@@ -10,6 +10,10 @@ module.exports = {
       cursor
     }
   }, res, next) => {
+    const response = {
+      rates: null,
+      currencyTypes: null
+    }
     http.get('http://api.bestchange.ru/info.zip', (data) => {
       const {
         statusCode
@@ -18,73 +22,29 @@ module.exports = {
         res.status(400).send('smth went wrong')
         throw console.error(data)
       } else {
-        const file = fs.createWriteStream('info.zip')
-        data.pipe(file)
-        file.on('finish', () => {
-          file.close(zipFunc) // close() is async, call cb after close completes.
-        })
-
-        const zipFunc = () => {
+        const zipWriteBuffer = fs.createWriteStream('info.zip')
+        data.pipe(zipWriteBuffer)
+        zipWriteBuffer.on('finish', () => {
           const zip = new StreamZip({
             file: 'info.zip',
             storeEntries: true
           })
-          for (const entry of Object.values(zip.entries())) {
-            const fileArr = []
-            zip.stream(entry, (err, stm) => {
-              if (err) {
-                console.log(err, '-----erro')
-              } else {
-                console.log(stm)
-                fileArr.push(stm)
-              }
-            })
-
-            console.log('The content of info.zip is: ' + fileArr)
-          }
-          
           zip.on('ready', () => {
-            // Take a look at the files
-            // console.log('Entries read: ' + zip.entriesCount)
-            // for (const entry of Object.values(zip.entries())) {
-            //   const desc = entry.isDirectory ? 'directory' : `${entry.size} bytes`
-            //   console.log(`Entry ${entry.name}: ${desc}`)
-            //   console.log('entry full------', entry)
-            //   // Read a file in memory
-            //   let zipDotDatContents = zip.entryDataSync(entry)
-            //   console.log(zipDotDatContents)
-            //   fileArr.push(zipDotDatContents)
-            // }
-            res.status(200).json('success')
-          })
-          zip.on('entry', entry => {
-            // you can already stream this entry,
-            // without waiting until all entry descriptions are read (suitable for very large archives)
-            console.log(entry)
-            console.log(`Read entry ${entry.name}`)
-          })
-          setTimeout(() => {
-            console.log('test')
+            const ratesBuffer = zip.entryDataSync('bm_rates.dat')
+            // console.log(`Read entry ${ratesBuffer.toString()}`)
+            // response.rates = ratesBuffer.toString()
+            res.status(200).send(ratesBuffer.toString())
             zip.close()
-          }, 5000)
-        }
-
-        // zip.close()
-
-        fs.close(0, (err) => {
-          if (err) throw console.error(err)
+          })
         })
-
-        // zip.on('error', err => {
-        //   console.error(err)
-        // })
       }
     })
-    // BestChange.find(query, select, cursor)
-    //   .then(success(res))
-    //   .catch(next)
   }
 }
+// BestChange.find(query, select, cursor)
+//   .then(success(res))
+//   .catch(next)
+//   }
 // export const show = ({ params }, res, next) =>
 //   BestChange.findById(params.id)
 //     .then(notFound(res))
