@@ -1,7 +1,9 @@
 const http = require('http')
 const fs = require('fs')
 const StreamZip = require('node-stream-zip')
-
+const windows1251 = require('windows-1251')
+const Iconv = require('iconv').Iconv
+const Buffer = require('buffer').Buffer
 module.exports = {
   index: ({
     querymen: {
@@ -30,10 +32,10 @@ module.exports = {
             storeEntries: true
           })
           zip.on('ready', () => {
-            const ratesBuffer = zip.entryDataSync('bm_rates.dat')
-            // console.log(`Read entry ${ratesBuffer.toString()}`)
-            // response.rates = ratesBuffer.toString()
-            res.status(200).send(ratesBuffer.toString())
+            const cy = zip.entryDataSync('bm_cy.dat')
+            const iconv = new Iconv('windows-1251', 'utf-8')
+            const buffer = iconv.convert(cy)
+            res.status(200).send(buffer)
             zip.close()
           })
         })
@@ -41,13 +43,3 @@ module.exports = {
     })
   }
 }
-// BestChange.find(query, select, cursor)
-//   .then(success(res))
-//   .catch(next)
-//   }
-// export const show = ({ params }, res, next) =>
-//   BestChange.findById(params.id)
-//     .then(notFound(res))
-//     .then((currency) => currency ? currency.view() : null)
-//     .then(success(res))
-//     .catch(next)
