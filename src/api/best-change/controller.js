@@ -1,9 +1,7 @@
 const http = require('http')
 const fs = require('fs')
 const StreamZip = require('node-stream-zip')
-const windows1251 = require('windows-1251')
 const Iconv = require('iconv').Iconv
-const Buffer = require('buffer').Buffer
 module.exports = {
   index: ({
     querymen: {
@@ -12,10 +10,10 @@ module.exports = {
       cursor
     }
   }, res, next) => {
-    const response = {
-      rates: null,
-      currencyTypes: null
-    }
+    // const response = {
+    //   rates: null,
+    //   currencyTypes: null
+    // }
     http.get('http://api.bestchange.ru/info.zip', (data) => {
       const {
         statusCode
@@ -33,7 +31,7 @@ module.exports = {
           })
           zip.on('ready', () => {
             const cy = zip.entryDataSync('bm_cy.dat')
-            const iconv = new Iconv('windows-1251', 'utf-8')
+            const iconv = new Iconv('WINDOWS-1251', 'UTF-8')
             const buffer = iconv.convert(cy)
             res.status(200).send(buffer)
             zip.close()

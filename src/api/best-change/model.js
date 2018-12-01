@@ -1,29 +1,24 @@
 const { mongoose, Schema } = require('mongoose')
 const { mongooseKeywords } = require('mongoose-keywords')
 
-const types = ['eur', 'usa', 'btc']
+// const types = ['eur', 'usa', 'btc']
 const currencySchema = new Schema({
-  test: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    lowercase: true
-  },
-  name: {
+  title: {
     type: String,
     index: true,
     trim: true
   },
   type: {
     type: String,
-    enum: types,
-    default: 'btc'
+    trim: true,
+    // enum: types,
+    default: ''
   },
   id: {
     type: String,
     default: '',
-    trim: true
+    trim: true,
+    unique: true
   }
 }, {
   timestamps: true
