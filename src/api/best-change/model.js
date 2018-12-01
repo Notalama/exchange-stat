@@ -1,7 +1,7 @@
 const { mongoose, Schema } = require('mongoose')
 const { mongooseKeywords } = require('mongoose-keywords')
 
-// const types = ['eur', 'usa', 'btc']
+// const types = ['country', 'electronic', 'binary']
 const currencySchema = new Schema({
   title: {
     type: String,
@@ -31,9 +31,9 @@ currencySchema.path('type').set((type) => {
   return type
 })
 
-currencySchema.plugin(mongooseKeywords, { paths: ['name', 'type'] })
+currencySchema.plugin(mongooseKeywords, { paths: ['title', 'type'] })
 
-const model = mongoose.model('BestChange', currencySchema)
+const model = mongoose.model('currencies', currencySchema)
 
 export const schema = model.schema
 module.exports = model
