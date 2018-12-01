@@ -33,11 +33,16 @@ module.exports = {
             const cy = zip.entryDataSync('bm_cy.dat')
             const iconv = new Iconv('WINDOWS-1251', 'UTF-8')
             const buffer = iconv.convert(cy)
-            res.status(200).send(buffer)
+            
+            res.status(200).send(buffer.toString().substring(0, 999))
             zip.close()
           })
         })
       }
     })
   }
+}
+
+const formatExchange = (unformattedList) => {
+  unformattedList
 }

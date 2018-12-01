@@ -1,17 +1,22 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <BestChangeTable v-bind:msg="message"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import BestChangeTable from './components/BestChangeTable.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    BestChangeTable
+  },
+  data: function() {
+    return {
+      message: 'Welcome to Exchange-Stat App'
+    }
   }
 }
 </script>
