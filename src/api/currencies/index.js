@@ -2,8 +2,9 @@ const { Router } = require('express')
 const { middleware } = require('querymen')
 // const { schema } = require('./model')
 // const { index } } = require('./controller'
-const { index } = require('./controller')
+const { index, show } = require('./controller')
 const router = new Router()
+// const { test, name, type, id } = schema.tree
 
 /**
  * @api {get} /users Retrieve users
@@ -20,8 +21,8 @@ router.get('/',
   middleware(),
   index)
 
-// router.get('/:id',
-//   query(),
-//   show)
+router.get('/:id',
+  middleware(),
+  show)
 
 module.exports = router

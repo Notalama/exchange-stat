@@ -1,6 +1,7 @@
 const { Router } = require('express')
 // const {bestChange } = require('./best-change'
 const bestChange = require('./best-change')
+const currencies = require('./currencies')
 const router = new Router()
 
 /**
@@ -27,5 +28,6 @@ const router = new Router()
  * @apiParam {String[]} [fields] Fields to be returned.
  */
 router.use('/best-change', bestChange)
+router.use('/currencies', currencies)
 
 module.exports = router

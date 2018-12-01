@@ -8,11 +8,9 @@ module.exports = {
     }
     return null
   },
-  notFound: (res) => (entity) => {
-    if (entity) {
-      return entity
-    }
-    res.status(404).end()
+  notFound: (res) => {
+    console.log('notfound ---', res)
+    res.status(404).send(res)
     return null
   },
   authorOrAdmin: (res, user, userField) => (entity) => {
