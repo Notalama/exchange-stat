@@ -43,5 +43,16 @@ module.exports = {
         res.send(response)
       }
     })
+  },
+  saveList: (query, res, next) => {
+    currenciesModel.insertMany(query, (err, docs) => {
+      if (err) {
+        console.error('saveMany err -----> ', err)
+        res.status(400).send(err.errmsg)
+      }
+      else {
+        res.send({message: 'success', value: docs})
+      }
+    })
   }
 }

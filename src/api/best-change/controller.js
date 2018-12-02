@@ -2,6 +2,9 @@ const http = require('http')
 const fs = require('fs')
 const StreamZip = require('node-stream-zip')
 const Iconv = require('iconv').Iconv
+const { formatExchange, formatCurrencies, formatExchangers } = require('./../../services/helpers/formatter')
+const currenciesModel = require('./../currencies/model')
+const _exchangers = require('./../exchangers/controller')
 module.exports = {
   index: ({
     querymen: {
@@ -12,7 +15,8 @@ module.exports = {
   }, res, next) => {
     const response = {
       rates: null,
-      currencyTypes: null
+      currencyTypes: null,
+      exchangers: null
     }
     http.get('http://api.bestchange.ru/info.zip', (data) => {
       const {
@@ -30,11 +34,20 @@ module.exports = {
             storeEntries: true
           })
           zip.on('ready', () => {
-            // const cy = zip.entryDataSync('bm_cy.dat')
+            const cy = zip.entryDataSync('bm_cy.dat')
             const rates = zip.entryDataSync('bm_rates.dat')
+            const excahngers = zip.entryDataSync('bm_exch.dat')
             const iconv = new Iconv('WINDOWS-1251', 'UTF-8')
+
+            const cyBuffer = iconv.convert(cy).toString()
             const ratesBuffer = iconv.convert(rates).toString().substring(0, 9999)
+            const excahngersBuffer = iconv.convert(excahngers).toString()
+
+            response.exchangers = formatExchangers(excahngersBuffer.split('\n'))
             response.rates = formatExchange(ratesBuffer.split('\n'))
+            response.currencyTypes = formatCurrencies(cyBuffer.split('\n'))
+
+            _exchangers.saveList(response.exchangers)
             res.status(200).json(response)
             zip.close()
           })
@@ -44,18 +57,4 @@ module.exports = {
   }
 }
 
-const formatExchange = (unformattedList) => {
-  const result = []
-  for (let i = 0; i < unformattedList.length; i++) {
-    const rowArray = unformattedList[i].split(';')
-    result.push({
-      givenCurrId: rowArray[0],
-      receivedCurrId: rowArray[1],
-      changerId: rowArray[2],
-      rateToGive: rowArray[3],
-      rateToReceive: rowArray[4],
-      fullChangerCapital: rowArray[5]
-    })
-  }
-  return result
-}
+

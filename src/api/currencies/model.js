@@ -3,32 +3,18 @@ const { Schema } = require('mongoose')
 
 // const types = ['country', 'electronic', 'binary']
 const currencySchema = new Schema({
-  title: {
+  currencyTitle: {
     type: String,
     index: true,
     trim: true
   },
-  type: {
+  currencyId: {
     type: String,
-    trim: true,
-    // enum: types,
-    default: ''
-  },
-  id: {
-    type: String,
-    default: '',
     trim: true,
     unique: true
   }
 }, {
   timestamps: true
-})
-
-currencySchema.path('type').set((type) => {
-  if (!this.name) {
-    this.name = type.replace(/^(.+)@.+$/, '$1')
-  }
-  return type
 })
 
 const model = mongoose.model('currencies', currencySchema)
