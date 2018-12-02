@@ -1,6 +1,7 @@
+const currenciesModel = require('./../../api/currencies/model')
 module.exports = {
-  formatRates: (unformattedList) => {
-    const result = []
+  formatRates: async (unformattedList) => {
+    let result = []
     for (let i = 0; i < unformattedList.length; i++) {
       const rowArray = unformattedList[i].split(';')
       result.push({
@@ -12,7 +13,12 @@ module.exports = {
         fullChangerCapital: rowArray[5]
       })
     }
-    return result
+    filterByCurrencies(result).then((res) => {
+      result = res
+      console.log(result)
+      return result
+    })
+    
   },
   formatCurrencies: (unformattedList) => {
     const result = []
@@ -28,19 +34,26 @@ module.exports = {
   formatExchangers: (unformattedList) => {
     const result = []
     for (let i = 0; i < unformattedList.length; i++) {
-      const rowArray = unformattedList[i].split(';')
+      let rowArray = unformattedList[i].split(';')
       result.push({
         exchangerId: rowArray[0],
         exchangerTitle: rowArray[1]
       })
     }
     return result
-  },
-  // filterRates: (rates) => {
-  //   return rates.filter((el) => {
-  //     const matchToGiven = el.givenCurrId === 
-      
-  //     el.receivedCurrId) === 
-  //   })
-  // }
+  }
+}
+const filterByCurrencies = async (array) => {
+  let omitCurrencies = [];
+  await currenciesModel.find({ hide: true }, (err, res) => {
+    if (err) console.error(err, '----- err')
+    else if (res === null) console.error('null triggered')
+    else {
+      omitCurrencies = res.map(el => el.currencyId)
+    }
+  })
+  console.log(omitCurrencies)
+  return array.filter(el => {
+    return omitCurrencies.every(id => el.receivedCurrId !== id && el.givenCurrId !== id)
+  })
 }

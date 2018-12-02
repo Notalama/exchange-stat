@@ -2,7 +2,7 @@ const http = require('http')
 const fs = require('fs')
 const StreamZip = require('node-stream-zip')
 const Iconv = require('iconv').Iconv
-const { formatRates, filterRates, formatCurrencies, formatExchangers } = require('./../../services/helpers/formatter')
+const { formatRates, formatCurrencies, formatExchangers } = require('./../../services/helpers/formatter')
 const exchangersModel = require('./../exchangers/model')
 const currenciesModel = require('./../currencies/model')
 module.exports = {
@@ -39,7 +39,8 @@ module.exports = {
             // const excahngers = zip.entryDataSync('bm_exch.dat')
             const iconv = new Iconv('WINDOWS-1251', 'UTF-8')
 
-            const ratesBuffer = iconv.convert(rates).toString().substring(0, 999)
+            const ratesBuffer = iconv.convert(rates).toString()
+              // .substring(0, 999)
 
             // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
             // const cyBuffer = iconv.convert(cy).toString()
@@ -59,11 +60,14 @@ module.exports = {
             //     console.log(val, 'sadfafsd')
             //   }
             // })
-            rates = formatRates(ratesBuffer.split('\n'))
-            rates = filterRates(rates)
+            
+            await formatRates(ratesBuffer.split('\n')).then(res => {
+              rates = res
+            })
             for (const el of rates) {
               const currToGive = await currenciesModel.findOne({currencyId: el.givenCurrId}, (err, curr) => {
                 if (err) console.error(err.errmsg)
+                else if (curr === null) res.status(404).send('Nothing found')
                 else {
                   return { id: el.givenCurrId, title: curr.currencyTitle }
                 }
