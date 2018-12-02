@@ -22,22 +22,17 @@ const {
         }
       })
     },
-    show: ({
-      querymen: {
-        query,
-        select,
-        cursor
-      }
-    }, res, next) => {
+    show: (query, res, next) => {
         exchangersModel.findOne(query, (err, result) => {
         if (err) res.status(400).send(err)
         else if (result === null) res.status(404).end()
         else {
-          const response = {
-            currencyType: null
-          }
-          response.currencyType = result
-          res.send(response)
+          // const response = {
+          //   currencyType: null
+          // }
+          // response.currencyType = result
+          // res.send(response)
+          return result
         }
       })
     },

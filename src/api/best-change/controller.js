@@ -2,9 +2,9 @@ const http = require('http')
 const fs = require('fs')
 const StreamZip = require('node-stream-zip')
 const Iconv = require('iconv').Iconv
-const { formatExchange, formatCurrencies, formatExchangers } = require('./../../services/helpers/formatter')
+const { formatRates, formatCurrencies, formatExchangers } = require('./../../services/helpers/formatter')
+const exchangersModel = require('./../exchangers/model')
 const currenciesModel = require('./../currencies/model')
-const _exchangers = require('./../exchangers/controller')
 module.exports = {
   index: ({
     querymen: {
@@ -14,7 +14,7 @@ module.exports = {
     }
   }, res, next) => {
     const response = {
-      rates: null,
+      rates: [],
       currencyTypes: null,
       exchangers: null
     }
@@ -33,21 +33,51 @@ module.exports = {
             file: 'info.zip',
             storeEntries: true
           })
-          zip.on('ready', () => {
-            const cy = zip.entryDataSync('bm_cy.dat')
-            const rates = zip.entryDataSync('bm_rates.dat')
-            const excahngers = zip.entryDataSync('bm_exch.dat')
+          zip.on('ready', async () => {
+            let rates = zip.entryDataSync('bm_rates.dat')
+            // const cy = zip.entryDataSync('bm_cy.dat')
+            // const excahngers = zip.entryDataSync('bm_exch.dat')
             const iconv = new Iconv('WINDOWS-1251', 'UTF-8')
 
-            const cyBuffer = iconv.convert(cy).toString()
-            const ratesBuffer = iconv.convert(rates).toString().substring(0, 9999)
-            const excahngersBuffer = iconv.convert(excahngers).toString()
+            const ratesBuffer = iconv.convert(rates).toString().substring(0, 999)
 
-            response.exchangers = formatExchangers(excahngersBuffer.split('\n'))
-            response.rates = formatExchange(ratesBuffer.split('\n'))
-            response.currencyTypes = formatCurrencies(cyBuffer.split('\n'))
+            // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
+            // const cyBuffer = iconv.convert(cy).toString()
+            // const excahngersBuffer = iconv.convert(excahngers).toString()
+            // response.exchangers = formatExchangers(excahngersBuffer.split('\n'))
+            // response.currencyTypes = formatCurrencies(cyBuffer.split('\n'))
 
-            _exchangers.saveList(response.exchangers)
+            rates = formatRates(ratesBuffer.split('\n'))
+
+            for (const el of rates) {
+              const currToGive = await currenciesModel.findOne({currencyId: el.givenCurrId}, (err, curr) => {
+                if (err) console.error(err.errmsg)
+                else {
+                  return { id: el.givenCurrId, title: curr.currencyTitle }
+                }
+              })
+              const currToReceive = await currenciesModel.findOne({currencyId: el.receivedCurrId}, (err, curr) => {
+                if (err) console.error(err.errmsg)
+                else {
+                  return { id: el.receivedCurrId, title: curr.currencyTitle }
+                }
+              })
+              const exchanger = await exchangersModel.findOne({exchangerId: el.changerId}, (err, curr) => {
+                if (err) console.error(err.errmsg)
+                else {
+                  return { id: el.changerId, title: curr.exchangerTitle }
+                }
+              })
+
+              response.rates.push({
+                currToGive,
+                currToReceive,
+                exchanger,
+                rateToGive: el.rateToGive,
+                rateToReceive: el.rateToReceive,
+                fullChangerCapital: el.fullChangerCapital
+              })
+            }
             res.status(200).json(response)
             zip.close()
           })

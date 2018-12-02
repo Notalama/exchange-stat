@@ -1,5 +1,5 @@
 module.exports = {
-  formatExchange: (unformattedList) => {
+  formatRates: (unformattedList) => {
     const result = []
     for (let i = 0; i < unformattedList.length; i++) {
       const rowArray = unformattedList[i].split(';')
