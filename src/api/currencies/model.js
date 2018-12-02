@@ -12,6 +12,10 @@ const currencySchema = new Schema({
     type: String,
     trim: true,
     unique: true
+  },
+  hide: {
+    type: Boolean,
+    default: true
   }
 }, {
   timestamps: true

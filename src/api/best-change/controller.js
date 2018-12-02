@@ -2,7 +2,7 @@ const http = require('http')
 const fs = require('fs')
 const StreamZip = require('node-stream-zip')
 const Iconv = require('iconv').Iconv
-const { formatRates, formatCurrencies, formatExchangers } = require('./../../services/helpers/formatter')
+const { formatRates, filterRates, formatCurrencies, formatExchangers } = require('./../../services/helpers/formatter')
 const exchangersModel = require('./../exchangers/model')
 const currenciesModel = require('./../currencies/model')
 module.exports = {
@@ -60,7 +60,7 @@ module.exports = {
             //   }
             // })
             rates = formatRates(ratesBuffer.split('\n'))
-
+            rates = filterRates(rates)
             for (const el of rates) {
               const currToGive = await currenciesModel.findOne({currencyId: el.givenCurrId}, (err, curr) => {
                 if (err) console.error(err.errmsg)

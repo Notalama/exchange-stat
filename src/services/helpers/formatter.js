@@ -35,5 +35,12 @@ module.exports = {
       })
     }
     return result
-  }
+  },
+  // filterRates: (rates) => {
+  //   return rates.filter((el) => {
+  //     const matchToGiven = el.givenCurrId === 
+      
+  //     el.receivedCurrId) === 
+  //   })
+  // }
 }
