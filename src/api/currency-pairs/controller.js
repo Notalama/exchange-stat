@@ -1,8 +1,4 @@
-const {
-  success,
-  notFound
-} = require('./../../services/response')
-const currencyModel = require('./model')
+const currencyPairModel = require('./model')
 module.exports = {
   index: ({
     querymen: {
@@ -12,7 +8,7 @@ module.exports = {
     }
   }, res, next) => {
     console.log(query)
-    currencyModel.find(query, (err, result) => {
+    currencyPairModel.find(query, (err, result) => {
       if (err) res.status(400).send(err)
       else {
         const response = {
@@ -31,7 +27,7 @@ module.exports = {
       cursor
     }
   }, res, next) => {
-    currencyModel.findOne(query, (err, result) => {
+    currencyPairModel.findOne(query, (err, result) => {
       if (err) res.status(400).send(err)
       else if (result === null) res.status(404).end()
       else {
@@ -45,12 +41,11 @@ module.exports = {
     })
   },
   saveList: (query, res, next) => {
-    currenciesModel.insertMany(query, (err, docs) => {
+    currencyPairModel.insertMany(query, (err, docs) => {
       if (err) {
         console.error('saveMany err -----> ', err)
         res.status(400).send(err.errmsg)
-      }
-      else {
+      } else {
         res.send({message: 'success', value: docs})
       }
     })

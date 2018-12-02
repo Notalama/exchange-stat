@@ -1,14 +1,23 @@
 const mongoose = require('mongoose')
 const { Schema } = require('mongoose')
 
-// const types = ['country', 'electronic', 'binary']
 const currencySchema = new Schema({
-  currencyTitle: {
+  firstCurrencyTitle: {
     type: String,
     index: true,
     trim: true
   },
-  currencyId: {
+  firstCurrencyId: {
+    type: String,
+    trim: true,
+    unique: true
+  },
+  secondCurrencyTitle: {
+    type: String,
+    index: true,
+    trim: true
+  },
+  secondCurrencyId: {
     type: String,
     trim: true,
     unique: true
@@ -17,6 +26,6 @@ const currencySchema = new Schema({
   timestamps: true
 })
 
-const model = mongoose.model('currencies', currencySchema)
+const model = mongoose.model('currencyPairs', currencySchema)
 
 module.exports = model

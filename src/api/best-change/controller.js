@@ -47,6 +47,18 @@ module.exports = {
             // response.exchangers = formatExchangers(excahngersBuffer.split('\n'))
             // response.currencyTypes = formatCurrencies(cyBuffer.split('\n'))
 
+            // currenciesModel.insertMany(response.currencyTypes, (err, val) => {
+            //   if (err) console.log(err)
+            //   else {
+            //     console.log(val, 'sadfafsd')
+            //   }
+            // })
+            // exchangersModel.insertMany(response.exchangers, (err, val) => {
+            //   if (err) console.log(err)
+            //   else {
+            //     console.log(val, 'sadfafsd')
+            //   }
+            // })
             rates = formatRates(ratesBuffer.split('\n'))
 
             for (const el of rates) {
@@ -86,5 +98,3 @@ module.exports = {
     })
   }
 }
-
-
