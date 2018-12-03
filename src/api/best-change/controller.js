@@ -2,9 +2,13 @@ const http = require('http')
 const fs = require('fs')
 const StreamZip = require('node-stream-zip')
 const Iconv = require('iconv').Iconv
-const { formatRates, formatCurrencies, formatExchangers } = require('./../../services/helpers/formatter')
-const exchangersModel = require('./../exchangers/model')
-const currenciesModel = require('./../currencies/model')
+const {
+  formatRates
+  // formatCurrencies,
+  // formatExchangers
+} = require('./../../services/helpers/formatter')
+// const exchangersModel = require('./../exchangers/model')
+// const currenciesModel = require('./../currencies/model')
 module.exports = {
   index: ({
     querymen: {
@@ -40,7 +44,6 @@ module.exports = {
             const iconv = new Iconv('WINDOWS-1251', 'UTF-8')
 
             const ratesBuffer = iconv.convert(rates).toString()
-              // .substring(0, 999)
 
             // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
             // const cyBuffer = iconv.convert(cy).toString()
@@ -51,7 +54,7 @@ module.exports = {
             // currenciesModel.insertMany(response.currencyTypes, (err, val) => {
             //   if (err) console.log(err)
             //   else {
-            //     console.log(val, 'sadfafsd')
+            //     console.log(val, 'success fill')
             //   }
             // })
             // exchangersModel.insertMany(response.exchangers, (err, val) => {
@@ -60,40 +63,13 @@ module.exports = {
             //     console.log(val, 'sadfafsd')
             //   }
             // })
-            
             await formatRates(ratesBuffer.split('\n')).then(res => {
-              rates = res
+              if (res.length > 100) {
+                response.rates = res.slice(0, 99)
+              } else {
+                response.rates = res
+              }
             })
-            for (const el of rates) {
-              const currToGive = await currenciesModel.findOne({currencyId: el.givenCurrId}, (err, curr) => {
-                if (err) console.error(err.errmsg)
-                else if (curr === null) res.status(404).send('Nothing found')
-                else {
-                  return { id: el.givenCurrId, title: curr.currencyTitle }
-                }
-              })
-              const currToReceive = await currenciesModel.findOne({currencyId: el.receivedCurrId}, (err, curr) => {
-                if (err) console.error(err.errmsg)
-                else {
-                  return { id: el.receivedCurrId, title: curr.currencyTitle }
-                }
-              })
-              const exchanger = await exchangersModel.findOne({exchangerId: el.changerId}, (err, curr) => {
-                if (err) console.error(err.errmsg)
-                else {
-                  return { id: el.changerId, title: curr.exchangerTitle }
-                }
-              })
-
-              response.rates.push({
-                currToGive,
-                currToReceive,
-                exchanger,
-                rateToGive: el.rateToGive,
-                rateToReceive: el.rateToReceive,
-                fullChangerCapital: el.fullChangerCapital
-              })
-            }
             res.status(200).json(response)
             zip.close()
           })

@@ -26,40 +26,41 @@ export default {
   },
   data: function() {
     return {
+      info: null,
       columns: [
         {
           label: '',
           field: 'init'
         },
         {
-          label: 'Name',
-          field: 'name',
+          label: 'Дохід',
+          field: 'gain',
         },
         {
-          label: 'Age',
+          label: 'Ланцюжки',
           field: 'age',
           type: 'number',
         },
         {
-          label: 'Created On',
+          label: 'Дата',
           field: 'createdAt',
           type: 'date',
           dateInputFormat: 'YYYY-MM-DD',
           dateOutputFormat: 'MMM Do YY',
         },
         {
-          label: 'Percent',
+          label: '',
           field: 'score',
           type: 'percentage',
         },
       ],
       rows: [
-        { id:1, name:"John", age: 20, createdAt: '201-10-31:9: 35 am',score: 0.03343 },
-        { id:2, name:"Jane", age: 24, createdAt: '2011-10-31', score: 0.03343 },
-        { id:3, name:"Susan", age: 16, createdAt: '2011-10-30', score: 0.03343 },
-        { id:4, name:"Chris", age: 55, createdAt: '2011-10-11', score: 0.03343 },
-        { id:5, name:"Dan", age: 40, createdAt: '2011-10-21', score: 0.03343 },
-        { id:6, name:"John", age: 20, createdAt: '2011-10-31', score: 0.03343 },
+        { init:1, gain: this.info[0].givenCurrency.title, age: 20, createdAt: '201-10-31:9: 35 am',score: 0.03343 },
+        { init:2, gain:"Jane", age: 24, createdAt: '2011-10-31', score: 0.03343 },
+        { init:3, gain:"Susan", age: 16, createdAt: '2011-10-30', score: 0.03343 },
+        { init:4, gain:"Chris", age: 55, createdAt: '2011-10-11', score: 0.03343 },
+        { init:5, gain:"Dan", age: 40, createdAt: '2011-10-21', score: 0.03343 },
+        { init:6, gain:"John", age: 20, createdAt: '2011-10-31', score: 0.03343 },
       ]
     }
   }
