@@ -4,31 +4,26 @@ const exchangersModel = require('./../../api/exchangers/model')
 module.exports = {
   formatRates: async (unformattedList) => {
     try {
-      let result = []
-      let omitCurrencies = []
-      let omitExchangers = []
-      await hideParamsModel.find({}, (err, res) => {
+      const result = []
+      const omitValues = await hideParamsModel.find({}, (err, res) => {
         if (err) console.error(err, '----- err')
         else if (res === null) console.error('null hideparams found')
-        else {
-          omitCurrencies = res[0].hiddenCurrencies
-          omitExchangers = res[0].hiddenExchangers
-        }
       })
-      const allCurrencies = await currenciesModel.find({currencyId: {$nin: omitCurrencies}},
+      const allCurrencies = await currenciesModel.find({currencyId: {$nin: omitValues[0].hiddenCurrencies}},
         {currencyId: 1, currencyTitle: 1}, (err, res) => {
           if (err) console.error(err, '----- err')
           else if (res === null) console.error('null currencies found')
         })
-      const allExchangers = await exchangersModel.find({exchangerId: {$nin: omitExchangers}},
+      const allExchangers = await exchangersModel.find({exchangerId: {$nin: omitValues[0].hiddenExchangers}},
         {exchangerId: 1, exchangerTitle: 1}, (err, res) => {
           if (err) console.error(err, '----- err')
           else if (res === null) console.error('null currencies found')
         })
       for (let i = 0; i < unformattedList.length; i++) {
         let rowArray = unformattedList[i].split(';')
-        const isHidden = omitCurrencies.some(id => rowArray[0] === id || rowArray[1] === id) || omitExchangers.some(id => rowArray[2] === id)
+        const isHidden = omitValues[0].hiddenCurrencies.some(id => rowArray[0] === id || rowArray[1] === id) || omitValues[0].hiddenExchangers.some(id => rowArray[2] === id)
         if (!isHidden) {
+          
           result.push({
             givenCurrency: allCurrencies.find(el => el.currencyId === rowArray[0]),
             receivedCurrency: allCurrencies.find(el => el.currencyId === rowArray[1]),
@@ -41,7 +36,7 @@ module.exports = {
       }
       return result
     } catch (rejectedValue) {
-      console.error('err caugth ----', rejectedValue)
+      console.error('formatter err caught ---', rejectedValue)
     }
   },
   formatCurrencies: async (unformattedList) => {
