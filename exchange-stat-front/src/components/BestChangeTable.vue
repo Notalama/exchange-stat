@@ -1,10 +1,15 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
+    <div>
+      {{info}}
+    </div>
       <vue-good-table
+      mode="remote"
       class="bc-table"
       :columns="columns"
-      :rows="rows"/>
+      :rows="rows"
+      :line-numbers="true"/>
   </div>
 </template>
 
@@ -17,16 +22,45 @@ export default {
     msg: String
   },
   mounted: function() {
-    axios
+    this.loadItems()
+  },
+  methods: {
+  getGainCol: function() {
+    return 'getCol'
+  },
+  getChainCol: function(row) {
+    const maxChainEffSum = 1000 
+    const maxChainEfficiency = 'maxChainEfficiency Example - ' + maxChainEffSum + ' ' + row.givenCurrency.currencyTitle + ' -> '
+    const rate = row.changer.exchangerTitle + '(' + row.rateToGive + ':' + row.rateToReceive + ';' + row.fullChangerCapital + ')'
+    const calculatedCurrency = maxChainEffSum * row.rateToGive * row.rateToReceive
+    const result = maxChainEfficiency + rate + ' -> ' + row.receivedCurrency.currencyTitle + ' ' + calculatedCurrency
+    return result
+  },
+  loadItems: function() {
+      axios
       .get('http://localhost:9000/best-change')
-      .then((response) => {
-        console.log(response.data)
-        this.info = response;
+      .then(response => {
+        console.log(response)
+        // const firstItem = response.data.rates[0]
+        this.info = response.data.rates[0]
+        // .givenCurrency.currencyTitle;
+        const chainCol = this.getChainCol(this.info)
+        const gainCol = this.getGainCol()
+        this.rows = [
+          { init:1, gain: gainCol, chain: chainCol, createdAt: '201-10-31:9: 35 am', score: 0.03343 },
+          { init:2, gain:"Jane", chain: 24, createdAt: '2011-10-31', score: 0.03343 },
+          { init:3, gain:"Susan", chain: 16, createdAt: '2011-10-30', score: 0.03343 },
+          { init:4, gain:"Chris", chain: 55, createdAt: '2011-10-11', score: 0.03343 },
+          { init:5, gain:"Dan", chain: 40, createdAt: '2011-10-21', score: 0.03343 },
+          { init:6, gain:"John", chain: 20, createdAt: '2011-10-31', score: 0.03343 },
+        ]
       });
+    }
   },
   data: function() {
     return {
       info: null,
+      row: [],
       columns: [
         {
           label: '',
@@ -38,8 +72,8 @@ export default {
         },
         {
           label: 'Ланцюжки',
-          field: 'age',
-          type: 'number',
+          field: 'chain',
+          type: 'string',
         },
         {
           label: 'Дата',
@@ -54,14 +88,7 @@ export default {
           type: 'percentage',
         },
       ],
-      rows: [
-        { init:1, gain: this.info[0].givenCurrency.title, age: 20, createdAt: '201-10-31:9: 35 am',score: 0.03343 },
-        { init:2, gain:"Jane", age: 24, createdAt: '2011-10-31', score: 0.03343 },
-        { init:3, gain:"Susan", age: 16, createdAt: '2011-10-30', score: 0.03343 },
-        { init:4, gain:"Chris", age: 55, createdAt: '2011-10-11', score: 0.03343 },
-        { init:5, gain:"Dan", age: 40, createdAt: '2011-10-21', score: 0.03343 },
-        { init:6, gain:"John", age: 20, createdAt: '2011-10-31', score: 0.03343 },
-      ]
+      rows: []
     }
   }
 };
