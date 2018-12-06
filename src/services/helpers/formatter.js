@@ -1,6 +1,7 @@
 const currenciesModel = require('./../../api/currencies/model')
 const hideParamsModel = require('./../../api/hide-params/model')
 const exchangersModel = require('./../../api/exchangers/model')
+const ratesModel = require('./../../api/rates/model')
 module.exports = {
   formatRates: async (unformattedList) => {
     try {
@@ -27,9 +28,9 @@ module.exports = {
             fromCurr: allCurrencies.find(el => el.currencyId === rowArray[0]),
             toCurr: allCurrencies.find(el => el.currencyId === rowArray[1]),
             changer: allExchangers.find(el => el.exchangerId === rowArray[2]),
-            give: rowArray[3],
-            receive: rowArray[4],
-            amount: rowArray[5]
+            give: +rowArray[3],
+            receive: +rowArray[4],
+            amount: +rowArray[5]
           })
         }
       }
@@ -37,6 +38,41 @@ module.exports = {
     } catch (rejectedValue) {
       console.error('formatter err caught ---', rejectedValue)
     }
+  },
+  getChains: async () => {
+    const result = []
+    const omitValues = await hideParamsModel.find({}, (err, res) => {
+      if (err) console.error(err, '--- omitValues err')
+      else if (res === null) console.error('null hideparams found')
+    })
+    const allCurrencies = await currenciesModel.find({ currencyId: { $nin: omitValues[0].hiddenCurrencies } },
+    { currencyId: 1, currencyTitle: 1 }, (err, res) => {
+      if (err) console.error(err, '--- allCurrencies err')
+      else if (res === null) console.error('null currencies found')
+    })
+    const currIds = allCurrencies.map(el => el.currencyId)
+    for (let i = 0; i < allCurrencies.length; i++) {
+      let test = await ratesModel.aggregate([
+        {
+          $match: {
+            'fromCurr.currencyId': allCurrencies[i].currencyId,
+            'toCurr.currencyId': {$in: currIds}
+          }
+        },
+        {
+          $group: {
+            _id: {$concat: ['$fromCurr.currencyTitle', ' -> ', '$toCurr.currencyTitle']},
+            minGive: { $min: '$give' },
+            minReceive: { $min: '$receive' },
+            allGave: { $push: '$give'},
+            allReceived: { $push: '$receive'},
+            allChangers: { $push: '$changer.exchangerTitle' }
+          }
+        }
+      ])
+      result.push(test)
+    }
+    return result
   },
   formatCurrencies: async (unformattedList) => {
     const result = []

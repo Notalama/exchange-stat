@@ -2,8 +2,10 @@ const http = require('http')
 const fs = require('fs')
 const StreamZip = require('node-stream-zip')
 const Iconv = require('iconv').Iconv
+const ratesModel = require('./../../api/rates/model')
 const {
-  formatRates
+  formatRates,
+  getChains
   // formatCurrencies,
   // formatExchangers
 } = require('./../../services/helpers/formatter')
@@ -27,7 +29,7 @@ module.exports = {
         statusCode
       } = data
       if (statusCode !== 200) {
-        res.status(400).send('smth went wrong', data)
+        res.status(400).send('info.zip not found', data)
         throw console.error(data)
       } else {
         const zipWriteBuffer = fs.createWriteStream('info.zip')
@@ -63,15 +65,26 @@ module.exports = {
             //     console.log(val, 'sadfafsd')
             //   }
             // })
-            await formatRates(ratesBuffer.split('\n')).then(res => {
-              if (res.length > 100) {
-                response.rates = res.slice(0, 99)
+            await formatRates(ratesBuffer.split('\n')).then( async result => {
+              if (result.length > 100) {
+                response.rates = result.slice(0, 99)
               } else {
-                response.rates = res
+                response.rates = result
               }
+              const refillRates = await ratesModel.collection.drop().then(async res => {
+                await ratesModel.insertMany(result, (err, doc) => {
+                  if (err) console.error(err, '--- insert rates err')
+                  // else if (res === null) console.error('null currencies found')
+                  else {
+                    console.log(doc.slice(0, 1))
+                  }
+                })
+              }, rejected => console.error('rejected refill', rejected))
+              const chain = await getChains()
+              // response.rates = getChains()
+              res.status(200).json(chain)
+              zip.close()
             })
-            res.status(200).json(response)
-            zip.close()
           })
         })
       }

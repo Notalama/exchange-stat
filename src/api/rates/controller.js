@@ -1,51 +1,47 @@
-const {
-    success,
-    notFound
-  } = require('./../../services/response')
-  const exchangersModel = require('./model')
-  module.exports = {
-    index: ({
-      querymen: {
-        query,
-        select,
-        cursor
+const ratesModel = require('./model')
+module.exports = {
+  index: ({
+    querymen: {
+      query,
+      select,
+      cursor
+    }
+  }, res) => {
+    ratesModel.find(querymen.query, querymen.select, querymen.cursor, (err, result) => {
+      if (err) res.status(400).send(err)
+      else if (result === null) return null
+      else {
+        return result
       }
-    }, res, next) => {
-      exchangersModel.find(query, (err, result) => {
-        if (err) res.status(400).send(err)
-        else {
-          const response = {
-            currencyTypes: null
-          }
-          response.currencyTypes = result
-          res.send(response)
+    })
+  },
+  show: (query, res, next) => {
+    ratesModel.findOne(query, (err, result) => {
+      if (err) res.status(400).send(err)
+      else if (result === null) res.status(404).end()
+      else {
+        const response = {
+          currencyType: null
         }
-      })
-    },
-    show: (query, res, next) => {
-        exchangersModel.findOne(query, (err, result) => {
-        if (err) res.status(400).send(err)
-        else if (result === null) res.status(404).end()
-        else {
-          // const response = {
-          //   currencyType: null
-          // }
-          // response.currencyType = result
-          // res.send(response)
-          return result
-        }
-      })
-    },
-    saveList: (query, res, next) => {
-        exchangersModel.insertMany(query, (err, docs) => {
+        response.currencyType = result
+        res.send(response)
+        return result
+      }
+    })
+  },
+  saveList: (query, res) => {
+    // if (ratesModel.drop()) {
+      ratesModel.insertMany(query, (err, docs) => {
         if (err) {
           console.error('saveMany err -----> ', err)
           res.status(400).send(err.errmsg)
         }
         else {
-          res.send({message: 'success', value: docs})
+          res.send({ message: 'success', value: docs })
         }
       })
-    }
+    // } else {
+    //   console.error('rates collection was not dropped')
+    // }
   }
-  
+}

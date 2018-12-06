@@ -3,26 +3,22 @@ const { Schema } = require('mongoose')
 
 // const types = ['country', 'electronic', 'binary']
 const rateSchema = new Schema({
-  // givenCurrency:
-  //           receivedCurrency: 
-  //           changer: 
-  //           rateToGive: 
-  //           rateToReceive: 
-  //           fullChangerCapital: 
-  exchangerTitle: {
-    type: String,
-    index: true,
-    trim: true
+  fromCurr: {
+    currencyTitle: String,
+    currencyId: String
   },
-  exchangerId: {
-    type: String,
-    trim: true,
-    unique: true
-  }
-}, {
-  timestamps: true
+  toCurr: {
+    currencyTitle: String,
+    currencyId: String
+  },
+  changer: {
+    exchangerTitle: String,
+    exchangerId: String
+  },
+  give: Number,
+  receive: Number,
+  amount: Number
 })
-
-const model = mongoose.model('exchangers', exchangerSchema)
+const model = mongoose.model('rates', rateSchema)
 
 module.exports = model

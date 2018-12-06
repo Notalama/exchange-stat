@@ -24,5 +24,4 @@ router.get('/',
 router.get('/:id',
   middleware(),
   show)
-
 module.exports = router
