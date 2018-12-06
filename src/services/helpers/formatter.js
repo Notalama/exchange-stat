@@ -6,31 +6,30 @@ module.exports = {
     try {
       const result = []
       const omitValues = await hideParamsModel.find({}, (err, res) => {
-        if (err) console.error(err, '----- err')
+        if (err) console.error(err, '--- omitValues err')
         else if (res === null) console.error('null hideparams found')
       })
       const allCurrencies = await currenciesModel.find({currencyId: {$nin: omitValues[0].hiddenCurrencies}},
         {currencyId: 1, currencyTitle: 1}, (err, res) => {
-          if (err) console.error(err, '----- err')
+          if (err) console.error(err, '--- allCurrencies err')
           else if (res === null) console.error('null currencies found')
         })
       const allExchangers = await exchangersModel.find({exchangerId: {$nin: omitValues[0].hiddenExchangers}},
         {exchangerId: 1, exchangerTitle: 1}, (err, res) => {
-          if (err) console.error(err, '----- err')
+          if (err) console.error(err, '--- allExchangers err')
           else if (res === null) console.error('null currencies found')
         })
       for (let i = 0; i < unformattedList.length; i++) {
         let rowArray = unformattedList[i].split(';')
         const isHidden = omitValues[0].hiddenCurrencies.some(id => rowArray[0] === id || rowArray[1] === id) || omitValues[0].hiddenExchangers.some(id => rowArray[2] === id)
         if (!isHidden) {
-          
           result.push({
-            givenCurrency: allCurrencies.find(el => el.currencyId === rowArray[0]),
-            receivedCurrency: allCurrencies.find(el => el.currencyId === rowArray[1]),
+            fromCurr: allCurrencies.find(el => el.currencyId === rowArray[0]),
+            toCurr: allCurrencies.find(el => el.currencyId === rowArray[1]),
             changer: allExchangers.find(el => el.exchangerId === rowArray[2]),
-            rateToGive: rowArray[3],
-            rateToReceive: rowArray[4],
-            fullChangerCapital: rowArray[5]
+            give: rowArray[3],
+            receive: rowArray[4],
+            amount: rowArray[5]
           })
         }
       }
