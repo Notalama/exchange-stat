@@ -65,24 +65,99 @@ module.exports = {
             //     console.log(val, 'sadfafsd')
             //   }
             // })
-            await formatRates(ratesBuffer.split('\n')).then( async result => {
-              if (result.length > 100) {
-                response.rates = result.slice(0, 99)
-              } else {
-                response.rates = result
-              }
-              const refillRates = await ratesModel.collection.drop().then(async res => {
-                await ratesModel.insertMany(result, (err, doc) => {
-                  if (err) console.error(err, '--- insert rates err')
-                  // else if (res === null) console.error('null currencies found')
-                  else {
-                    console.log(doc.slice(0, 1))
+            await formatRates(ratesBuffer.split('\n')).then(async result => {
+              // if (result.length > 100) {
+              //   response.rates = result.slice(0, 99)
+              // } else {
+              //   response.rates = result
+              // }
+
+              // fromCurr: allCurrencies.find(el => el.currencyId === rowArray[0]),
+              // toCurr: allCurrencies.find(el => el.currencyId === rowArray[1]),
+              // changer: allExchangers.find(el => el.exchangerId === rowArray[2]),
+              // give: +rowArray[3],
+              // receive: +rowArray[4],
+              // amount: +rowArray[5]
+              const profitArr = []
+              const test = result.slice(0, 100).filter(rate => {
+                let isProfitable = false
+                result.forEach(cmpRate => {
+                  const isPair = cmpRate.fromCurr.currencyId === rate.toCurr.currencyId && cmpRate.toCurr.currencyId === rate.fromCurr.currencyId
+                  if (rate.give === 1 && isPair) {
+                    // receive maximum currency
+                    if (rate.receive < cmpRate.give) {
+                      const isLower = !profitArr.length || profitArr.some(el => {
+                        if (el.cmpRate.give === 1) {
+                          return el.receive > cmpRate.give
+                        } else {
+                          return false
+                        }
+                      })
+                      if (isLower) {
+                        const r = {
+                          from: rate.fromCurr.currencyId,
+                          to: rate.toCurr.currencyId,
+                          give: rate.give,
+                          receive: rate.receive,
+                          changer: rate.changer
+                        }
+                        const c = {
+                          from: cmpRate.fromCurr.currencyId,
+                          to: cmpRate.toCurr.currencyId,
+                          give: cmpRate.give,
+                          receive: cmpRate.receive,
+                          changer: cmpRate.changer
+                        }
+                        profitArr.push({rate: r, cmpRate: c})
+                        isProfitable = true
+                      }
+                    }
+                  } else if (rate.receive === 1 && isPair) {
+                    // receive maximum currency
+                    if (rate.give < cmpRate.receive) {
+                      const isLower = !profitArr.length || profitArr.some(el => {
+                        if (el.receive === 1) {
+                          return el.cmpRate.give > cmpRate.receive
+                        } else {
+                          return false
+                        }
+                      })
+                      if (isLower) {
+                        const r = {
+                          from: rate.fromCurr.currencyId,
+                          to: rate.toCurr.currencyId,
+                          give: rate.give,
+                          receive: rate.receive,
+                          changer: rate.changer
+                        }
+                        const c = {
+                          from: cmpRate.fromCurr.currencyId,
+                          to: cmpRate.toCurr.currencyId,
+                          give: cmpRate.give,
+                          receive: cmpRate.receive,
+                          changer: cmpRate.changer
+                        }
+                        profitArr.push({rate: r, cmpRate: c})
+                        isProfitable = true
+                      }
+                    }
                   }
                 })
-              }, rejected => console.error('rejected refill', rejected))
-              const chain = await getChains()
+                return isProfitable
+              })
+              console.log(profitArr, '---- profitArr ')
+              // const refillRates = await ratesModel.collection.drop().then(async res => {
+              //   await ratesModel.insertMany(result, (err, doc) => {
+              //     if (err) console.error(err, '--- insert rates err')
+              //     // else if (res === null) console.error('null currencies found')
+              //     else {
+              //       console.log(doc.slice(0, 1))
+              //     }
+              //   })
+              // }, rejected => console.error('rejected refill', rejected))
+              // const chain = await getChains()
               // response.rates = getChains()
-              res.status(200).json(chain)
+              res.status(200).json([test, profitArr])
               zip.close()
             })
           })

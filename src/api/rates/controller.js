@@ -7,7 +7,7 @@ module.exports = {
       cursor
     }
   }, res) => {
-    ratesModel.find(querymen.query, querymen.select, querymen.cursor, (err, result) => {
+    ratesModel.find(query, select, cursor, (err, result) => {
       if (err) res.status(400).send(err)
       else if (result === null) return null
       else {
@@ -31,15 +31,17 @@ module.exports = {
   },
   saveList: (query, res) => {
     // if (ratesModel.drop()) {
-      ratesModel.insertMany(query, (err, docs) => {
-        if (err) {
-          console.error('saveMany err -----> ', err)
-          res.status(400).send(err.errmsg)
-        }
-        else {
-          res.send({ message: 'success', value: docs })
-        }
-      })
+    ratesModel.insertMany(query, (err, docs) => {
+      if (err) {
+        console.error('saveMany err -----> ', err)
+        res.status(400).send(err.errmsg)
+      } else {
+        res.send({
+          message: 'success',
+          value: docs
+        })
+      }
+    })
     // } else {
     //   console.error('rates collection was not dropped')
     // }

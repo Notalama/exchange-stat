@@ -40,19 +40,19 @@ module.exports = {
     }
   },
   getChains: async () => {
-    const result = []
+    let result = []
     const omitValues = await hideParamsModel.find({}, (err, res) => {
       if (err) console.error(err, '--- omitValues err')
       else if (res === null) console.error('null hideparams found')
     })
     const allCurrencies = await currenciesModel.find({ currencyId: { $nin: omitValues[0].hiddenCurrencies } },
-    { currencyId: 1, currencyTitle: 1 }, (err, res) => {
-      if (err) console.error(err, '--- allCurrencies err')
-      else if (res === null) console.error('null currencies found')
-    })
+      { currencyId: 1, currencyTitle: 1 }, (err, res) => {
+        if (err) console.error(err, '--- allCurrencies err')
+        else if (res === null) console.error('null currencies found')
+      })
     const currIds = allCurrencies.map(el => el.currencyId)
     for (let i = 0; i < allCurrencies.length; i++) {
-      let test = await ratesModel.aggregate([
+      let bestRates = await ratesModel.aggregate([
         {
           $match: {
             'fromCurr.currencyId': allCurrencies[i].currencyId,
@@ -62,16 +62,67 @@ module.exports = {
         {
           $group: {
             _id: {$concat: ['$fromCurr.currencyTitle', ' -> ', '$toCurr.currencyTitle']},
-            minGive: { $min: '$give' },
-            minReceive: { $min: '$receive' },
-            allGave: { $push: '$give'},
-            allReceived: { $push: '$receive'},
-            allChangers: { $push: '$changer.exchangerTitle' }
+            fromCurr: {$push: '$fromCurr.currencyId'},
+            toCurId: {$push: '$toCurr.currencyTitle'},
+            minGive: {$min: '$give'},
+            maxGive: {$max: '$give'},
+            minReceive: {$min: '$receive'},
+            maxReceive: {$max: '$receive'},
+            allGave: {$push: '$give'},
+            allReceived: {$push: '$receive'},
+            allChangers: {$push: '$changer.exchangerTitle'}
           }
         }
       ])
-      result.push(test)
+      result.push(bestRates)
     }
+    const test = []
+    result = result.filter((bestRates) => {
+      let profitable = false
+      bestRates.forEach(bestRate => {
+        if (bestRate.minGive === 1) {
+          // find the most profitable rate of all bestRates
+          let maxProfit = []
+          
+          const porfitRates = bestRates.filter(val => {
+            const isPair = val.fromCurr[0] === bestRate.toCurId[0] && val.toCurId[0] === bestRate.fromCurr[0]
+            const isProf = val.maxGive < bestRate.minGive
+            if (isPair && isProf) {
+              maxProfit.push({
+                changer: val.allChangers,
+                bestRate: bestRate,
+                val: val
+              })
+              return true
+            }
+          })
+          if (maxProfit.length) {
+            test.push({maxReceive: maxProfit, bestRate}, porfitRates)
+            profitable = true
+          }
+        } else {
+          let maxProfit = []
+          const porfitRates = bestRates.filter(val => {
+            const isPair = val.fromCurr[0] === bestRate.toCurId[0] && val.toCurId[0] === bestRate.fromCurr[0]
+            const isProf = val.maxReceive > bestRate.minReceive
+            if (isPair && isProf) {
+              maxProfit.push({
+                changer: val.allChangers,
+                bestRate: bestRate,
+                val: val
+              })
+              return true
+            }
+          })
+          if (maxProfit.length) {
+            test.push({maxReceive: maxProfit, bestRate}, porfitRates)
+            profitable = true
+          }
+        }
+      })
+      return profitable
+    })
+    result.push(test)
     return result
   },
   formatCurrencies: async (unformattedList) => {
