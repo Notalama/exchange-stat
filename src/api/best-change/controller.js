@@ -2,10 +2,8 @@ const http = require('http')
 const fs = require('fs')
 const StreamZip = require('node-stream-zip')
 const Iconv = require('iconv').Iconv
-const ratesModel = require('./../../api/rates/model')
 const {
-  formatRates,
-  getChains
+  formatRates
   // formatCurrencies,
   // formatExchangers
 } = require('./../../services/helpers/formatter')
@@ -19,11 +17,6 @@ module.exports = {
       cursor
     }
   }, res, next) => {
-    const response = {
-      rates: [],
-      currencyTypes: null,
-      exchangers: null
-    }
     http.get('http://api.bestchange.ru/info.zip', (data) => {
       const {
         statusCode
@@ -84,19 +77,8 @@ module.exports = {
                 result.forEach(cmpRate => {
                   const isPair = cmpRate.fromCurr.currencyId === rate.toCurr.currencyId && cmpRate.toCurr.currencyId === rate.fromCurr.currencyId
                   if (rate.give === 1 && isPair) {
-                    // receive maximum currency
+                    // receive more then give
                     if (rate.receive > cmpRate.give) {
-                      console.log(profitArr, 'profitArr')
-                      // const isLower = !profitArr.length || profitArr.some((el) => {
-                      // const isProfitPair = el.cmpRate.to.currencyId === cmpRate.toCurr.currencyId &&
-                      // el.cmpRate.from.currencyId === cmpRate.fromCurr.currencyId
-                      // if (el.cmpRate.give === 1) {
-                      //   return el.receive > cmpRate.give
-                      // } else {
-                      //   return false
-                      // }
-                      // })
-                      // if (isLower) {
                       const r = {
                         from: rate.fromCurr.currencyId,
                         fromTitle: rate.fromCurr.currencyTitle,
@@ -122,21 +104,10 @@ module.exports = {
                         cmpRate: c
                       })
                       isProfitable = true
-                      // }
                     }
                   } else if (rate.receive === 1 && isPair) {
-                    // receive maximum currency
+                    // give less then receive
                     if (rate.give < cmpRate.receive) {
-                      // const isLower = !profitArr.length || profitArr.some(el => {
-                      //   // const isProfitPair = el.cmpRate.to.currencyId === cmpRate.toCurr.currencyId &&
-                      //   // el.cmpRate.from.currencyId === cmpRate.fromCurr.currencyId
-                      //   if (el.receive === 1) {
-                      //     return el.cmpRate.give > cmpRate.receive
-                      //   } else {
-                      //     return false
-                      //   }
-                      // })
-                      // if (isLower) {
                       const r = {
                         from: rate.fromCurr.currencyId,
                         fromTitle: rate.fromCurr.currencyTitle,
@@ -162,7 +133,6 @@ module.exports = {
                         cmpRate: c
                       })
                       isProfitable = true
-                      // }
                     }
                   }
                 })
@@ -179,7 +149,7 @@ module.exports = {
               // }, rejected => console.error('rejected refill', rejected))
               // const chain = await getChains()
               // response.rates = getChains()
-              res.status(200).json([test, profitArr])
+              res.status(200).json({introCurrencies: test, profitablesForIntro: profitArr})
               zip.close()
             })
           })
