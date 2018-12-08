@@ -3,18 +3,12 @@ const { Schema } = require('mongoose')
 
 // const types = ['country', 'electronic', 'binary']
 const rateSchema = new Schema({
-  fromCurr: {
-    currencyTitle: String,
-    currencyId: String
-  },
-  toCurr: {
-    currencyTitle: String,
-    currencyId: String
-  },
-  changer: {
-    exchangerTitle: String,
-    exchangerId: String
-  },
+  from: String,
+  fromTitle: String,
+  to: String,
+  toTitle: String,
+  changer: String,
+  changerTitle: String,
   give: Number,
   receive: Number,
   amount: Number

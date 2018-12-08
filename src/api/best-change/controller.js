@@ -3,7 +3,8 @@ const fs = require('fs')
 const StreamZip = require('node-stream-zip')
 const Iconv = require('iconv').Iconv
 const {
-  formatRates
+  formatRates,
+  getChains
   // formatCurrencies,
   // formatExchangers
 } = require('./../../services/helpers/formatter')
@@ -59,97 +60,11 @@ module.exports = {
             //   }
             // })
             await formatRates(ratesBuffer.split('\n')).then(async result => {
-              // if (result.length > 100) {
-              //   response.rates = result.slice(0, 99)
-              // } else {
-              //   response.rates = result
-              // }
-
-              // fromCurr: allCurrencies.find(el => el.currencyId === rowArray[0]),
-              // toCurr: allCurrencies.find(el => el.currencyId === rowArray[1]),
-              // changer: allExchangers.find(el => el.exchangerId === rowArray[2]),
-              // give: +rowArray[3],
-              // receive: +rowArray[4],
-              // amount: +rowArray[5]
-              const profitArr = []
-              const test = result.slice(0, 100).filter(rate => {
-                let isProfitable = false
-                result.forEach(cmpRate => {
-                  const isPair = cmpRate.fromCurr.currencyId === rate.toCurr.currencyId && cmpRate.toCurr.currencyId === rate.fromCurr.currencyId
-                  if (rate.give === 1 && isPair) {
-                    // receive more then give
-                    if (rate.receive > cmpRate.give) {
-                      const r = {
-                        from: rate.fromCurr.currencyId,
-                        fromTitle: rate.fromCurr.currencyTitle,
-                        to: rate.toCurr.currencyId,
-                        toTitle: rate.toCurr.currencyTitle,
-                        give: rate.give,
-                        receive: rate.receive,
-                        changer: rate.changer,
-                        amount: rate.amount
-                      }
-                      const c = {
-                        from: cmpRate.fromCurr.currencyId,
-                        fromTitle: cmpRate.fromCurr.currencyTitle,
-                        to: cmpRate.toCurr.currencyId,
-                        toTitle: cmpRate.fromCurr.currencyTitle,
-                        give: cmpRate.give,
-                        receive: cmpRate.receive,
-                        changer: cmpRate.changer,
-                        amount: cmpRate.amount
-                      }
-                      profitArr.push({
-                        rate: r,
-                        cmpRate: c
-                      })
-                      isProfitable = true
-                    }
-                  } else if (rate.receive === 1 && isPair) {
-                    // give less then receive
-                    if (rate.give < cmpRate.receive) {
-                      const r = {
-                        from: rate.fromCurr.currencyId,
-                        fromTitle: rate.fromCurr.currencyTitle,
-                        to: rate.toCurr.currencyId,
-                        toTitle: rate.toCurr.currencyTitle,
-                        give: rate.give,
-                        receive: rate.receive,
-                        changer: rate.changer,
-                        amount: rate.amount
-                      }
-                      const c = {
-                        from: cmpRate.fromCurr.currencyId,
-                        fromTitle: cmpRate.fromCurr.currencyTitle,
-                        to: cmpRate.toCurr.currencyId,
-                        toTitle: cmpRate.toCurr.currencyTitle,
-                        give: cmpRate.give,
-                        receive: cmpRate.receive,
-                        changer: cmpRate.changer,
-                        amount: cmpRate.amount
-                      }
-                      profitArr.push({
-                        rate: r,
-                        cmpRate: c
-                      })
-                      isProfitable = true
-                    }
-                  }
-                })
-                return isProfitable
-              })
-              // const refillRates = await ratesModel.collection.drop().then(async res => {
-              //   await ratesModel.insertMany(result, (err, doc) => {
-              //     if (err) console.error(err, '--- insert rates err')
-              //     // else if (res === null) console.error('null currencies found')
-              //     else {
-              //       console.log(doc.slice(0, 1))
-              //     }
-              //   })
-              // }, rejected => console.error('rejected refill', rejected))
-              // const chain = await getChains()
-              // response.rates = getChains()
-              res.status(200).json({introCurrencies: test, profitablesForIntro: profitArr})
+              console.log('result ---', result.length, '----result')
+              console.log('result ---', result.slice(0, 2), '----result')
+              const chain = await getChains(result)
+              // response.rates = result
+              res.status(200).json(chain)
               zip.close()
             })
           })

@@ -22,108 +22,79 @@ module.exports = {
         })
       for (let i = 0; i < unformattedList.length; i++) {
         let rowArray = unformattedList[i].split(';')
-        const isHidden = omitValues[0].hiddenCurrencies.some(id => rowArray[0] === id || rowArray[1] === id) || omitValues[0].hiddenExchangers.some(id => rowArray[2] === id)
-        if (!isHidden) {
+        // const isHidden = omitValues[0].hiddenCurrencies.some(id => rowArray[0] === id || rowArray[1] === id) || omitValues[0].hiddenExchangers.some(id => rowArray[2] === id)
+        let from = allCurrencies.find(el => el.currencyId === rowArray[0])
+        let to = allCurrencies.find(el => el.currencyId === rowArray[1])
+        let changer = allExchangers.find(el => el.exchangerId === rowArray[2])
+        if (!!from && !!to && !!changer) {
           result.push({
-            fromCurr: allCurrencies.find(el => el.currencyId === rowArray[0]),
-            toCurr: allCurrencies.find(el => el.currencyId === rowArray[1]),
-            changer: allExchangers.find(el => el.exchangerId === rowArray[2]),
+            from: from.currencyId,
+            fromTitle: from.currencyTitle,
+            to: to.currencyId,
+            toTitle: to.currencyTitle,
+            changer: changer.exchangerId,
+            changerTitle: changer.exchangerTitle,
             give: +rowArray[3],
             receive: +rowArray[4],
             amount: +rowArray[5]
           })
         }
       }
+      const refillRates = await ratesModel.collection.drop().then(async res => {
+        await ratesModel.insertMany(result, (err, doc) => {
+          if (err) console.error(err, '--- insert rates err')
+          // else if (res === null) console.error('null currencies found')
+          else {
+            console.log(doc.slice(0, 1), 'formatter: 48')
+          }
+        })
+      }, rejected => console.error('rejected refill', rejected))
       return result
     } catch (rejectedValue) {
       console.error('formatter err caught ---', rejectedValue)
     }
   },
-  getChains: async () => {
-    let result = []
-    const omitValues = await hideParamsModel.find({}, (err, res) => {
-      if (err) console.error(err, '--- omitValues err')
-      else if (res === null) console.error('null hideparams found')
-    })
-    const allCurrencies = await currenciesModel.find({ currencyId: { $nin: omitValues[0].hiddenCurrencies } },
-      { currencyId: 1, currencyTitle: 1 }, (err, res) => {
-        if (err) console.error(err, '--- allCurrencies err')
-        else if (res === null) console.error('null currencies found')
-      })
-    const currIds = allCurrencies.map(el => el.currencyId)
-    for (let i = 0; i < allCurrencies.length; i++) {
+  getChains: async (result) => {
+    let chain = []
+    // const currIds = allCurrencies.map(el => el.currencyId)
+    for (let i = 0; i < result.length; i++) {
       let bestRates = await ratesModel.aggregate([
         {
           $match: {
-            'fromCurr.currencyId': allCurrencies[i].currencyId,
-            'toCurr.currencyId': {$in: currIds}
+            'from': result[i].to,
+            'to': result[i].from,
           }
         },
         {
-          $group: {
-            _id: {$concat: ['$fromCurr.currencyTitle', ' -> ', '$toCurr.currencyTitle']},
-            fromCurr: {$push: '$fromCurr.currencyId'},
-            toCurId: {$push: '$toCurr.currencyTitle'},
-            minGive: {$min: '$give'},
-            maxGive: {$max: '$give'},
-            minReceive: {$min: '$receive'},
-            maxReceive: {$max: '$receive'},
-            allGave: {$push: '$give'},
-            allReceived: {$push: '$receive'},
-            allChangers: {$push: '$changer.exchangerTitle'}
+          $project: {
+            giveOne: {
+              $filter: {
+                input: result,
+                cond: {
+                  $and: [
+                    {$eq: ['this.give', 1]},
+                    {$gt: ['this.receive', '$give']}
+                  ]
+                }
+              }
+            },
+            receiveOne: {
+              $filter: {
+                input: result,
+                cond: {
+                  $and: [
+                    {$eq: ['this.receive', 1]},
+                    {$lt: ['this.give', '$receive']}
+                  ]
+                }
+              }
+            }
           }
         }
       ])
-      result.push(bestRates)
+      chain.push(bestRates)
     }
-    const test = []
-    result = result.filter((bestRates) => {
-      let profitable = false
-      bestRates.forEach(bestRate => {
-        if (bestRate.minGive === 1) {
-          // find the most profitable rate of all bestRates
-          let maxProfit = []
-          
-          const porfitRates = bestRates.filter(val => {
-            const isPair = val.fromCurr[0] === bestRate.toCurId[0] && val.toCurId[0] === bestRate.fromCurr[0]
-            const isProf = val.maxGive < bestRate.minGive
-            if (isPair && isProf) {
-              maxProfit.push({
-                changer: val.allChangers,
-                bestRate: bestRate,
-                val: val
-              })
-              return true
-            }
-          })
-          if (maxProfit.length) {
-            test.push({maxReceive: maxProfit, bestRate}, porfitRates)
-            profitable = true
-          }
-        } else {
-          let maxProfit = []
-          const porfitRates = bestRates.filter(val => {
-            const isPair = val.fromCurr[0] === bestRate.toCurId[0] && val.toCurId[0] === bestRate.fromCurr[0]
-            const isProf = val.maxReceive > bestRate.minReceive
-            if (isPair && isProf) {
-              maxProfit.push({
-                changer: val.allChangers,
-                bestRate: bestRate,
-                val: val
-              })
-              return true
-            }
-          })
-          if (maxProfit.length) {
-            test.push({maxReceive: maxProfit, bestRate}, porfitRates)
-            profitable = true
-          }
-        }
-      })
-      return profitable
-    })
-    result.push(test)
-    return result
+    return chain
   },
   formatCurrencies: async (unformattedList) => {
     const result = []
