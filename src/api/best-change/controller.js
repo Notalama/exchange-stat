@@ -85,67 +85,89 @@ module.exports = {
                   const isPair = cmpRate.fromCurr.currencyId === rate.toCurr.currencyId && cmpRate.toCurr.currencyId === rate.fromCurr.currencyId
                   if (rate.give === 1 && isPair) {
                     // receive maximum currency
-                    if (rate.receive < cmpRate.give) {
-                      const isLower = !profitArr.length || profitArr.some(el => {
-                        if (el.cmpRate.give === 1) {
-                          return el.receive > cmpRate.give
-                        } else {
-                          return false
-                        }
-                      })
-                      if (isLower) {
-                        const r = {
-                          from: rate.fromCurr.currencyId,
-                          to: rate.toCurr.currencyId,
-                          give: rate.give,
-                          receive: rate.receive,
-                          changer: rate.changer
-                        }
-                        const c = {
-                          from: cmpRate.fromCurr.currencyId,
-                          to: cmpRate.toCurr.currencyId,
-                          give: cmpRate.give,
-                          receive: cmpRate.receive,
-                          changer: cmpRate.changer
-                        }
-                        profitArr.push({rate: r, cmpRate: c})
-                        isProfitable = true
+                    if (rate.receive > cmpRate.give) {
+                      console.log(profitArr, 'profitArr')
+                      // const isLower = !profitArr.length || profitArr.some((el) => {
+                      // const isProfitPair = el.cmpRate.to.currencyId === cmpRate.toCurr.currencyId &&
+                      // el.cmpRate.from.currencyId === cmpRate.fromCurr.currencyId
+                      // if (el.cmpRate.give === 1) {
+                      //   return el.receive > cmpRate.give
+                      // } else {
+                      //   return false
+                      // }
+                      // })
+                      // if (isLower) {
+                      const r = {
+                        from: rate.fromCurr.currencyId,
+                        fromTitle: rate.fromCurr.currencyTitle,
+                        to: rate.toCurr.currencyId,
+                        toTitle: rate.toCurr.currencyTitle,
+                        give: rate.give,
+                        receive: rate.receive,
+                        changer: rate.changer,
+                        amount: rate.amount
                       }
+                      const c = {
+                        from: cmpRate.fromCurr.currencyId,
+                        fromTitle: cmpRate.fromCurr.currencyTitle,
+                        to: cmpRate.toCurr.currencyId,
+                        toTitle: cmpRate.fromCurr.currencyTitle,
+                        give: cmpRate.give,
+                        receive: cmpRate.receive,
+                        changer: cmpRate.changer,
+                        amount: cmpRate.amount
+                      }
+                      profitArr.push({
+                        rate: r,
+                        cmpRate: c
+                      })
+                      isProfitable = true
+                      // }
                     }
                   } else if (rate.receive === 1 && isPair) {
                     // receive maximum currency
                     if (rate.give < cmpRate.receive) {
-                      const isLower = !profitArr.length || profitArr.some(el => {
-                        if (el.receive === 1) {
-                          return el.cmpRate.give > cmpRate.receive
-                        } else {
-                          return false
-                        }
-                      })
-                      if (isLower) {
-                        const r = {
-                          from: rate.fromCurr.currencyId,
-                          to: rate.toCurr.currencyId,
-                          give: rate.give,
-                          receive: rate.receive,
-                          changer: rate.changer
-                        }
-                        const c = {
-                          from: cmpRate.fromCurr.currencyId,
-                          to: cmpRate.toCurr.currencyId,
-                          give: cmpRate.give,
-                          receive: cmpRate.receive,
-                          changer: cmpRate.changer
-                        }
-                        profitArr.push({rate: r, cmpRate: c})
-                        isProfitable = true
+                      // const isLower = !profitArr.length || profitArr.some(el => {
+                      //   // const isProfitPair = el.cmpRate.to.currencyId === cmpRate.toCurr.currencyId &&
+                      //   // el.cmpRate.from.currencyId === cmpRate.fromCurr.currencyId
+                      //   if (el.receive === 1) {
+                      //     return el.cmpRate.give > cmpRate.receive
+                      //   } else {
+                      //     return false
+                      //   }
+                      // })
+                      // if (isLower) {
+                      const r = {
+                        from: rate.fromCurr.currencyId,
+                        fromTitle: rate.fromCurr.currencyTitle,
+                        to: rate.toCurr.currencyId,
+                        toTitle: rate.toCurr.currencyTitle,
+                        give: rate.give,
+                        receive: rate.receive,
+                        changer: rate.changer,
+                        amount: rate.amount
                       }
+                      const c = {
+                        from: cmpRate.fromCurr.currencyId,
+                        fromTitle: cmpRate.fromCurr.currencyTitle,
+                        to: cmpRate.toCurr.currencyId,
+                        toTitle: cmpRate.toCurr.currencyTitle,
+                        give: cmpRate.give,
+                        receive: cmpRate.receive,
+                        changer: cmpRate.changer,
+                        amount: cmpRate.amount
+                      }
+                      profitArr.push({
+                        rate: r,
+                        cmpRate: c
+                      })
+                      isProfitable = true
+                      // }
                     }
                   }
                 })
                 return isProfitable
               })
-              console.log(profitArr, '---- profitArr ')
               // const refillRates = await ratesModel.collection.drop().then(async res => {
               //   await ratesModel.insertMany(result, (err, doc) => {
               //     if (err) console.error(err, '--- insert rates err')
