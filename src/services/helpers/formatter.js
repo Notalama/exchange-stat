@@ -1,40 +1,42 @@
-const currenciesModel = require('./../../api/currencies/model')
-const hideParamsModel = require('./../../api/hide-params/model')
-const exchangersModel = require('./../../api/exchangers/model')
-const ratesModel = require('./../../api/rates/model')
 module.exports = {
-  formatRates: async (unformattedList) => {
+  formatRates: async (unformattedList, omitValues) => {
     try {
       const byCurr = []
       const result = []
-      const temp = []
-      const omitValues = await hideParamsModel.find({}, (err, res) => {
-        if (err) console.error(err, '--- omitValues err')
-        else if (res === null) console.error('null hideparams found')
-      })
+      const profitArr = []
+      
       for (let i = 0; i < unformattedList.length; i++) {
         let rowArray = unformattedList[i].split(';')
-        const fromTo = omitValues[0].hiddenCurrencies.every(el => { return el !== rowArray[0] || (el !== rowArray[1])})
-        const changer = omitValues[0].hiddenExchangers.every(el => el !== rowArray[2])
-        const isLow = rowArray[3] === '1'
-        if (changer && fromTo && isLow) {
-          if (!byCurr[rowArray[0]]) byCurr[rowArray[0]] = []
-          byCurr[rowArray[0]].push(rowArray)
-        } else if (changer && fromTo && !isLow) {
-          if (!byCurr[rowArray[1]]) byCurr[rowArray[1]] = []
-          byCurr[rowArray[1]].push(rowArray)
-        }
+        if (!omitValues[0].hiddenCurrencies.every(el => {
+          return el !== rowArray[0] || (el !== rowArray[1])
+        })) continue
+        if (!omitValues[0].hiddenExchangers.every(el => el !== rowArray[2])) continue
+        result.push(rowArray)
       }
-      
-      const profitArr = []
-      byCurr.forEach(el => result.push(el))
-
-      result.forEach(exchangers => {
+      result.forEach(exchanger => {
+        let id = exchanger[0]
+        if (+exchanger[0] > +exchanger[1]) {
+          id += exchanger[1]
+        } else {
+          id = exchanger[1] + exchanger[0]
+        }
+        if (byCurr[id] !== undefined) {
+          byCurr[id].push(exchanger)
+        } else {
+          byCurr[id] = [exchanger]
+        }
+      })
+      byCurr.forEach(exchangers => {
         exchangers.forEach(_ => {
-          let exchangerToCompare = exchangers.shift()
+          let exchangerToCompare = exchangers.pop()
           exchangers.forEach(exch => {
-            if (exchangerToCompare[4] > exch[3] || exchangerToCompare[3] < exch[4]) {
-              profitArr.push({in: exchangerToCompare, back: exch})
+            if (+exchangerToCompare[0] !== +exch[0]) {
+              if (+exchangerToCompare[4] > +exch[3] || +exchangerToCompare[3] < +exch[4]) {
+                profitArr.push({
+                  in: exchangerToCompare,
+                  back: exch
+                })
+              }
             }
           })
         })
@@ -43,92 +45,6 @@ module.exports = {
     } catch (rejectedValue) {
       console.error('formatter err caught ---', rejectedValue)
     }
-  },
-  getChains: async () => {
-    let result = []
-    const omitValues = await hideParamsModel.find({}, (err, res) => {
-      if (err) console.error(err, '--- omitValues err')
-      else if (res === null) console.error('null hideparams found')
-    })
-    const allCurrencies = await currenciesModel.find({ currencyId: { $nin: omitValues[0].hiddenCurrencies } },
-      { currencyId: 1, currencyTitle: 1 }, (err, res) => {
-        if (err) console.error(err, '--- allCurrencies err')
-        else if (res === null) console.error('null currencies found')
-      })
-    const currIds = allCurrencies.map(el => el.currencyId)
-    for (let i = 0; i < allCurrencies.length; i++) {
-      let bestRates = await ratesModel.aggregate([
-        {
-          $match: {
-            'fromCurr.currencyId': allCurrencies[i].currencyId,
-            'toCurr.currencyId': {$in: currIds}
-          }
-        },
-        {
-          $group: {
-            _id: {$concat: ['$fromCurr.currencyTitle', ' -> ', '$toCurr.currencyTitle']},
-            fromCurr: {$push: '$fromCurr.currencyId'},
-            toCurId: {$push: '$toCurr.currencyTitle'},
-            minGive: {$min: '$give'},
-            maxGive: {$max: '$give'},
-            minReceive: {$min: '$receive'},
-            maxReceive: {$max: '$receive'},
-            allGave: {$push: '$give'},
-            allReceived: {$push: '$receive'},
-            allChangers: {$push: '$changer.exchangerTitle'}
-          }
-        }
-      ])
-      result.push(bestRates)
-    }
-    const test = []
-    result = result.filter((bestRates) => {
-      let profitable = false
-      bestRates.forEach(bestRate => {
-        if (bestRate.minGive === 1) {
-          // find the most profitable rate of all bestRates
-          let maxProfit = []
-          
-          const porfitRates = bestRates.filter(val => {
-            const isPair = val.fromCurr[0] === bestRate.toCurId[0] && val.toCurId[0] === bestRate.fromCurr[0]
-            const isProf = val.maxGive < bestRate.minGive
-            if (isPair && isProf) {
-              maxProfit.push({
-                changer: val.allChangers,
-                bestRate: bestRate,
-                val: val
-              })
-              return true
-            }
-          })
-          if (maxProfit.length) {
-            test.push({maxReceive: maxProfit, bestRate}, porfitRates)
-            profitable = true
-          }
-        } else {
-          let maxProfit = []
-          const porfitRates = bestRates.filter(val => {
-            const isPair = val.fromCurr[0] === bestRate.toCurId[0] && val.toCurId[0] === bestRate.fromCurr[0]
-            const isProf = val.maxReceive > bestRate.minReceive
-            if (isPair && isProf) {
-              maxProfit.push({
-                changer: val.allChangers,
-                bestRate: bestRate,
-                val: val
-              })
-              return true
-            }
-          })
-          if (maxProfit.length) {
-            test.push({maxReceive: maxProfit, bestRate}, porfitRates)
-            profitable = true
-          }
-        }
-      })
-      return profitable
-    })
-    result.push(test)
-    return result
   },
   formatCurrencies: async (unformattedList) => {
     const result = []

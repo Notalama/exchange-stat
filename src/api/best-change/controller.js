@@ -7,8 +7,10 @@ const {
   // formatCurrencies,
   // formatExchangers
 } = require('./../../services/helpers/formatter')
-// const exchangersModel = require('./../exchangers/model')
-// const currenciesModel = require('./../currencies/model')
+const hideParamsModel = require('./../hide-params/model')
+
+const exchangersModel = require('./../exchangers/model')
+const currenciesModel = require('./../currencies/model')
 module.exports = {
   index: ({
     querymen: {
@@ -59,7 +61,30 @@ module.exports = {
             //     console.log(val, 'sadfafsd')
             //   }
             // })
-            await formatRates(ratesBuffer.split('\n')).then(async result => {
+            const omitValues = await hideParamsModel.find({}, (err, res) => {
+              if (err) console.error(err, '--- omitValues err')
+              else if (res === null) console.error('null hideparams found')
+            })
+
+            await formatRates(ratesBuffer.split('\n'), omitValues).then(async result => {
+              const allCurrencies = await currenciesModel.find({})
+              const allChangers = await exchangersModel.find({})
+              result = result.map(el => {
+                const currFrom = allCurrencies.find(cur => el[0] === cur.currencyId)
+                const currTo = allCurrencies.find(cur => el[1] === cur.currencyId)
+                const changer = allChangers.find(exch => el[2] === exch)
+                return {
+                  from: el[0],
+                  fromTitle: currFrom.currencyTitle,
+                  to: el[1],
+                  toTitle: currTo.currencyTitle,
+                  changer: el[2],
+                  changerTitle: changer.exchangerTitle,
+                  give: el[3],
+                  receive: el[4],
+                  amount: el[5]
+                }
+              })
               res.status(200).json(result)
               zip.close()
             })
