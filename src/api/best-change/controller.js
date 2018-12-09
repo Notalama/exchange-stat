@@ -40,6 +40,7 @@ module.exports = {
 
             const ratesBuffer = iconv.convert(rates).toString()
 
+            
             // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
             // const cyBuffer = iconv.convert(cy).toString()
             // const excahngersBuffer = iconv.convert(excahngers).toString()

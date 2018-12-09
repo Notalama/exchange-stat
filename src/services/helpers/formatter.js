@@ -28,34 +28,18 @@ module.exports = {
       
       const profitArr = []
       byCurr.forEach(el => result.push(el))
-      // const test = result.filter(curr => {
-      //   let isProfitable = false
-      //   result.forEach(cmpCurr => {
-      //     const isPair = cmpRate[0] === rate[1] && cmpRate[1] === rate[0]
-      //     if (rate[3] === 1 && isPair) {
-      //       // receive more then give
-      //       if (rate[4] > cmpRate[3]) {
-      //         profitArr.push({
-      //           rate,
-      //           cmpRate
-      //         })
-      //         isProfitable = true
-      //       }
-      //     } else if (rate[4] === 1 && isPair) {
-      //       // give less then receive
-      //       if (rate[3] < cmpRate[4]) {
-      //         profitArr.push({
-      //           rate,
-      //           cmpRate
-      //         })
-      //         isProfitable = true
-      //       }
-      //     }
-      //   })
-      //   return isProfitable
-      // })
-      // temp.forEach(el => result.push(el))
-      return {byCurr: result, profitArr: profitArr}
+
+      result.forEach(exchangers => {
+        exchangers.forEach(_ => {
+          let exchangerToCompare = exchangers.shift()
+          exchangers.forEach(exch => {
+            if (exchangerToCompare[4] > exch[3] || exchangerToCompare[3] < exch[4]) {
+              profitArr.push({in: exchangerToCompare, back: exch})
+            }
+          })
+        })
+      })
+      return profitArr
     } catch (rejectedValue) {
       console.error('formatter err caught ---', rejectedValue)
     }
