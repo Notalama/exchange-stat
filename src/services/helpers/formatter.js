@@ -5,36 +5,57 @@ const ratesModel = require('./../../api/rates/model')
 module.exports = {
   formatRates: async (unformattedList) => {
     try {
+      const byCurr = []
       const result = []
+      const temp = []
       const omitValues = await hideParamsModel.find({}, (err, res) => {
         if (err) console.error(err, '--- omitValues err')
         else if (res === null) console.error('null hideparams found')
       })
-      const allCurrencies = await currenciesModel.find({currencyId: {$nin: omitValues[0].hiddenCurrencies}},
-        {currencyId: 1, currencyTitle: 1}, (err, res) => {
-          if (err) console.error(err, '--- allCurrencies err')
-          else if (res === null) console.error('null currencies found')
-        })
-      const allExchangers = await exchangersModel.find({exchangerId: {$nin: omitValues[0].hiddenExchangers}},
-        {exchangerId: 1, exchangerTitle: 1}, (err, res) => {
-          if (err) console.error(err, '--- allExchangers err')
-          else if (res === null) console.error('null currencies found')
-        })
       for (let i = 0; i < unformattedList.length; i++) {
         let rowArray = unformattedList[i].split(';')
-        const isHidden = omitValues[0].hiddenCurrencies.some(id => rowArray[0] === id || rowArray[1] === id) || omitValues[0].hiddenExchangers.some(id => rowArray[2] === id)
-        if (!isHidden) {
-          result.push({
-            fromCurr: allCurrencies.find(el => el.currencyId === rowArray[0]),
-            toCurr: allCurrencies.find(el => el.currencyId === rowArray[1]),
-            changer: allExchangers.find(el => el.exchangerId === rowArray[2]),
-            give: +rowArray[3],
-            receive: +rowArray[4],
-            amount: +rowArray[5]
-          })
+        const fromTo = omitValues[0].hiddenCurrencies.every(el => { return el !== rowArray[0] || (el !== rowArray[1])})
+        const changer = omitValues[0].hiddenExchangers.every(el => el !== rowArray[2])
+        const isLow = rowArray[3] === '1'
+        if (changer && fromTo && isLow) {
+          if (!byCurr[rowArray[0]]) byCurr[rowArray[0]] = []
+          byCurr[rowArray[0]].push(rowArray)
+        } else if (changer && fromTo && !isLow) {
+          if (!byCurr[rowArray[1]]) byCurr[rowArray[1]] = []
+          byCurr[rowArray[1]].push(rowArray)
         }
       }
-      return result
+      
+      const profitArr = []
+      byCurr.forEach(el => result.push(el))
+      // const test = result.filter(curr => {
+      //   let isProfitable = false
+      //   result.forEach(cmpCurr => {
+      //     const isPair = cmpRate[0] === rate[1] && cmpRate[1] === rate[0]
+      //     if (rate[3] === 1 && isPair) {
+      //       // receive more then give
+      //       if (rate[4] > cmpRate[3]) {
+      //         profitArr.push({
+      //           rate,
+      //           cmpRate
+      //         })
+      //         isProfitable = true
+      //       }
+      //     } else if (rate[4] === 1 && isPair) {
+      //       // give less then receive
+      //       if (rate[3] < cmpRate[4]) {
+      //         profitArr.push({
+      //           rate,
+      //           cmpRate
+      //         })
+      //         isProfitable = true
+      //       }
+      //     }
+      //   })
+      //   return isProfitable
+      // })
+      // temp.forEach(el => result.push(el))
+      return {byCurr: result, profitArr: profitArr}
     } catch (rejectedValue) {
       console.error('formatter err caught ---', rejectedValue)
     }
