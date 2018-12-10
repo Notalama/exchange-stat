@@ -1,10 +1,15 @@
+const hideParamsModel = require('./../../api/hide-params/model')
+
 module.exports = {
-  formatRates: async (unformattedList, omitValues) => {
+  formatRates: async (unformattedList) => {
     try {
       const byCurr = []
       const result = []
       const profitArr = []
-      
+      const omitValues = await hideParamsModel.find({}, (err, res) => {
+        if (err) console.error(err, '--- omitValues err')
+        else if (res === null) console.error('null hideparams found')
+      })
       for (let i = 0; i < unformattedList.length; i++) {
         let rowArray = unformattedList[i].split(';')
         if (!omitValues[0].hiddenCurrencies.every(el => {

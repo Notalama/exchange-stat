@@ -3,11 +3,10 @@ const fs = require('fs')
 const StreamZip = require('node-stream-zip')
 const Iconv = require('iconv').Iconv
 const {
-  formatRates
+  formatRates,
   // formatCurrencies,
-  // formatExchangers
+  formatExchangers
 } = require('./../../services/helpers/formatter')
-const hideParamsModel = require('./../hide-params/model')
 
 const exchangersModel = require('./../exchangers/model')
 const currenciesModel = require('./../currencies/model')
@@ -46,7 +45,7 @@ module.exports = {
             // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
             // const cyBuffer = iconv.convert(cy).toString()
             // const excahngersBuffer = iconv.convert(excahngers).toString()
-            // response.exchangers = formatExchangers(excahngersBuffer.split('\n'))
+            // let exchangersBase = formatExchangers(excahngersBuffer.split('\n'))
             // response.currencyTypes = formatCurrencies(cyBuffer.split('\n'))
 
             // currenciesModel.insertMany(response.currencyTypes, (err, val) => {
@@ -55,37 +54,56 @@ module.exports = {
             //     console.log(val, 'success fill')
             //   }
             // })
-            // exchangersModel.insertMany(response.exchangers, (err, val) => {
+            // await exchangersModel.collection.drop()
+            // await exchangersModel.insertMany(exchangersBase, (err, val) => {
             //   if (err) console.log(err)
-            //   else {
-            //     console.log(val, 'sadfafsd')
-            //   }
+            //   else console.log(val[0], 'sadfafsd')
             // })
-            const omitValues = await hideParamsModel.find({}, (err, res) => {
-              if (err) console.error(err, '--- omitValues err')
-              else if (res === null) console.error('null hideparams found')
-            })
-
-            await formatRates(ratesBuffer.split('\n'), omitValues).then(async result => {
-              const allCurrencies = await currenciesModel.find({})
-              const allChangers = await exchangersModel.find({})
-              result = result.map(el => {
-                const currFrom = allCurrencies.find(cur => el[0] === cur.currencyId)
-                const currTo = allCurrencies.find(cur => el[1] === cur.currencyId)
-                const changer = allChangers.find(exch => el[2] === exch)
-                return {
-                  from: el[0],
-                  fromTitle: currFrom.currencyTitle,
-                  to: el[1],
-                  toTitle: currTo.currencyTitle,
-                  changer: el[2],
-                  changerTitle: changer.exchangerTitle,
-                  give: el[3],
-                  receive: el[4],
-                  amount: el[5]
-                }
+            await formatRates(ratesBuffer.split('\n')).then(async result => {
+              
+              const allCurrencies = await currenciesModel.find({}, {currencyId: 1, currencyTitle: 1}, (err, res) => {
+                if (err) console.error(err, '--- allCurrencies err')
+                else if (res === null) console.error('null currencies found')
               })
-              res.status(200).json(result)
+              const allChangers = await exchangersModel.find({}, {exchangerId: 1, exchangerTitle: 1}, (err, res) => {
+                if (err) console.error(err, '--- allCurrencies err')
+                else if (res === null) console.error('null currencies found')
+              })
+              const response = []
+              
+              result.forEach(el => {
+                const currFromIn = allCurrencies.find(cur => el.in[0] === cur.currencyId)
+                const currToIn = allCurrencies.find(cur => el.in[1] === cur.currencyId)
+                const changerIn = allChangers.find(exch => el.in[2] === exch.exchangerId)
+                const currFromBack = allCurrencies.find(cur => el.back[0] === cur.currencyId)
+                const currToBack = allCurrencies.find(cur => el.back[1] === cur.currencyId)
+                const changerBack = allChangers.find(exch => el.back[2] === exch.exchangerId)
+                response.push({
+                  in: {
+                    from: el.in[0],
+                    fromTitle: currFromIn.currencyTitle,
+                    to: el.in[1],
+                    toTitle: currToIn.currencyTitle,
+                    changer: el.in[2],
+                    changerTitle: changerIn.exchangerTitle,
+                    give: el.in[3],
+                    receive: el.in[4],
+                    amount: el.in[5]
+                  },
+                  back: {
+                    from: el.back[0],
+                    fromTitle: currFromBack.currencyTitle,
+                    to: el.back[1],
+                    toTitle: currToBack.currencyTitle,
+                    changer: el.back[2],
+                    changerTitle: changerBack.exchangerTitle,
+                    give: el.back[3],
+                    receive: el.back[4],
+                    amount: el.back[5]
+                  }
+                })
+              })
+              res.status(200).json(response)
               zip.close()
             })
           })

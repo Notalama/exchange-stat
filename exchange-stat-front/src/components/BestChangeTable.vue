@@ -30,37 +30,38 @@ export default {
   },
   getChainCol: function(row) {
     const maxChainEffSum = 1000 
-    const maxChainEfficiency = 'maxChainEfficiency Example - ' + maxChainEffSum + ' ' + row.givenCurrency.currencyTitle + ' -> '
-    const rate = row.changer.exchangerTitle + '(' + row.rateToGive + ':' + row.rateToReceive + ';' + row.fullChangerCapital + ')'
-    const calculatedCurrency = maxChainEffSum * row.rateToGive * row.rateToReceive
-    const result = maxChainEfficiency + rate + ' -> ' + row.receivedCurrency.currencyTitle + ' ' + calculatedCurrency
-    return result
+    const maxChainEfficiency = 'maxChainEfficiency Example - ' + maxChainEffSum + ' ' + row.in.fromTitle + ' -> '
+    const rate = row.in.changerTitle + '(' + row.in.give + ':' + row.in.receive + ';' + row.in.amount + ')'
+    const calculatedCurrency = maxChainEffSum * row.in.give * row.in.receive
+    const result = maxChainEfficiency + rate + ' -> ' + row.in.toTitle + ' ' + calculatedCurrency
+    const maxChainEffSumBack = 1000 
+    const maxChainEfficiencyBack = 'maxChainEfficiency ExampleBack - ' + maxChainEffSumBack + ' ' + row.back.fromTitle + ' -> '
+    const rateBack = row.back.changerTitle + '(' + row.back.give + ':' + row.back.receive + ';' + row.back.amount + ')'
+    const calculatedCurrencyBack = maxChainEffSumBack * row.back.give * row.back.receive
+    const resultBack = maxChainEfficiencyBack + rateBack + ' -> ' + row.back.toTitle + ' ' + calculatedCurrencyBack
+    return result + '====> <br/>' + resultBack
   },
   loadItems: function() {
       axios
       .get('http://localhost:9000/best-change')
       .then(response => {
-        console.log(response)
+        console.log(response.data[1])
         // const firstItem = response.data.rates[0]
-        this.info = response.data.rates[0]
+        this.info = response.data[1]
         // .givenCurrency.currencyTitle;
-        const chainCol = this.getChainCol(this.info)
+        
         const gainCol = this.getGainCol()
-        this.rows = [
-          { init:1, gain: gainCol, chain: chainCol, createdAt: '201-10-31:9: 35 am', score: 0.03343 },
-          { init:2, gain:"Jane", chain: 24, createdAt: '2011-10-31', score: 0.03343 },
-          { init:3, gain:"Susan", chain: 16, createdAt: '2011-10-30', score: 0.03343 },
-          { init:4, gain:"Chris", chain: 55, createdAt: '2011-10-11', score: 0.03343 },
-          { init:5, gain:"Dan", chain: 40, createdAt: '2011-10-21', score: 0.03343 },
-          { init:6, gain:"John", chain: 20, createdAt: '2011-10-31', score: 0.03343 },
-        ]
+        this.rows = []
+        response.data.slice(0, 10).forEach(element => {
+          this.rows.push({ init:1, gain: gainCol, chain: this.getChainCol(element), createdAt: '201-10-31:9: 35 am', score: 0.03343 })
+        }); 
+        this.rows.push()
       });
     }
   },
   data: function() {
     return {
       info: null,
-      row: [],
       columns: [
         {
           label: '',
