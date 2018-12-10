@@ -1,9 +1,7 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <div>
-      {{info}}
-    </div>
+    <h2>{{ 'Last update timer: ' + timer + ' seconds ago' }}</h2>
       <vue-good-table
       mode="remote"
       class="bc-table"
@@ -15,7 +13,6 @@
 
 <script>
 import axios from 'axios'
-
 export default {
   name: "BestChangeTable",
   props: {
@@ -23,37 +20,46 @@ export default {
   },
   mounted: function() {
     this.loadItems()
+    setInterval(() => {
+      this.timer++
+    }, 1000);
   },
   methods: {
   getGainCol: function() {
     return 'getCol'
   },
   getChainCol: function(row) {
-    const maxChainEffSum = 1000 
-    const maxChainEfficiency = 'maxChainEfficiency Example - ' + maxChainEffSum + ' ' + row.in.fromTitle + ' -> '
-    const rate = row.in.changerTitle + '(' + row.in.give + ':' + row.in.receive + ';' + row.in.amount + ')'
-    const calculatedCurrency = maxChainEffSum * row.in.give * row.in.receive
-    const result = maxChainEfficiency + rate + ' -> ' + row.in.toTitle + ' ' + calculatedCurrency
-    const maxChainEffSumBack = 1000 
-    const maxChainEfficiencyBack = 'maxChainEfficiency ExampleBack - ' + maxChainEffSumBack + ' ' + row.back.fromTitle + ' -> '
-    const rateBack = row.back.changerTitle + '(' + row.back.give + ':' + row.back.receive + ';' + row.back.amount + ')'
-    const calculatedCurrencyBack = maxChainEffSumBack * row.back.give * row.back.receive
-    const resultBack = maxChainEfficiencyBack + rateBack + ' -> ' + row.back.toTitle + ' ' + calculatedCurrencyBack
-    return result + '====> <br/>' + resultBack
+    const maxChainEffSum = 1000
+    const calculatedCurrencyIn = row.in.give > 1 ?
+    maxChainEffSum / row.in.give :
+    maxChainEffSum * row.in.receive
+    const inCurr = maxChainEffSum + ' ' + row.in.fromTitle 
+    const inChanger = ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row.in.changer + '">'
+     + ' <i class="fas fa-arrow-right"></i> - ' + row.in.changerTitle
+     + '</a> ' + '(' + row.in.give + ':' + row.in.receive + '; ' + row.in.amount + ') <br>'
+    const back = calculatedCurrencyIn + ' ' + row.in.toTitle
+    const backChanger = '<a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row.back.changer + '">'
+     + ' <i class="fas fa-arrow-right"></i>  -' + row.back.changerTitle + '</a> ' + '(' + row.back.give + ':' + row.back.receive + '; ' + row.back.amount + ') <br>'
+    const achievmentCurr = ' ' + row.back.toTitle + ' '
+    const achivement = row.back.give < row.back.receive ? 
+    calculatedCurrencyIn * row.back.receive :
+    calculatedCurrencyIn / row.back.give
+    return inCurr + inChanger + back + backChanger + '<span style="color: green">' + achivement + achievmentCurr + '</span>'
   },
   loadItems: function() {
       axios
       .get('http://localhost:9000/best-change')
       .then(response => {
-        console.log(response.data[1])
-        // const firstItem = response.data.rates[0]
-        this.info = response.data[1]
-        // .givenCurrency.currencyTitle;
-        
+        /* eslint-disable */ console.log(response.data) 
         const gainCol = this.getGainCol()
         this.rows = []
-        response.data.slice(0, 10).forEach(element => {
-          this.rows.push({ init:1, gain: gainCol, chain: this.getChainCol(element), createdAt: '201-10-31:9: 35 am', score: 0.03343 })
+        let timer = 
+        response.data.slice(0, 30).forEach(element => {
+          this.rows.push({
+            gain: element.profit * 1000,
+            chain: this.getChainCol(element),
+            score: element.profit.toFixed(6)
+          })
         }); 
         this.rows.push()
       });
@@ -61,12 +67,9 @@ export default {
   },
   data: function() {
     return {
-      info: null,
+      timer: 0,
+      loadTime: new Date(),
       columns: [
-        {
-          label: '',
-          field: 'init'
-        },
         {
           label: 'Дохід',
           field: 'gain',
@@ -75,13 +78,7 @@ export default {
           label: 'Ланцюжки',
           field: 'chain',
           type: 'string',
-        },
-        {
-          label: 'Дата',
-          field: 'createdAt',
-          type: 'date',
-          dateInputFormat: 'YYYY-MM-DD',
-          dateOutputFormat: 'MMM Do YY',
+          html: true
         },
         {
           label: '',

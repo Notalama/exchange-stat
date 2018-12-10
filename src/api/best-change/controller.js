@@ -4,7 +4,7 @@ const StreamZip = require('node-stream-zip')
 const Iconv = require('iconv').Iconv
 const {
   formatRates,
-  // formatCurrencies,
+  formatCurrencies,
   formatExchangers
 } = require('./../../services/helpers/formatter')
 
@@ -35,42 +35,43 @@ module.exports = {
           })
           zip.on('ready', async () => {
             let rates = zip.entryDataSync('bm_rates.dat')
-            // const cy = zip.entryDataSync('bm_cy.dat')
-            // const excahngers = zip.entryDataSync('bm_exch.dat')
             const iconv = new Iconv('WINDOWS-1251', 'UTF-8')
-
             const ratesBuffer = iconv.convert(rates).toString()
 
-            
             // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
-            // const cyBuffer = iconv.convert(cy).toString()
-            // const excahngersBuffer = iconv.convert(excahngers).toString()
-            // let exchangersBase = formatExchangers(excahngersBuffer.split('\n'))
-            // response.currencyTypes = formatCurrencies(cyBuffer.split('\n'))
+            //   const cy = zip.entryDataSync('bm_cy.dat')
+            //   const cyBuffer = iconv.convert(cy).toString()
+            //   const currencyTypes = formatCurrencies(cyBuffer.split('\n'))
+            //   currenciesModel.insertMany(currencyTypes, (err, val) => {
+            //     if (err) console.log(err)
+            //     else console.log(val[0], 'success fill curr')
+            //   })
+            //   const excahngers = zip.entryDataSync('bm_exch.dat')
+            //   const excahngersBuffer = iconv.convert(excahngers).toString()
+            //   const exchangersBase = formatExchangers(excahngersBuffer.split('\n'))
+            //   exchangersModel.collection.drop()
+            //   exchangersModel.insertMany(exchangersBase, (err, val) => {
+            //     if (err) console.log(err)
+            //     else console.log(val[0], 'success fill exch')
+            //   })
+            // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
 
-            // currenciesModel.insertMany(response.currencyTypes, (err, val) => {
-            //   if (err) console.log(err)
-            //   else {
-            //     console.log(val, 'success fill')
-            //   }
-            // })
-            // await exchangersModel.collection.drop()
-            // await exchangersModel.insertMany(exchangersBase, (err, val) => {
-            //   if (err) console.log(err)
-            //   else console.log(val[0], 'sadfafsd')
-            // })
             await formatRates(ratesBuffer.split('\n')).then(async result => {
-              
-              const allCurrencies = await currenciesModel.find({}, {currencyId: 1, currencyTitle: 1}, (err, res) => {
+              const allCurrencies = await currenciesModel.find({}, {
+                currencyId: 1,
+                currencyTitle: 1
+              }, (err, res) => {
                 if (err) console.error(err, '--- allCurrencies err')
                 else if (res === null) console.error('null currencies found')
               })
-              const allChangers = await exchangersModel.find({}, {exchangerId: 1, exchangerTitle: 1}, (err, res) => {
+              const allChangers = await exchangersModel.find({}, {
+                exchangerId: 1,
+                exchangerTitle: 1
+              }, (err, res) => {
                 if (err) console.error(err, '--- allCurrencies err')
                 else if (res === null) console.error('null currencies found')
               })
               const response = []
-              
               result.forEach(el => {
                 const currFromIn = allCurrencies.find(cur => el.in[0] === cur.currencyId)
                 const currToIn = allCurrencies.find(cur => el.in[1] === cur.currencyId)
@@ -78,6 +79,7 @@ module.exports = {
                 const currFromBack = allCurrencies.find(cur => el.back[0] === cur.currencyId)
                 const currToBack = allCurrencies.find(cur => el.back[1] === cur.currencyId)
                 const changerBack = allChangers.find(exch => el.back[2] === exch.exchangerId)
+                if (!currFromIn || !currToIn || !changerIn || !currFromBack || !currToBack || !changerBack) return
                 response.push({
                   in: {
                     from: el.in[0],
@@ -100,7 +102,8 @@ module.exports = {
                     give: el.back[3],
                     receive: el.back[4],
                     amount: el.back[5]
-                  }
+                  },
+                  profit: el.profit
                 })
               })
               res.status(200).json(response)

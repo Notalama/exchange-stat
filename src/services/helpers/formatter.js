@@ -35,18 +35,28 @@ module.exports = {
         exchangers.forEach(_ => {
           let exchangerToCompare = exchangers.pop()
           exchangers.forEach(exch => {
-            if (+exchangerToCompare[0] !== +exch[0]) {
-              if (+exchangerToCompare[4] > +exch[3] || +exchangerToCompare[3] < +exch[4]) {
+            // console.log(!+exch[5], exch[5])
+            const pairProfitable = +exchangerToCompare[0] !== +exch[0] && (+exchangerToCompare[4] > +exch[3] || +exchangerToCompare[3] < +exch[4])
+            if (pairProfitable) {
+              let profit = null
+              if (exch[3] > exchangerToCompare[4]) {
+                profit = +exchangerToCompare[4] * +exch[3] - +exchangerToCompare[3] / +exch[4]
+              } else {
+                profit = +exchangerToCompare[4] / +exch[3] - +exchangerToCompare[3] * +exch[4]
+              }
+              const isProfitable = profit > 0.003 && +exch[5] > 0.1
+              if (isProfitable) {
                 profitArr.push({
                   in: exchangerToCompare,
-                  back: exch
+                  back: exch,
+                  profit: profit
                 })
               }
             }
           })
         })
       })
-      return profitArr
+      return profitArr.sort((a, b) => b.profit - a.profit)
     } catch (rejectedValue) {
       console.error('formatter err caught ---', rejectedValue)
     }
