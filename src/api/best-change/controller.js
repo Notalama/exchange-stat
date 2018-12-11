@@ -58,7 +58,7 @@ module.exports = {
 
             await formatRates(ratesBuffer.split('\n')).then(async result => {
               const response = []
-              result.forEach(el => response.push(el))
+              // result.forEach(el => response.push(el))
               // const allCurrencies = await currenciesModel.find({}, {
               //   currencyId: 1,
               //   currencyTitle: 1
@@ -108,7 +108,7 @@ module.exports = {
               //     profit: el.profit
               //   })
               // })
-              res.status(200).json(response)
+              res.status(200).json(result)
               zip.close()
             })
           })
