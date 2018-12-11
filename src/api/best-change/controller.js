@@ -57,55 +57,57 @@ module.exports = {
             // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
 
             await formatRates(ratesBuffer.split('\n')).then(async result => {
-              const allCurrencies = await currenciesModel.find({}, {
-                currencyId: 1,
-                currencyTitle: 1
-              }, (err, res) => {
-                if (err) console.error(err, '--- allCurrencies err')
-                else if (res === null) console.error('null currencies found')
-              })
-              const allChangers = await exchangersModel.find({}, {
-                exchangerId: 1,
-                exchangerTitle: 1
-              }, (err, res) => {
-                if (err) console.error(err, '--- allCurrencies err')
-                else if (res === null) console.error('null currencies found')
-              })
               const response = []
-              result.forEach(el => {
-                const currFromIn = allCurrencies.find(cur => el.in[0] === cur.currencyId)
-                const currToIn = allCurrencies.find(cur => el.in[1] === cur.currencyId)
-                const changerIn = allChangers.find(exch => el.in[2] === exch.exchangerId)
-                const currFromBack = allCurrencies.find(cur => el.back[0] === cur.currencyId)
-                const currToBack = allCurrencies.find(cur => el.back[1] === cur.currencyId)
-                const changerBack = allChangers.find(exch => el.back[2] === exch.exchangerId)
-                if (!currFromIn || !currToIn || !changerIn || !currFromBack || !currToBack || !changerBack) return
-                response.push({
-                  in: {
-                    from: el.in[0],
-                    fromTitle: currFromIn.currencyTitle,
-                    to: el.in[1],
-                    toTitle: currToIn.currencyTitle,
-                    changer: el.in[2],
-                    changerTitle: changerIn.exchangerTitle,
-                    give: el.in[3],
-                    receive: el.in[4],
-                    amount: el.in[5]
-                  },
-                  back: {
-                    from: el.back[0],
-                    fromTitle: currFromBack.currencyTitle,
-                    to: el.back[1],
-                    toTitle: currToBack.currencyTitle,
-                    changer: el.back[2],
-                    changerTitle: changerBack.exchangerTitle,
-                    give: el.back[3],
-                    receive: el.back[4],
-                    amount: el.back[5]
-                  },
-                  profit: el.profit
-                })
-              })
+              result.forEach(el => response.push(el))
+              // const allCurrencies = await currenciesModel.find({}, {
+              //   currencyId: 1,
+              //   currencyTitle: 1
+              // }, (err, res) => {
+              //   if (err) console.error(err, '--- allCurrencies err')
+              //   else if (res === null) console.error('null currencies found')
+              // })
+              // const allChangers = await exchangersModel.find({}, {
+              //   exchangerId: 1,
+              //   exchangerTitle: 1
+              // }, (err, res) => {
+              //   if (err) console.error(err, '--- allCurrencies err')
+              //   else if (res === null) console.error('null currencies found')
+              // })
+              // const response = []
+              // result.forEach(el => {
+              //   const currFromIn = allCurrencies.find(cur => el.in[0] === cur.currencyId)
+              //   const currToIn = allCurrencies.find(cur => el.in[1] === cur.currencyId)
+              //   const changerIn = allChangers.find(exch => el.in[2] === exch.exchangerId)
+              //   const currFromBack = allCurrencies.find(cur => el.back[0] === cur.currencyId)
+              //   const currToBack = allCurrencies.find(cur => el.back[1] === cur.currencyId)
+              //   const changerBack = allChangers.find(exch => el.back[2] === exch.exchangerId)
+              //   if (!currFromIn || !currToIn || !changerIn || !currFromBack || !currToBack || !changerBack) return
+              //   response.push({
+              //     in: {
+              //       from: el.in[0],
+              //       fromTitle: currFromIn.currencyTitle,
+              //       to: el.in[1],
+              //       toTitle: currToIn.currencyTitle,
+              //       changer: el.in[2],
+              //       changerTitle: changerIn.exchangerTitle,
+              //       give: el.in[3],
+              //       receive: el.in[4],
+              //       amount: el.in[5]
+              //     },
+              //     back: {
+              //       from: el.back[0],
+              //       fromTitle: currFromBack.currencyTitle,
+              //       to: el.back[1],
+              //       toTitle: currToBack.currencyTitle,
+              //       changer: el.back[2],
+              //       changerTitle: changerBack.exchangerTitle,
+              //       give: el.back[3],
+              //       receive: el.back[4],
+              //       amount: el.back[5]
+              //     },
+              //     profit: el.profit
+              //   })
+              // })
               res.status(200).json(response)
               zip.close()
             })
