@@ -4,7 +4,6 @@ module.exports = {
   formatRates: async (unformattedList) => {
     try {
       const byCurr = []
-      const result = []
       const profitArr = []
       const omitValues = await hideParamsModel.find({}, (err, res) => {
         if (err) console.error(err, '--- omitValues err')
@@ -37,66 +36,8 @@ module.exports = {
           byCurr[id] = [rowArray]
         }
       }
-      // result.forEach(exchanger => {
-      //   let id = exchanger[0]
-      //   if (+exchanger[0] > +exchanger[1]) {
-      //     id += exchanger[1]
-      //   } else {
-      //     id = exchanger[1] + exchanger[0]
-      //   }
-      //   if (byCurr[id] !== undefined) {
 
-      //     if (isProfitable) {
-      //       byCurr[id].push(exchanger)
-      //     }
-      //   } else {
-      //     byCurr[id] = [exchanger]
-      //   }
-      // })
-
-      // byCurr.forEach(exchangers => {
-      //   exchangers.forEach(_ => {
-      //     let exchangerToCompare = exchangers.pop()
-      //     exchangers.forEach(exch => {
-      //       const pairProfitable = +exchangerToCompare[0] !== +exch[0] && (+exchangerToCompare[4] > +exch[3] || +exchangerToCompare[3] < +exch[4])
-      //       if (pairProfitable) {
-      //         let profit = null
-      //         if (exch[3] > exchangerToCompare[4]) {
-      //           profit = +exchangerToCompare[4] * +exch[3] - +exchangerToCompare[3] / +exch[4]
-      //         } else {
-      //           profit = +exchangerToCompare[4] / +exch[3] - +exchangerToCompare[3] * +exch[4]
-      //         }
-      //         const isProfitable = profit > 0.003 && +exch[5] > 0.1
-      //         if (isProfitable) {
-      //           profitArr.push({
-      //             in: exchangerToCompare,
-      //             back: exch,
-      //             profit: profit
-      //           })
-      //         }
-      //       }
-      //     })
-      //   })
-      // })
-      /*
-        [
-          [
-            rate 1-2 ->, rate 1-3 <-, rate 1-4 ->, rate 1-5 <-
-          ],
-          [
-            rate 2-1 ->, rate 2-3 <-, rate 2-4 ->, rate 2-5 <-
-          ],
-          [
-            rate 3-1 ->, rate 3-2 <-, rate 3-4 ->, rate 3-5 <-
-          ],
-          ...
-        ]
-        bestEachPairValue = (only 4 best values in array, but Вт 11:30 only the best) determine in first loop
-
-      */
-
-
-
+      // **** three steps ****
       byCurr.forEach(currArr => {
         currArr.forEach(firstEl => {
           if (byCurr[firstEl[1]]) {
@@ -116,7 +57,8 @@ module.exports = {
                     const megaSum = +firstEl[4] > 1
                       ? sumThree * +firstEl[4]
                       : sumThree / +firstEl[3]
-                    if ((megaSum - sumOne) > 1.05) profitArr.push([firstEl, secondEl, thirdEl])
+                    const profit = megaSum - sumOne
+                    if (profit > 0.05 && profit < 0.5) profitArr.push([firstEl, secondEl, thirdEl, profit])
                   }
                 })
               }
@@ -124,9 +66,43 @@ module.exports = {
           }
         })
       })
-      // byCurr.forEach(el => {
-      //   result.push(el)
-      // })
+
+      // **** four steps ****
+      byCurr.forEach(currArr => {
+        currArr.forEach(firstEl => {
+          if (byCurr[firstEl[1]]) {
+            byCurr[firstEl[1]].forEach(secondEl => {
+              if (byCurr[secondEl[1]]) {
+                byCurr[secondEl[1]].forEach(thirdEl => {
+                  if (byCurr[thirdEl[1]]) {
+                    byCurr[thirdEl[1]].forEach(fourthEl => {
+                      if (thirdEl[1] === firstEl[0]) {
+                        const sumOne = +firstEl[4] > 1
+                          ? +firstEl[3] * +firstEl[4]
+                          : +firstEl[3] / +firstEl[3]
+                        const sumTwo = +secondEl[4] > 1
+                          ? sumOne * +secondEl[4]
+                          : sumOne / +secondEl[3]
+                        const sumThree = +thirdEl[4] > 1
+                          ? sumTwo * +thirdEl[4]
+                          : sumTwo / +thirdEl[3]
+                        const sumFour = +fourthEl[4] > 1
+                          ? sumThree * +fourthEl[4]
+                          : sumThree / +fourthEl[3]
+                        const megaSum = +firstEl[4] > 1
+                          ? sumFour * +firstEl[4]
+                          : sumFour / +firstEl[3]
+                        const profit = megaSum - sumOne
+                        if (profit > 0.1 && profit < 0.3) profitArr.push([firstEl, secondEl, thirdEl, firstEl, profit])
+                      }
+                    })
+                  }
+                })
+              }
+            })
+          }
+        })
+      })
       return profitArr
       // return profitArr.sort((a, b) => b.profit - a.profit)
     } catch (rejectedValue) {
