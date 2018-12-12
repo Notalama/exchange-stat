@@ -30,21 +30,30 @@ export default {
   },
   getChainCol: function(row) {
     const maxChainEffSum = 1000
-    const calculatedCurrencyIn = row.in.give > 1 ?
-    maxChainEffSum / row.in.give :
-    maxChainEffSum * row.in.receive
-    const inCurr = maxChainEffSum + ' ' + row.in.fromTitle 
-    const inChanger = ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row.in.changer + '">'
-     + ' <i class="fas fa-arrow-right"></i> - ' + row.in.changerTitle
-     + '</a> ' + '(' + row.in.give + ':' + row.in.receive + '; ' + row.in.amount + ') <br>'
-    const back = calculatedCurrencyIn + ' ' + row.in.toTitle
-    const backChanger = '<a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row.back.changer + '">'
-     + ' <i class="fas fa-arrow-right"></i>  -' + row.back.changerTitle + '</a> ' + '(' + row.back.give + ':' + row.back.receive + '; ' + row.back.amount + ') <br>'
-    const achievmentCurr = ' ' + row.back.toTitle + ' '
-    const achivement = row.back.give < row.back.receive ? 
-    calculatedCurrencyIn * row.back.receive :
-    calculatedCurrencyIn / row.back.give
-    return inCurr + inChanger + back + backChanger + '<span style="color: green">' + achivement + achievmentCurr + '</span>'
+    const calculatedCurrencyIn = row[0].give > 1 ?
+    maxChainEffSum / row[0].give :
+    maxChainEffSum * row[0].receive
+    const inCurr = maxChainEffSum + ' ' + row[0].fromTitle 
+    const inChanger = ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[0].changer + '">'
+     + ' <i class="fas fa-arrow-right"></i> - ' + row[0].changerTitle
+     + '</a> ' + '(' + row[0].give + ':' + row[0].receive + '; ' + row[0].amount + ') <br>'
+    const secondStep = calculatedCurrencyIn + ' ' + row[0].toTitle
+    const secondStepChanger = '<a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[1].changer + '">'
+     + ' <i class="fas fa-arrow-right"></i>  -' + row[1].changerTitle + '</a> ' + '(' + row[1].give + ':' + row[1].receive + '; ' + row[1].amount + ') <br> '
+    const secondActCurr = ' ' + row[1].toTitle + ' '
+    const secondAct = 1 < row[1].receive ? 
+    calculatedCurrencyIn * row[1].receive :
+    calculatedCurrencyIn / row[1].give
+
+    const thirdStepChanger = '<a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[2].changer + '">'
+     + ' <i class="fas fa-arrow-right"></i>  -' + row[2].changerTitle + '</a> ' + '(' + row[2].give + ':' + row[2].receive + '; ' + row[2].amount + ') <br> '
+    const thirdActCurr = ' ' + row[2].toTitle + ' '
+    const thirdAct = 1 < row[2].receive ? 
+    calculatedCurrencyIn * row[2].receive :
+    calculatedCurrencyIn / row[2].give
+    const thirdStep = calculatedCurrencyIn + ' ' + row[2].toTitle
+    return inCurr + inChanger + secondStep + secondStepChanger + '<span style="color: green">' + secondAct + secondActCurr + '</span>' + thirdStepChanger + thirdAct + thirdActCurr +
+      '<span style="color: blue">' + thirdStep + '</span>'
   },
   loadItems: function() {
       axios
@@ -56,9 +65,9 @@ export default {
         let timer = 
         response.data.slice(0, 30).forEach(element => {
           this.rows.push({
-            gain: element.profit * 1000,
+            gain: element[3] * 1000,
             chain: this.getChainCol(element),
-            score: element.profit.toFixed(6)
+            score: element[3].toFixed(6)
           })
         }); 
         this.rows.push()

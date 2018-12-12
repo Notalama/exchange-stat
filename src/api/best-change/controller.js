@@ -58,57 +58,43 @@ module.exports = {
 
             await formatRates(ratesBuffer.split('\n')).then(async result => {
               const response = []
-              // result.forEach(el => response.push(el))
-              // const allCurrencies = await currenciesModel.find({}, {
-              //   currencyId: 1,
-              //   currencyTitle: 1
-              // }, (err, res) => {
-              //   if (err) console.error(err, '--- allCurrencies err')
-              //   else if (res === null) console.error('null currencies found')
-              // })
-              // const allChangers = await exchangersModel.find({}, {
-              //   exchangerId: 1,
-              //   exchangerTitle: 1
-              // }, (err, res) => {
-              //   if (err) console.error(err, '--- allCurrencies err')
-              //   else if (res === null) console.error('null currencies found')
-              // })
-              // const response = []
-              // result.forEach(el => {
-              //   const currFromIn = allCurrencies.find(cur => el.in[0] === cur.currencyId)
-              //   const currToIn = allCurrencies.find(cur => el.in[1] === cur.currencyId)
-              //   const changerIn = allChangers.find(exch => el.in[2] === exch.exchangerId)
-              //   const currFromBack = allCurrencies.find(cur => el.back[0] === cur.currencyId)
-              //   const currToBack = allCurrencies.find(cur => el.back[1] === cur.currencyId)
-              //   const changerBack = allChangers.find(exch => el.back[2] === exch.exchangerId)
-              //   if (!currFromIn || !currToIn || !changerIn || !currFromBack || !currToBack || !changerBack) return
-              //   response.push({
-              //     in: {
-              //       from: el.in[0],
-              //       fromTitle: currFromIn.currencyTitle,
-              //       to: el.in[1],
-              //       toTitle: currToIn.currencyTitle,
-              //       changer: el.in[2],
-              //       changerTitle: changerIn.exchangerTitle,
-              //       give: el.in[3],
-              //       receive: el.in[4],
-              //       amount: el.in[5]
-              //     },
-              //     back: {
-              //       from: el.back[0],
-              //       fromTitle: currFromBack.currencyTitle,
-              //       to: el.back[1],
-              //       toTitle: currToBack.currencyTitle,
-              //       changer: el.back[2],
-              //       changerTitle: changerBack.exchangerTitle,
-              //       give: el.back[3],
-              //       receive: el.back[4],
-              //       amount: el.back[5]
-              //     },
-              //     profit: el.profit
-              //   })
-              // })
-              res.status(200).json(result)
+              const allCurrencies = await currenciesModel.find({currencyId: {$in: result.usedCurrencies}}, {
+                currencyId: 1,
+                currencyTitle: 1
+              }, (err, res) => {
+                if (err) console.error(err, '--- allCurrencies err')
+                else if (res === null) console.error('null currencies found')
+              })
+              const allChangers = await exchangersModel.find({exchangerId: {$in: result.usedExchangers}}, {
+                exchangerId: 1,
+                exchangerTitle: 1
+              }, (err, res) => {
+                if (err) console.error(err, '--- allCurrencies err')
+                else if (res === null) console.error('null currencies found')
+              })
+              result.profitArr.forEach(chain => {
+                const compiled = []
+                for (let i = 0; i < 3; i++) {
+                  const el = chain[i]
+                  const fromT = allCurrencies.find(cur => el[0] === cur.currencyId)
+                  const toT = allCurrencies.find(cur => el[1] === cur.currencyId)
+                  const chan = allChangers.find(exch => el[2] === exch.exchangerId)
+                  compiled.push({
+                    from: el[0],
+                    fromTitle: fromT ? fromT.currencyTitle : '',
+                    to: el[1],
+                    toTitle: toT ? toT.currencyTitle : '',
+                    changer: el[2],
+                    changerTitle: chan ? chan.exchangerTitle : '',
+                    give: el[3],
+                    receive: el[4],
+                    amount: el[5]
+                  })
+                }
+                compiled.push(chain[3])
+                response.push(compiled)
+              })
+              res.status(200).json(response)
               zip.close()
             })
           })
