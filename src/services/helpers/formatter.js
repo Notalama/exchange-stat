@@ -18,24 +18,20 @@ module.exports = {
         if (!omitValues[0].hiddenExchangers.every(el => el !== rowArray[2] && rowArray[5] > 0.01)) continue
         let id = rowArray[0]
         if (byCurr[id] !== undefined) {
-          let idx = null
-          const isPair = byCurr[id].some((el, i) => {
+          for (let j = 0; j < byCurr[id].length; j++) {
+            const el = byCurr[id][j]
             if (rowArray[1] === el[1]) {
-              idx = i
-              return true
+              const isProfitable = el[3] > 1
+                ? (rowArray[3] > 1 && rowArray[3] < el[3])
+                : (rowArray[4] > 1 && rowArray[4] > el[4])
+              if (isProfitable) {
+                byCurr[id][j] = rowArray
+              }
+              break
+            } else if (j === byCurr[id].length - 1) {
+              byCurr[id].push(rowArray)
+              break
             }
-          })
-          if (isPair) {
-            const isProfitable = byCurr[id][3] > 1
-              ? (rowArray[3] > 1 && rowArray[3] < byCurr[id][3])
-              //  || rowArray[3] === 1 || false
-              : (rowArray[4] > 1 && rowArray[4] > byCurr[id][4])
-              //  || rowArray[4] === 1 || false
-            if (isProfitable) {
-              byCurr[id][i] = rowArray
-            }
-          } else {
-            byCurr[id].push(rowArray)
           }
         } else {
           byCurr[id] = [rowArray]
@@ -101,30 +97,36 @@ module.exports = {
 
 
 
-      byCurr.forEach(first => {
-        if (byCurr[first[1]]) {
-          byCurr[first[1]].forEach(second => {
-            if (byCurr[second[1]]) {
-              byCurr[second[1]].forEach(third => {
-                if (third[1] === first[0]) {
-                  const sumOne = first[3] > 1
-                    ? +second[4] * +first[3] - +second[3] / +first[4]
-                    : +second[4] / +first[3] - +second[3] * +first[4]
-                  const sumTwo = second[3] > 1
-                    ? +third[4] * +sumOne - +third[3] / +sumOne
-                    : +third[4] / +sumOne - +third[3] * +sumOne
-                  const sumThree = third[3] > 1
-                    ? +first[4] * +sumTwo - +first[3] / +sumTwo
-                    : +first[4] / +sumTwo - +first[3] * +sumTwo
-
-                  if (third[3] > 1 ? sumThree > 1 : sumThree < 1) profitArr.push([first, second, third])
-                }
-              })
-            }
-          })
-        }
+      byCurr.forEach(currArr => {
+        currArr.forEach(firstEl => {
+          if (byCurr[firstEl[1]]) {
+            byCurr[firstEl[1]].forEach(secondEl => {
+              if (byCurr[secondEl[1]]) {
+                byCurr[secondEl[1]].forEach(thirdEl => {
+                  if (thirdEl[1] === firstEl[0]) {
+                    const sumOne = +firstEl[4] > 1
+                      ? +firstEl[3] * +firstEl[4]
+                      : +firstEl[3] / +firstEl[3]
+                    const sumTwo = +secondEl[4] > 1
+                      ? sumOne * +secondEl[4]
+                      : sumOne / +secondEl[3]
+                    const sumThree = +thirdEl[4] > 1
+                      ? sumTwo * +thirdEl[4]
+                      : sumTwo / +thirdEl[3]
+                    const megaSum = +firstEl[4] > 1
+                      ? sumThree * +firstEl[4]
+                      : sumThree / +firstEl[3]
+                    if ((megaSum - sumOne) > 1.05) profitArr.push([firstEl, secondEl, thirdEl])
+                  }
+                })
+              }
+            })
+          }
+        })
       })
-
+      // byCurr.forEach(el => {
+      //   result.push(el)
+      // })
       return profitArr
       // return profitArr.sort((a, b) => b.profit - a.profit)
     } catch (rejectedValue) {
