@@ -5,8 +5,10 @@ module.exports = {
     try {
       const byCurr = []
       const profitArr = []
+      const minAmount = 30 // dollars ... to do: editable by User
       const usedCurrencies = []
       const usedExchangers = []
+      const profitArray = []
       const omitValues = await hideParamsModel.find({}, (err, res) => {
         if (err) console.error(err, '--- omitValues err')
         else if (res === null) console.error('null hideparams found')
@@ -19,23 +21,19 @@ module.exports = {
         if (!omitValues[0].hiddenExchangers.every(el => el !== rowArray[2] && rowArray[5] > 0.01)) continue
         let id = rowArray[0]
         if (byCurr[id] !== undefined) {
-          for (let j = 0; j < byCurr[id].length; j++) {
-            const el = byCurr[id][j]
+          byCurr[id].forEach((el, j) => {
             if (rowArray[1] === el[1]) {
-              const isProfitable = el[3] > 1
-                ? (rowArray[3] > 1 && rowArray[3] < el[3])
-                : (rowArray[4] > 1 && rowArray[4] > el[4])
+              const isProfitable = rowArray[3] <= el[3] && rowArray[4] >= el[4]
               if (isProfitable) {
-                byCurr[id][j] = rowArray.slice(0, 5)
+                byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
               }
-              break
-            } else if (j === byCurr[id].length - 1) {
-              byCurr[id].push(rowArray.slice(0, 5))
-              break
+            } else if (rowArray[1] !== el[1] && j === byCurr[id].length - 1) {
+              byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
             }
-          }
+          })
         } else {
-          byCurr[id] = [rowArray.slice(0, 5)]
+          byCurr[id] = []
+          byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
         }
       }
 
@@ -43,7 +41,7 @@ module.exports = {
       byCurr.forEach(currArr => {
         currArr.forEach(firstEl => {
           if (byCurr[firstEl[1]]) {
-            byCurr[firstEl[1]].forEach(secondEl => {
+            byCurr[firstEl[1]].forEach((secondEl, ind) => {
               if (byCurr[secondEl[1]]) {
                 byCurr[secondEl[1]].forEach(thirdEl => {
                   if (thirdEl[1] === firstEl[0]) {
@@ -56,19 +54,29 @@ module.exports = {
                     const sumThree = +thirdEl[4] > 1
                       ? sumTwo * +thirdEl[4]
                       : sumTwo / +thirdEl[3]
-                    const megaSum = +firstEl[4] > 1
-                      ? sumThree * +firstEl[4]
-                      : sumThree / +firstEl[3]
-                    const profit = megaSum - sumOne
-                    if (profit > 0.05 && profit < 1) {
-                      profitArr.push([firstEl, secondEl, thirdEl, profit])
-                      const isUniqCurr = usedCurrencies.some(el => el === firstEl[0] || el === secondEl[0] || el === thirdEl[0])
-                      const isUniqueExch = usedExchangers.some(el => el === firstEl[2] || el === secondEl[2] || el === thirdEl[2])
-                      if (isUniqCurr || !usedCurrencies.length) {
-                        usedCurrencies.push(firstEl[0], secondEl[0], thirdEl[0])
-                      }
-                      if (isUniqueExch || !usedExchangers.length) {
-                        usedExchangers.push(firstEl[2], secondEl[2], thirdEl[2])
+                    const profit = sumThree - +firstEl[3]
+                    profitArray.push(profit)
+                    if (profit > 0) {
+                      // *** Chain currencies to dollar compare ***
+                      console.log('test', profit)
+                      const dolToFirst = byCurr[firstEl[0]][40]
+                      const dolToSecond = byCurr[secondEl[0]][40]
+                      const dolToThird = byCurr[thirdEl[0]][40]
+                      let [amountFirst, amountSecond, amountThird] = [
+                        dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : minAmount,
+                        dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : minAmount,
+                        dolToThird ? +dolToThird[4] > 1 ? +thirdEl[5] * +dolToThird[4] : +thirdEl[5] / +dolToThird[3] : minAmount]
+                      const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount && amountThird > minAmount
+                      if (exchHaveEnoughMoney) {
+                        profitArr.push([firstEl, secondEl, thirdEl, profit])
+                        const isUniqCurr = usedCurrencies.every(el => el !== firstEl[0] && el !== secondEl[0] && el !== thirdEl[0])
+                        const isUniqueExch = usedExchangers.every(el => el !== firstEl[2] && el !== secondEl[2] && el !== thirdEl[2])
+                        if (isUniqCurr || !usedCurrencies.length) {
+                          usedCurrencies.push(firstEl[0], secondEl[0], thirdEl[0])
+                        }
+                        if (isUniqueExch || !usedExchangers.length) {
+                          usedExchangers.push(firstEl[2], secondEl[2], thirdEl[2])
+                        }
                       }
                     }
                   }
@@ -88,7 +96,7 @@ module.exports = {
       //           byCurr[secondEl[1]].forEach(thirdEl => {
       //             if (byCurr[thirdEl[1]]) {
       //               byCurr[thirdEl[1]].forEach(fourthEl => {
-      //                 if (thirdEl[1] === firstEl[0]) {
+      //                 if (fourthEl[1] === firstEl[0]) {
       //                   const sumOne = +firstEl[4] > 1
       //                     ? +firstEl[3] * +firstEl[4]
       //                     : +firstEl[3] / +firstEl[3]
@@ -101,11 +109,33 @@ module.exports = {
       //                   const sumFour = +fourthEl[4] > 1
       //                     ? sumThree * +fourthEl[4]
       //                     : sumThree / +fourthEl[3]
-      //                   const megaSum = +firstEl[4] > 1
-      //                     ? sumFour * +firstEl[4]
-      //                     : sumFour / +firstEl[3]
-      //                   const profit = megaSum - sumOne
-      //                   if (profit > 0.1 && profit < 0.3) profitArr.push([firstEl, secondEl, thirdEl, firstEl, profit])
+      //                   const profit = sumFour - +firstEl[3]
+      //                   if (profit > 0) {
+      //                     console.log('test')
+      //                     // *** Chain currencies to dollar compare ***
+      //                     const dolToFirst = byCurr[firstEl[0]][40]
+      //                     const dolToSecond = byCurr[secondEl[0]][40]
+      //                     const dolToThird = byCurr[thirdEl[0]][40]
+      //                     const dolToFourth = byCurr[fourthEl[0]][40]
+      //                     let [amountFirst, amountSecond, amountThird, amountFourth] = [
+      //                       dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : minAmount,
+      //                       dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : minAmount,
+      //                       dolToThird ? +dolToThird[4] > 1 ? +thirdEl[5] * +dolToThird[4] : +thirdEl[5] / +dolToThird[3] : minAmount,
+      //                       dolToFourth ? +dolToFourth[4] > 1 ? +fourthEl[5] * +dolToFourth[4] : +fourthEl[5] / +dolToFourth[3] : minAmount
+      //                     ]
+      //                     const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount && amountThird > minAmount && amountFourth > minAmount
+      //                     if (exchHaveEnoughMoney) {
+      //                       profitArr.push([firstEl, secondEl, thirdEl, fourthEl, profit])
+      //                       const isUniqCurr = usedCurrencies.every(el => el !== firstEl[0] && el !== secondEl[0] && el !== thirdEl[0] && el !== fourthEl[0])
+      //                       const isUniqueExch = usedExchangers.every(el => el !== firstEl[2] && el !== secondEl[2] && el !== thirdEl[2] && el !== fourthEl[2])
+      //                       if (isUniqCurr || !usedCurrencies.length) {
+      //                         usedCurrencies.push(firstEl[0], secondEl[0], thirdEl[0], fourthEl[0])
+      //                       }
+      //                       if (isUniqueExch || !usedExchangers.length) {
+      //                         usedExchangers.push(firstEl[2], secondEl[2], thirdEl[2], fourthEl[2])
+      //                       }
+      //                     }
+      //                   }
       //                 }
       //               })
       //             }
