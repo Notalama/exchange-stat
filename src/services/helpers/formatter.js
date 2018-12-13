@@ -21,23 +21,67 @@ module.exports = {
         if (!omitValues[0].hiddenExchangers.every(el => el !== rowArray[2] && rowArray[5] > 0.01)) continue
         let id = rowArray[0]
         if (byCurr[id] !== undefined) {
-          byCurr[id].forEach((el, j) => {
-            if (rowArray[1] === el[1]) {
-              const isProfitable = rowArray[3] <= el[3] && rowArray[4] >= el[4]
-              if (isProfitable) {
+          for (let j = 0; j < byCurr[id].length; j++) {
+            if (byCurr[id][j]) {
+              const el = byCurr[id][j]
+              if (rowArray[1] === el[1]) {
+                const isProfitable = rowArray[3] <= el[3] && rowArray[4] >= el[4]
+                if (isProfitable) {
+                  byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
+                }
+                break
+              } else if (j === byCurr[id].length - 1) {
                 byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
+                break
               }
-            } else if (rowArray[1] !== el[1] && j === byCurr[id].length - 1) {
-              byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
             }
-          })
+          }
         } else {
           byCurr[id] = []
           byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
         }
       }
-
-      // **** three steps ****
+      // **** two steps ****
+      // byCurr.forEach(currArr => {
+      //   currArr.forEach(firstEl => {
+      //     if (byCurr[firstEl[1]]) {
+      //       byCurr[firstEl[1]].forEach(secondEl => {
+      //         if (secondEl[1] === firstEl[0]) {
+      //           const sumOne = +firstEl[4] > +firstEl[4]
+      //             ? +firstEl[3] * +firstEl[4]
+      //             : +firstEl[3] / +firstEl[3]
+      //           const sumTwo = +secondEl[4] > +secondEl[4]
+      //             ? sumOne * +secondEl[4]
+      //             : sumOne / +secondEl[3]
+      //           const profit = sumTwo - +firstEl[3]
+      //           profitArray.push(profit)
+      //           if (profit > 0) {
+      //             // *** Chain currencies to dollar compare ***
+      //             const dolToFirst = byCurr[firstEl[0]][40]
+      //             const dolToSecond = byCurr[secondEl[0]][40]
+      //             const [amountFirst, amountSecond] = [
+      //               dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : minAmount,
+      //               dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : minAmount
+      //             ]
+      //             const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount
+      //             if (exchHaveEnoughMoney) {
+      //               profitArr.push([firstEl, secondEl, thirdEl, profit])
+      //               const isUniqCurr = usedCurrencies.every(el => el !== firstEl[0] && el !== secondEl[0])
+      //               const isUniqueExch = usedExchangers.every(el => el !== firstEl[2] && el !== secondEl[2])
+      //               if (isUniqCurr || !usedCurrencies.length) {
+      //                 usedCurrencies.push(firstEl[0], secondEl[0])
+      //               }
+      //               if (isUniqueExch || !usedExchangers.length) {
+      //                 usedExchangers.push(firstEl[2], secondEl[2])
+      //               }
+      //             }
+      //           }
+      //         }
+      //       })
+      //     }
+      //   })
+      // })
+      // // **** three steps ****
       byCurr.forEach(currArr => {
         currArr.forEach(firstEl => {
           if (byCurr[firstEl[1]]) {
@@ -56,9 +100,8 @@ module.exports = {
                       : sumTwo / +thirdEl[3]
                     const profit = sumThree - +firstEl[3]
                     profitArray.push(profit)
-                    if (profit > 0) {
+                    if (profit > 5) {
                       // *** Chain currencies to dollar compare ***
-                      console.log('test', profit)
                       const dolToFirst = byCurr[firstEl[0]][40]
                       const dolToSecond = byCurr[secondEl[0]][40]
                       const dolToThird = byCurr[thirdEl[0]][40]
@@ -111,7 +154,6 @@ module.exports = {
       //                     : sumThree / +fourthEl[3]
       //                   const profit = sumFour - +firstEl[3]
       //                   if (profit > 0) {
-      //                     console.log('test')
       //                     // *** Chain currencies to dollar compare ***
       //                     const dolToFirst = byCurr[firstEl[0]][40]
       //                     const dolToSecond = byCurr[secondEl[0]][40]
