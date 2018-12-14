@@ -74,7 +74,7 @@ module.exports = {
               })
               result.profitArr.forEach(chain => {
                 const compiled = []
-                for (let i = 0; i < 3; i++) {
+                for (let i = 0; i < chain.length - 2; i++) {
                   const el = chain[i]
                   const fromT = allCurrencies.find(cur => el[0] === cur.currencyId)
                   const toT = allCurrencies.find(cur => el[1] === cur.currencyId)
@@ -91,7 +91,22 @@ module.exports = {
                     amount: el[5]
                   })
                 }
-                compiled.push(chain[3])
+                switch (chain.length) {
+                  case 4:
+                    compiled.push(chain[2])
+                    compiled.push(chain[3])
+                    break
+                  case 5:
+                    compiled.push(chain[3])
+                    compiled.push(chain[4])
+                    break
+                  case 6:
+                    compiled.push(chain[4])
+                    compiled.push(chain[5])
+                    break
+                  default:
+                    break
+                }
                 response.push(compiled)
               })
               res.status(200).json(response)

@@ -23,37 +23,34 @@ export default {
     setInterval(() => {
       this.timer++
     }, 1000);
+    // setInterval(() => {
+    //   this.loadItems()
+    // }, 10000);
   },
   methods: {
   getGainCol: function() {
     return 'getCol'
   },
+  calcRate: function(give, receive, sum) {
+    return receive > give ? sum * receive : sum / give
+  },
   getChainCol: function(row) {
-    const maxChainEffSum = 1000
-    const calculatedCurrencyIn = row[0].give > 1 ?
-    maxChainEffSum / row[0].give :
-    maxChainEffSum * row[0].receive
-    const inCurr = maxChainEffSum + ' ' + row[0].fromTitle 
-    const inChanger = ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[0].changer + '">'
-     + ' <i class="fas fa-arrow-right"></i> - ' + row[0].changerTitle
-     + '</a> ' + '(' + row[0].give + ':' + row[0].receive + '; ' + row[0].amount + ') <br>'
-    const secondStep = calculatedCurrencyIn + ' ' + row[0].toTitle
-    const secondStepChanger = '<a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[1].changer + '">'
-     + ' <i class="fas fa-arrow-right"></i>  -' + row[1].changerTitle + '</a> ' + '(' + row[1].give + ':' + row[1].receive + '; ' + row[1].amount + ') <br> '
-    const secondActCurr = ' ' + row[1].toTitle + ' '
-    const secondAct = 1 < row[1].receive ? 
-    calculatedCurrencyIn * row[1].receive :
-    calculatedCurrencyIn / row[1].give
+    const sum = this.calcRate(+row[4][3], +row[4][4], 1000)
+    const calcFirst = this.calcRate(+row[0].give, +row[0].receive, sum)
+    const calcSecond = this.calcRate(+row[1].give, +row[1].receive, calcFirst)
+    const calcThird = row[3] ? this.calcRate(+row[2].give, +row[2].receive, calcSecond) : 0
 
-    const thirdStepChanger = '<a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[2].changer + '">'
-     + ' <i class="fas fa-arrow-right"></i>  -' + row[2].changerTitle + '</a> ' + '(' + row[2].give + ':' + row[2].receive + '; ' + row[2].amount + ') <br> '
-    const thirdActCurr = ' ' + row[2].toTitle + ' '
-    const thirdAct = 1 < row[2].receive ? 
-    calculatedCurrencyIn * row[2].receive :
-    calculatedCurrencyIn / row[2].give
-    const thirdStep = calculatedCurrencyIn + ' ' + row[2].toTitle
-    return inCurr + inChanger + secondStep + secondStepChanger + '<span style="color: green">' + secondAct + secondActCurr + '</span>' + thirdStepChanger + thirdAct + thirdActCurr +
-      '<span style="color: blue">' + thirdStep + '</span>'
+    const currOne = sum + ' ' + row[0].fromTitle
+    const exchOne = ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[0].changer + '">'
+     + ' <i class="fas fa-arrow-right"></i> - ' + row[0].changerTitle + '</a> ' + '(' + row[0].give + ':' + row[0].receive + '; ' + row[0].amount + ') <br>'
+    const currTwo = '<i class="fas fa-arrow-right"></i> ' + calcFirst + ' ' + row[1].fromTitle 
+    const exchTwo = ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[1].changer + '">'
+     + ' <i class="fas fa-arrow-right"></i> - ' + row[1].changerTitle + '</a> ' + '(' + row[1].give + ':' + row[1].receive + '; ' + row[1].amount + ') <br>'
+    const currThree = '<i class="fas fa-arrow-right"></i> ' + calcSecond + ' ' + row[2].fromTitle 
+    const exchThree = ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[2].changer + '">'
+     + ' <i class="fas fa-arrow-right"></i> - ' + row[2].changerTitle + '</a> ' + '(' + row[2].give + ':' + row[2].receive + '; ' + row[2].amount + ') <br>'
+    const endChain = '<span style="color: green"><i class="fas fa-arrow-right"></i> ' + calcThird + ' ' + row[2].toTitle + '</span>' 
+    return currOne + exchOne + currTwo + exchTwo + currThree + exchThree + endChain
   },
   loadItems: function() {
       axios
@@ -63,11 +60,11 @@ export default {
         const gainCol = this.getGainCol()
         this.rows = []
         let timer = 
-        response.data.slice(0, 30).forEach(element => {
+        response.data.forEach(element => {
           this.rows.push({
-            gain: element[3] * 1000,
+            gain: (element[3] * 10) + ' $',
             chain: this.getChainCol(element),
-            score: element[3].toFixed(6)
+            score: element[3] / 100
           })
         }); 
         this.rows.push()
@@ -80,7 +77,7 @@ export default {
       loadTime: new Date(),
       columns: [
         {
-          label: 'Дохід',
+          label: 'Дохід з 1000$',
           field: 'gain',
         },
         {
@@ -90,7 +87,7 @@ export default {
           html: true
         },
         {
-          label: '',
+          label: '%',
           field: 'score',
           type: 'percentage',
         },
