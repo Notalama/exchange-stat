@@ -58,14 +58,14 @@ module.exports = {
 
             await formatRates(ratesBuffer.split('\n')).then(async result => {
               const response = []
-              const allCurrencies = await currenciesModel.find({currencyId: {$in: result.usedCurrencies}}, {
+              const allCurrencies = await currenciesModel.find({}, {
                 currencyId: 1,
                 currencyTitle: 1
               }, (err, res) => {
                 if (err) console.error(err, '--- allCurrencies err')
                 else if (res === null) console.error('null currencies found')
               })
-              const allChangers = await exchangersModel.find({exchangerId: {$in: result.usedExchangers}}, {
+              const allChangers = await exchangersModel.find({}, {
                 exchangerId: 1,
                 exchangerTitle: 1
               }, (err, res) => {

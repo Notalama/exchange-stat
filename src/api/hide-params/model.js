@@ -7,6 +7,9 @@ const hideParamsSchema = new Schema({
   },
   hiddenExchangers: {
     type: Array
+  },
+  hiddenPairs: {
+    type: Array
   }
 }, {
   timestamps: true
