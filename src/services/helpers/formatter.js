@@ -1,12 +1,12 @@
 const hideParamsModel = require('./../../api/hide-params/model')
 const bonusesModel = require('./../../api/bonuses/model')
 module.exports = {
-  formatRates: async (unformattedList) => {
+  formatRates: async (unformattedList, minAmount, minProfit) => {
     try {
       const byCurr = []
       const profitArr = []
-      const minAmount = 30 // dollars ... to do: editable by User
-      const minProfit = 0.5 // % ... todo: editable by User
+      // const minAmount = 1000 // dollars ... to do: editable by User
+      // const minProfit = 0.5 // % ... todo: editable by User
       const usedCurrencies = []
       const usedExchangers = []
       const omitValues = await hideParamsModel.find({}, (err, res) => {
@@ -25,6 +25,7 @@ module.exports = {
         return rate
       }
       for (let i = 0; i < unformattedList.length; i++) {
+        if (i === 1) console.log(unformattedList[i])
         let rowArray = unformattedList[i].split(';')
         if (!omitValues[0].hiddenCurrencies.every(el => el !== rowArray[0] && (el !== rowArray[1]))) continue
         if (!omitValues[0].hiddenExchangers.every(el => el !== rowArray[2] && +rowArray[5] > 0.01)) continue

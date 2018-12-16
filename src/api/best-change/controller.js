@@ -11,13 +11,8 @@ const {
 const exchangersModel = require('./../exchangers/model')
 const currenciesModel = require('./../currencies/model')
 module.exports = {
-  index: ({
-    querymen: {
-      query,
-      select,
-      cursor
-    }
-  }, res, next) => {
+  index: (req, res, next) => {
+    const { minBalance, minProfit } = req.query
     http.get('http://api.bestchange.ru/info.zip', (data) => {
       const {
         statusCode
@@ -26,6 +21,7 @@ module.exports = {
         res.status(400).send('info.zip not found', data)
         throw console.error(data)
       } else {
+        
         const zipWriteBuffer = fs.createWriteStream('info.zip')
         data.pipe(zipWriteBuffer)
         zipWriteBuffer.on('finish', () => {
@@ -56,7 +52,7 @@ module.exports = {
             //   })
             // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
 
-            await formatRates(ratesBuffer.split('\n')).then(async result => {
+            await formatRates(ratesBuffer.split('\n'), +minBalance, +minProfit).then(async result => {
               const response = []
               const allCurrencies = await currenciesModel.find({}, {
                 currencyId: 1,
@@ -93,16 +89,13 @@ module.exports = {
                 }
                 switch (chain.length) {
                   case 4:
-                    compiled.push(chain[2])
-                    compiled.push(chain[3])
+                    compiled.push(chain[2], chain[3])
                     break
                   case 5:
-                    compiled.push(chain[3])
-                    compiled.push(chain[4])
+                    compiled.push(chain[3], chain[4])
                     break
                   case 6:
-                    compiled.push(chain[4])
-                    compiled.push(chain[5])
+                    compiled.push(chain[4], chain[5])
                     break
                   default:
                     break

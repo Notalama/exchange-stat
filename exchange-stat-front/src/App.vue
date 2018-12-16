@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
     <BestChangeTable v-bind:msg="message"/>
   </div>
 </template>
@@ -22,6 +21,9 @@ export default {
 </script>
 
 <style>
+body {
+  background-color: lightgrey
+}
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

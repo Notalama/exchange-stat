@@ -1,10 +1,31 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
     <h2>{{ 'Last update timer: ' + timer + ' seconds ago' }}</h2>
-      <p>Current interval is: {{interval / 1000}} s</p>
-      <button class="waves-effect waves-light btn inc" v-on:click="interval += 1000">+</button>
-      <button class="waves-effect waves-light btn inc" v-on:click="interval -= 1000">-</button>
+    <div class="settings">
+      <div class="container">
+        <div class="col s6">
+          <p>Current interval is: {{interval / 1000}} s</p>
+          <button class="waves-effect waves-light btn inc" v-on:click="interval += 1000">+</button>
+          <button class="waves-effect waves-light btn inc" v-on:click="interval -= 1000">-</button>
+        </div>
+        <div class="col s6">
+          <div class="input-field col s6">
+            <input v-model="minBalance" id="first_name" type="number" class="validate" placeholder="Min Balance">
+            <label for="first_name">Min Balance $</label>
+          </div>
+          <div class="input-field col s6">
+            <input v-model="minProfit" id="last_name" type="number" class="validate" placeholder="Min Profit">
+            <label for="last_name">Min Profit %</label>
+          </div>
+        </div>
+        <div class="input-field col s6">
+          <button class="btn waves-effect waves-light" type="button" name="action" v-on:click="loadItems()">Submit
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+      
       <vue-good-table
       mode="remote"
       class="bc-table"
@@ -27,7 +48,8 @@ export default {
   mounted: function() {
     setInterval(() => {
       this.timer++
-    }, 1000);
+      this.rows.forEach(el => el.age++)
+    }, 997);
     this.loadItems()
     // this.reloadInterval()
   },
@@ -40,6 +62,29 @@ export default {
   },
   getGainCol: function() {
     return 'getCol'
+  },
+  getAgeOfChain: function(currs) {
+    let oldIndex = null
+    const isOld = this.rows.find((el, index) => {
+      if (el.length === currs.length) {
+        let counter = 0
+        currs.forEach(curr => {
+          for (let i = 0; i < el.length - 2; i++) {
+            const rate = el[i];
+            if (rate.from === curr) {
+              counter++
+            }
+          }
+        });
+        if ((el.length - 2) === counter) {
+          oldIndex = index
+          return true
+        }
+         
+      }
+      return false
+    })
+    return {item: isOld, oldIndex} 
   },
   calcRate: function(give, receive, sum) {
     return receive > give ? sum * receive : sum / give
@@ -54,7 +99,7 @@ export default {
     const currOne = sum + ' ' + row[0].fromTitle
     const exchOne = ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[0].changer + '">'
     + ' <i class="fas fa-arrow-right"></i> - ' + row[0].changerTitle + '</a> ' + '(' + row[0].give + ':' + row[0].receive + '; ' + row[0].amount + ') <br>'
-    const currTwo = '<i class="fas fa-arrow-right"></i> ' + calcFirst + ' ' + row[1].fromTitle 
+    const currTwo = '<i class="fas fa-arrow-right"></i> ' + calcFirst + ' ' + row[1].fromTitle
     const exchTwo = ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[1].changer + '">'
     + ' <i class="fas fa-arrow-right"></i> - ' + row[1].changerTitle + '</a> ' + '(' + row[1].give + ':' + row[1].receive + '; ' + row[1].amount + ') <br>'
     const currThree = toDolIndex >= 4 ? '<i class="fas fa-arrow-right"></i> ' + calcSecond + ' ' + row[2].fromTitle : ''
@@ -72,27 +117,32 @@ export default {
   },
   loadItems: function() {
       axios
-      .get('http://localhost:9000/best-change')
+      .get('http://localhost:9000/best-change?minBalance=' + this.minBalance + '&minProfit=' + this.minProfit)
       .then(response => {
         /* eslint-disable */ console.log(response.data) 
         const gainCol = this.getGainCol()
-        this.rows = []
-        let timer = 
-        response.data.forEach(element => {
+        this.rows = response.data.map(element => {
           const toDolIndex = element.length - 1
-          this.rows.push({
+          const oldChain = this.getAgeOfChain(element.length === 3
+            ? [element[0].from, element[1].from] : element.length === 4
+            ? [element[0].from, element[1].from, element[2].from]
+            : [element[0].from, element[1].from, element[2].from, element[3].from])
+          return {
             gain: (element[toDolIndex - 1] * 10) + ' $',
             chain: this.getChainCol(element, toDolIndex),
-            score: element[toDolIndex - 1] / 100
-          })
-        }); 
-        this.rows.push()
+            score: element[toDolIndex - 1] / 100,
+            age: oldChain.item ? this.rows[oldChain.oldIndex].age : 0
+          }
+        });
+        this.timer = 0
       });
     
     }
   },
   data: function() {
     return {
+      minBalance: 30,
+      minProfit: 5,
       timer: 0,
       interval: 10000,
       loadTime: new Date(),
@@ -112,6 +162,10 @@ export default {
           field: 'score',
           type: 'percentage',
         },
+        {
+          label: 'Час життя лацюжка в секундах',
+          field: 'age'
+        }
       ],
       rows: []
     }
