@@ -27,6 +27,7 @@ module.exports = {
         if (err) console.error(err, '--- bonuses err')
         else if (res === null) console.error('null bonuses found')
       })
+      const absCommis = commissions.filter(el => el.commissionA[0])
       const calcBonus = (rate, bonus) => {
         const forAll = bonus.from && !bonus.to
         const forOneCurr = !bonus.from && bonus.to && rate[1] === bonus.to
@@ -48,6 +49,19 @@ module.exports = {
           }
         })
         return rate
+      }
+      const calcAbsCommission = (rate, sum) => {
+        absCommis.forEach(com => {
+          if ((com.currency === rate[0] && com.inOut === 'IN') || (com.currency === rate[1] && com.inOut === 'OUT')) {
+            if (com.changer && rate[2] === com.changer) {
+              sum = sum - com.commissionA[0]
+            }
+            if (!com.changer) {
+              sum = sum - com.commissionA[0]
+            }
+          }
+        })
+        return sum
       }
       // **** after complete chain, need to calculate absolute commission ****
       for (let i = 0; i < unformattedList.length; i++) {
@@ -92,8 +106,10 @@ module.exports = {
           if (byCurr[firstEl[1]]) {
             byCurr[firstEl[1]].forEach(secondEl => {
               if (secondEl[1] === firstEl[0]) {
-                const sumOne = +firstEl[4] > 1 ? +firstEl[3] * +firstEl[4] : +firstEl[3] / +firstEl[3]
-                const sumTwo = +secondEl[4] > 1 ? sumOne * +secondEl[4] : sumOne / +secondEl[3]
+                let sumOne = +firstEl[4] > 1 ? +firstEl[3] * +firstEl[4] : +firstEl[3] / +firstEl[3]
+                sumOne = calcAbsCommission(firstEl, sumOne)
+                let sumTwo = +secondEl[4] > 1 ? sumOne * +secondEl[4] : sumOne / +secondEl[3]
+                sumTwo = calcAbsCommission(secondEl, sumTwo)
                 const profit = ((sumTwo - +firstEl[3]) * 100) / +firstEl[3]
                 if (profit > minProfit) {
                   // *** Chain currencies to dollar compare ***
@@ -124,9 +140,12 @@ module.exports = {
               if (byCurr[secondEl[1]]) {
                 byCurr[secondEl[1]].forEach(thirdEl => {
                   if (thirdEl[1] === firstEl[0]) {
-                    const sumOne = +firstEl[4] > 1 ? +firstEl[3] * +firstEl[4] : +firstEl[3] / +firstEl[3]
-                    const sumTwo = +secondEl[4] > 1 ? sumOne * +secondEl[4] : sumOne / +secondEl[3]
-                    const sumThree = +thirdEl[4] > 1 ? sumTwo * +thirdEl[4] : sumTwo / +thirdEl[3]
+                    let sumOne = +firstEl[4] > 1 ? +firstEl[3] * +firstEl[4] : +firstEl[3] / +firstEl[3]
+                    sumOne = calcAbsCommission(firstEl, sumOne)
+                    let sumTwo = +secondEl[4] > 1 ? sumOne * +secondEl[4] : sumOne / +secondEl[3]
+                    sumTwo = calcAbsCommission(secondEl, sumTwo)
+                    let sumThree = +thirdEl[4] > 1 ? sumTwo * +thirdEl[4] : sumTwo / +thirdEl[3]
+                    sumThree = calcAbsCommission(thirdEl, sumThree)
                     const profit = ((sumThree - +firstEl[3]) * 100) / +firstEl[3]
                     if (profit > minProfit) {
                       // *** Chain currencies to dollar compare ***
@@ -164,10 +183,14 @@ module.exports = {
       //             if (byCurr[thirdEl[1]]) {
       //               byCurr[thirdEl[1]].forEach(fourthEl => {
       //                 if (fourthEl[1] === firstEl[0]) {
-      //                   const sumOne = +firstEl[4] > 1 ? +firstEl[3] * +firstEl[4] : +firstEl[3] / +firstEl[3]
-      //                   const sumTwo = +secondEl[4] > 1 ? sumOne * +secondEl[4] : sumOne / +secondEl[3]
-      //                   const sumThree = +thirdEl[4] > 1 ? sumTwo * +thirdEl[4] : sumTwo / +thirdEl[3]
-      //                   const sumFour = +fourthEl[4] > 1 ? sumThree * +fourthEl[4] : sumThree / +fourthEl[3]
+                        // let sumOne = +firstEl[4] > 1 ? +firstEl[3] * +firstEl[4] : +firstEl[3] / +firstEl[3]
+                        // sumOne = calcAbsCommission(firstEl, sumOne)
+                        // let sumTwo = +secondEl[4] > 1 ? sumOne * +secondEl[4] : sumOne / +secondEl[3]
+                        // sumTwo = calcAbsCommission(secondEl, sumTwo)
+                        // let sumThree = +thirdEl[4] > 1 ? sumTwo * +thirdEl[4] : sumTwo / +thirdEl[3]
+                        // sumThree = calcAbsCommission(thirdEl, sumThree)
+                        // let sumFour = +fourthEl[4] > 1 ? sumThree * +fourthEl[4] : sumThree / +fourthEl[3]
+                        // sumFour = calcAbsCommission(fourthEl, sumFour)
       //                   const profit = ((sumFour - +firstEl[3]) * 100) / +firstEl[3]
       //                   if (profit > minProfit) {
       //                     // *** Chain currencies to dollar compare ***

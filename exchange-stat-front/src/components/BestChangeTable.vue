@@ -34,7 +34,8 @@
       :line-numbers="true"
       :sort-options="{
         enabled: false,
-      }"/>
+      }"
+      @on-cell-click="pinToTop"/>
   </div>
 </template>
 
@@ -54,6 +55,9 @@ export default {
     // this.reloadInterval()
   },
   methods: {
+  pinToTop: function(params) {
+   /* eslint-disable */ console.log(params)
+  },
   reloadInterval: function() {
     this.loadItems()
     setTimeout(() => {
