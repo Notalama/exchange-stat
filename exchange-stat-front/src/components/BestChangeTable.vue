@@ -65,11 +65,8 @@ export default {
   },
   getAgeOfChain: function(rowId) {
     const pos = this.rows.find(el => el.id === rowId)
-    if (pos) {
-      return pos.age || 0
-    } else {
-      return 0
-    }
+    if (pos) return pos.age || 0
+    else return 0
   },
   genId: function(chain) {
     return chain.slice(0, chain.length - 2).reduce((rateAcc, rateCur) => {
