@@ -63,28 +63,23 @@ export default {
   getGainCol: function() {
     return 'getCol'
   },
-  getAgeOfChain: function(currs) {
-    let oldIndex = null
-    const isOld = this.rows.find((el, index) => {
-      if (el.length === currs.length) {
-        let counter = 0
-        currs.forEach(curr => {
-          for (let i = 0; i < el.length - 2; i++) {
-            const rate = el[i];
-            if (rate.from === curr) {
-              counter++
-            }
-          }
-        });
-        if ((el.length - 2) === counter) {
-          oldIndex = index
-          return true
-        }
-         
+  getAgeOfChain: function(rowId) {
+    const pos = this.rows.find(el => el.id === rowId)
+    if (pos) {
+      return pos.age || 0
+    } else {
+      return 0
+    }
+  },
+  genId: function(chain) {
+    return chain.slice(0, chain.length - 2).reduce((rateAcc, rateCur) => {
+      let accSum = ''
+      if (rateAcc.from) {
+        accSum = rateAcc.from + rateAcc.to + rateAcc.changer
       }
-      return false
+      const currSum = accSum + rateCur.from + rateCur.to + rateCur.changer
+      return accSum + currSum
     })
-    return {item: isOld, oldIndex} 
   },
   calcRate: function(give, receive, sum) {
     return receive > give ? sum * receive : sum / give
@@ -121,17 +116,15 @@ export default {
       .then(response => {
         /* eslint-disable */ console.log(response.data) 
         const gainCol = this.getGainCol()
+        console.log(this.rows)
         this.rows = response.data.map(element => {
           const toDolIndex = element.length - 1
-          const oldChain = this.getAgeOfChain(element.length === 3
-            ? [element[0].from, element[1].from] : element.length === 4
-            ? [element[0].from, element[1].from, element[2].from]
-            : [element[0].from, element[1].from, element[2].from, element[3].from])
           return {
             gain: (element[toDolIndex - 1] * 10) + ' $',
             chain: this.getChainCol(element, toDolIndex),
             score: element[toDolIndex - 1] / 100,
-            age: oldChain.item ? this.rows[oldChain.oldIndex].age : 0
+            age: this.rows.length ? this.getAgeOfChain(this.genId(element)) : 0,
+            id: this.genId(element)
           }
         });
         this.timer = 0
@@ -141,8 +134,8 @@ export default {
   },
   data: function() {
     return {
-      minBalance: 30,
-      minProfit: 5,
+      minBalance: 0,
+      minProfit: 1,
       timer: 0,
       interval: 10000,
       loadTime: new Date(),
@@ -163,8 +156,9 @@ export default {
           type: 'percentage',
         },
         {
-          label: 'Час життя лацюжка в секундах',
-          field: 'age'
+          label: 'Час с',
+          field: 'age',
+          tdClass: 'age'
         }
       ],
       rows: []
@@ -175,6 +169,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.age {
+  text-align: center;
+  width: 80px;
+}
 .inc {
   margin: 10px
 }

@@ -21,7 +21,6 @@ module.exports = {
         res.status(400).send('info.zip not found', data)
         throw console.error(data)
       } else {
-        
         const zipWriteBuffer = fs.createWriteStream('info.zip')
         data.pipe(zipWriteBuffer)
         zipWriteBuffer.on('finish', () => {

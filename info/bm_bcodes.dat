@@ -22,7 +22,7 @@
 989;XRP;Ripple;Poloniex
 988;ZEC;Zcash;Poloniex
 764;THB;Тайский бат;Банка Таиланда
-987;BAB;Bitcoin ABC;HitBtc
+987;BCH;Bitcoin BCH;HitBtc
 986;XEM;NEM;HitBtc
 985;REP;Augur;Poloniex
 984;NEO;NEO;HitBtc
@@ -40,3 +40,4 @@
 108;ZRX;0x;HitBtc
 566;NGN;Нигерийская найра;ЦБ Нигерии
 109;BNB;Binance Coin;Binance
+356;INR;Индийская рупия;Резервного банка Индии

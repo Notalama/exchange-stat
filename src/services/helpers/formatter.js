@@ -1,5 +1,6 @@
 const hideParamsModel = require('./../../api/hide-params/model')
 const bonusesModel = require('./../../api/bonuses/model')
+const commissionModel = require('./../../api/commision/model')
 module.exports = {
   formatRates: async (unformattedList, minAmount, minProfit) => {
     try {
@@ -17,6 +18,15 @@ module.exports = {
         if (err) console.error(err, '--- bonuses err')
         else if (res === null) console.error('null bonuses found')
       })
+      // const wrCom = await commissionModel.insertMany(arr, (err, res) => {
+      //   if (err) console.error(err, '--- bonuses err')
+      //   else if (res === null) console.error('null bonuses found')
+      //   console.log(res)
+      // })
+      const commissions = await commissionModel.find({}, (err, res) => {
+        if (err) console.error(err, '--- bonuses err')
+        else if (res === null) console.error('null bonuses found')
+      })
       const calcBonus = (rate, bonus) => {
         const forAll = bonus.from && !bonus.to
         const forOneCurr = !bonus.from && bonus.to && rate[1] === bonus.to
@@ -24,8 +34,23 @@ module.exports = {
         if (forAll || forOneCurr || forPair) +rate[4] > 1 ? rate[4] = +rate[4] * (+bonus.multi / 10 + 1) : rate[3] = +rate[3] / (+bonus.multi / 10 + 1)
         return rate
       }
+      const calcCommission = (rate) => {
+        commissions.forEach(com => {
+          if ((com.currency === rate[0] && com.inOut === 'IN') || (com.currency === rate[1] && com.inOut === 'OUT')) {
+            if (com.changer && rate[2] === com.changer) {
+              if (+com.commission) {
+                +rate[4] > 1 ? rate[4] = +rate[4] - +rate[4] * (+com.commission / 10) : rate[3] = +rate[3] + +rate[3] * (+com.commission / 10)
+              }
+            }
+            if (!com.changer && +com.commission) {
+              +rate[4] > 1 ? rate[4] = +rate[4] - +rate[4] * (+com.commission / 10) : rate[3] = +rate[3] + +rate[3] * (+com.commission / 10)
+            }
+          }
+        })
+        return rate
+      }
+      // **** after complete chain, need to calculate absolute commission ****
       for (let i = 0; i < unformattedList.length; i++) {
-        if (i === 1) console.log(unformattedList[i])
         let rowArray = unformattedList[i].split(';')
         if (!omitValues[0].hiddenCurrencies.every(el => el !== rowArray[0] && (el !== rowArray[1]))) continue
         if (!omitValues[0].hiddenExchangers.every(el => el !== rowArray[2] && +rowArray[5] > 0.01)) continue
@@ -39,12 +64,14 @@ module.exports = {
                 if (isProfitable) {
                   const bonus = bonuses.find(bon => bon.changer === rowArray[2])
                   if (bonus) rowArray = calcBonus(rowArray, bonus)
+                  rowArray = calcCommission(rowArray)
                   byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
                 }
                 break
               } else if (j === byCurr[id].length - 1) {
                 const bonus = bonuses.find(bon => bon.changer === rowArray[2])
                 if (bonus) rowArray = calcBonus(rowArray, bonus)
+                rowArray = calcCommission(rowArray)
                 byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
                 break
               }
@@ -54,6 +81,7 @@ module.exports = {
           byCurr[id] = []
           const bonus = bonuses.find(bon => bon.changer === rowArray[2])
           if (bonus) rowArray = calcBonus(rowArray, bonus)
+          rowArray = calcCommission(rowArray)
           byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
         }
       }
@@ -73,7 +101,8 @@ module.exports = {
                   const dolToSecond = byCurr[secondEl[1]][40]
                   let [amountFirst, amountSecond] = [
                     dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : minAmount,
-                    dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : minAmount]
+                    dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : minAmount
+                  ]
                   const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount
                   if (exchHaveEnoughMoney) {
                     const dolToInit = byCurr[40][firstEl[0]]
@@ -107,7 +136,8 @@ module.exports = {
                       let [amountFirst, amountSecond, amountThird] = [
                         dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : minAmount,
                         dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : minAmount,
-                        dolToThird ? +dolToThird[4] > 1 ? +thirdEl[5] * +dolToThird[4] : +thirdEl[5] / +dolToThird[3] : minAmount]
+                        dolToThird ? +dolToThird[4] > 1 ? +thirdEl[5] * +dolToThird[4] : +thirdEl[5] / +dolToThird[3] : minAmount
+                      ]
                       const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount && amountThird > minAmount
                       if (exchHaveEnoughMoney) {
                         const dolToInit = byCurr[40][firstEl[0]]
@@ -168,13 +198,17 @@ module.exports = {
       //     }
       //   })
       // })
-      const sorted = profitArr.sort((a, b) =>  +b[b.length - 2] - +a[a.length - 2])
+      const sorted = profitArr.sort((a, b) => +b[b.length - 2] - +a[a.length - 2])
       const filtered = []
       sorted.forEach((el, i) => {
         const prevElProfit = sorted[i - 1] ? sorted[i - 1][sorted[i - 1].length - 2] : 0
         if (sorted[i - 1] && el[el.length - 2].toFixed(4) !== prevElProfit.toFixed(4)) filtered.push(el)
       })
-      return {profitArr: filtered, usedCurrencies, usedExchangers}
+      return {
+        profitArr: filtered,
+        usedCurrencies,
+        usedExchangers
+      }
     } catch (rejectedValue) {
       console.error('formatter err caught ---', rejectedValue)
     }
@@ -214,5 +248,3 @@ module.exports = {
     return result
   }
 }
-
-
