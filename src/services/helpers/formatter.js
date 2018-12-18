@@ -2,12 +2,22 @@ const hideParamsModel = require('./../../api/hide-params/model')
 const bonusesModel = require('./../../api/bonuses/model')
 const commissionModel = require('./../../api/commision/model')
 module.exports = {
-  formatRates: async (unformattedList, minAmount, minProfit) => {
+  formatRates: async (unformattedList, minAmount, minProfit, chainSubscriptions) => {
     try {
       const byCurr = []
       const profitArr = []
-      // const minAmount = 1000 // dollars ... to do: editable by User
-      // const minProfit = 0.5 // % ... todo: editable by User
+      const subscriptionsU = chainSubscriptions ? chainSubscriptions.split('n') : null
+      const subscriptions = subscriptionsU ? subscriptionsU.map(el => el.split(';')) : null
+      // console.log(subscriptionsU)
+      if (subscriptions) {
+        for (let i = 0; i < subscriptions.length; i++) {
+          subscriptions[i].forEach((el, j) => {
+            subscriptions[i][j] = subscriptions[i][j].split(',')
+          })
+        }
+      }
+      // console.log(subscriptions)
+      const readySubs = []
       const usedCurrencies = []
       const usedExchangers = []
       const omitValues = await hideParamsModel.find({}, (err, res) => {
@@ -68,6 +78,21 @@ module.exports = {
         let rowArray = unformattedList[i].split(';')
         if (!omitValues[0].hiddenCurrencies.every(el => el !== rowArray[0] && (el !== rowArray[1]))) continue
         if (!omitValues[0].hiddenExchangers.every(el => el !== rowArray[2] && +rowArray[5] > 0.01)) continue
+        if (subscriptions) {
+          // *** pin to top the subscriptions
+          const rowId = rowArray[0] + rowArray[1] + rowArray[2]
+          subscriptions.forEach((chain, i) => {
+            for (let j = 0; j < chain.length; j++) {
+              const rateSub = chain[j]
+              const subId = rateSub[0] + rateSub[1] + rateSub[2]
+              if (subId === rowId) {
+                if (!readySubs[i]) readySubs[i] = []
+                readySubs[i][j] = rowArray.slice(0, 6)
+                continue
+              }
+            }
+          })
+        }
         let id = rowArray[0]
         if (byCurr[id] !== undefined) {
           for (let j = 0; j < byCurr[id].length; j++) {
@@ -183,14 +208,14 @@ module.exports = {
       //             if (byCurr[thirdEl[1]]) {
       //               byCurr[thirdEl[1]].forEach(fourthEl => {
       //                 if (fourthEl[1] === firstEl[0]) {
-                        // let sumOne = +firstEl[4] > 1 ? +firstEl[3] * +firstEl[4] : +firstEl[3] / +firstEl[3]
-                        // sumOne = calcAbsCommission(firstEl, sumOne)
-                        // let sumTwo = +secondEl[4] > 1 ? sumOne * +secondEl[4] : sumOne / +secondEl[3]
-                        // sumTwo = calcAbsCommission(secondEl, sumTwo)
-                        // let sumThree = +thirdEl[4] > 1 ? sumTwo * +thirdEl[4] : sumTwo / +thirdEl[3]
-                        // sumThree = calcAbsCommission(thirdEl, sumThree)
-                        // let sumFour = +fourthEl[4] > 1 ? sumThree * +fourthEl[4] : sumThree / +fourthEl[3]
-                        // sumFour = calcAbsCommission(fourthEl, sumFour)
+      //                  le[t sumOne = +firstEl[4] > 1 ? +firstEl[3] * +firstEl[4] : +firstEl[3] / +firstEl[3]
+      //                  sumOne = calcAbsCommission(firstEl, sumOne)
+      //                  let sumTwo = +secondEl[4] > 1 ? sumOne * +secondEl[4] : sumOne / +secondEl[3]
+      //                  sumTwo = calcAbsCommission(secondEl, sumTwo)
+      //                  let sumThree = +thirdEl[4] > 1 ? sumTwo * +thirdEl[4] : sumTwo / +thirdEl[3]
+      //                  sumThree = calcAbsCommission(thirdEl, sumThree)
+      //                  let sumFour = +fourthEl[4] > 1 ? sumThree * +fourthEl[4] : sumThree / +fourthEl[3]
+      //                  sum]Four = calcAbsCommission(fourthEl, sumFour)
       //                   const profit = ((sumFour - +firstEl[3]) * 100) / +firstEl[3]
       //                   if (profit > minProfit) {
       //                     // *** Chain currencies to dollar compare ***
@@ -221,6 +246,21 @@ module.exports = {
       //     }
       //   })
       // })
+      const calcSum = (give, receive, sum) => {
+        return receive > give ? sum * receive : sum / give
+      }
+      const calcChain = (chain) => {
+        let chainSum = []
+        let start = null
+        chain.forEach(rate => {
+          start = +rate[3]
+          chainSum.push(calcSum(+rate[3], +rate[4], chainSum.length ? chainSum[chainSum.length - 1] : +rate[3]))
+        })
+        return chainSum[chainSum.length - 1] - start
+      }
+      readySubs.forEach((chain, i) => {
+        readySubs[i].push(calcChain(chain), byCurr[40][chain[0][0]])
+      })
       const sorted = profitArr.sort((a, b) => +b[b.length - 2] - +a[a.length - 2])
       const filtered = []
       sorted.forEach((el, i) => {
@@ -228,7 +268,7 @@ module.exports = {
         if (sorted[i - 1] && el[el.length - 2].toFixed(4) !== prevElProfit.toFixed(4)) filtered.push(el)
       })
       return {
-        profitArr: filtered,
+        profitArr: readySubs.concat(filtered),
         usedCurrencies,
         usedExchangers
       }

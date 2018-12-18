@@ -31,11 +31,11 @@
       class="bc-table"
       :columns="columns"
       :rows="rows"
-      :line-numbers="true"
       :sort-options="{
         enabled: false,
       }"
-      @on-cell-click="pinToTop"/>
+      @on-cell-click="pinToTop"
+      />
   </div>
 </template>
 
@@ -56,6 +56,15 @@ export default {
   },
   methods: {
   pinToTop: function(params) {
+    if (params.column.field === 'pin') {
+      const chainRates = this.currentDataArr[params.row.originalIndex]
+      let getParams = this.chainSubscriptions ? 'n' : ''
+      for (let i = 0; i < chainRates.length - 2; i++) {
+        getParams += (getParams.length <= 1 ? '' : ';') + chainRates[i].from + ',' + chainRates[i].to + ',' + chainRates[i].changer
+      }
+      this.chainSubscriptions += getParams
+      this.loadItems()
+    }
    /* eslint-disable */ console.log(params)
   },
   reloadInterval: function() {
@@ -63,9 +72,6 @@ export default {
     setTimeout(() => {
       this.reloadInterval()
     }, this.interval);
-  },
-  getGainCol: function() {
-    return 'getCol'
   },
   getAgeOfChain: function(rowId) {
     const pos = this.rows.find(el => el.id === rowId)
@@ -112,15 +118,19 @@ export default {
     return currOne + exchOne + currTwo + exchTwo + currThree + exchThree + currFour + exchFour + endChain
   },
   loadItems: function() {
+      // this.chainSubscriptions = this.chainSubscriptions.substring(0, this.chainSubscriptions.length - 1)
+      let subcribeParam = this.chainSubscriptions ? '&chainSubscriptions=' + this.chainSubscriptions : ''
+
       axios
-      .get('http://localhost:9000/best-change?minBalance=' + this.minBalance + '&minProfit=' + this.minProfit)
+      .get('http://localhost:9000/best-change?minBalance=' + this.minBalance + '&minProfit=' + this.minProfit + subcribeParam)
       .then(response => {
-        /* eslint-disable */ console.log(response.data) 
-        const gainCol = this.getGainCol()
+        /* eslint-disable */ console.log(response.data)
         console.log(this.rows)
+        this.currentDataArr = response.data
         this.rows = response.data.map(element => {
           const toDolIndex = element.length - 1
           return {
+            pin: '<a class="btn-floating waves-effect waves-light red btn-small">+</a>',
             gain: (element[toDolIndex - 1] * 10) + ' $',
             chain: this.getChainCol(element, toDolIndex),
             score: element[toDolIndex - 1] / 100,
@@ -135,31 +145,40 @@ export default {
   },
   data: function() {
     return {
+      chainSubscriptions: '',
       minBalance: 0,
-      minProfit: 1,
+      minProfit: -1,
       timer: 0,
       interval: 10000,
-      loadTime: new Date(),
+      currentDataArr: null,
       columns: [
+        {
+          label: 'Pin',
+          field: 'pin',
+          html: true
+        },
         {
           label: 'Дохід з 1000$',
           field: 'gain',
+          globalSearchDisabled: true
         },
         {
           label: 'Ланцюжки',
           field: 'chain',
           type: 'string',
-          html: true
+          html: true,
         },
         {
           label: '%',
           field: 'score',
           type: 'percentage',
+          globalSearchDisabled: true
         },
         {
           label: 'Час с',
           field: 'age',
-          tdClass: 'age'
+          tdClass: 'age',
+          globalSearchDisabled: true
         }
       ],
       rows: []

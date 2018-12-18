@@ -12,7 +12,7 @@ const exchangersModel = require('./../exchangers/model')
 const currenciesModel = require('./../currencies/model')
 module.exports = {
   index: (req, res, next) => {
-    const { minBalance, minProfit } = req.query
+    const { minBalance, minProfit, chainSubscriptions } = req.query
     http.get('http://api.bestchange.ru/info.zip', (data) => {
       const {
         statusCode
@@ -51,7 +51,7 @@ module.exports = {
             //   })
             // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
 
-            await formatRates(ratesBuffer.split('\n'), +minBalance, +minProfit).then(async result => {
+            await formatRates(ratesBuffer.split('\n'), +minBalance, +minProfit, chainSubscriptions).then(async result => {
               const response = []
               const allCurrencies = await currenciesModel.find({}, {
                 currencyId: 1,
