@@ -1,5 +1,8 @@
 <template>
   <div class="hello">
+    <audio id="aud" type="audio/mp3">
+      <source src="./../assets/to-the-point.mp3" type="audio/mp3">
+    </audio>
     <h2>{{ 'Last update timer: ' + timer + ' seconds ago' }}</h2>
     <div class="settings">
       <div class="container">
@@ -58,12 +61,26 @@ export default {
   pinToTop: function(params) {
     if (params.column.field === 'pin') {
       const chainRates = this.currentDataArr[params.row.originalIndex]
-      let getParams = this.chainSubscriptions ? 'n' : ''
-      for (let i = 0; i < chainRates.length - 2; i++) {
-        getParams += (getParams.length <= 1 ? '' : ';') + chainRates[i].from + ',' + chainRates[i].to + ',' + chainRates[i].changer
+      if (chainRates[chainRates.length - 1]) {
+        this.chainSubscriptions = ''
+      } else {
+        let getParams = this.chainSubscriptions ? 'n' : ''
+        for (let i = 0; i < chainRates.length - 3; i++) {
+          getParams += (getParams.length <= 1 ? '' : ';') + chainRates[i].from + ',' + chainRates[i].to + ',' + chainRates[i].changer
+        }
+        this.chainSubscriptions += getParams
       }
-      this.chainSubscriptions += getParams
       this.loadItems()
+    } else if (params.column.field === 'links') {
+      const chainRates = this.currentDataArr[params.row.originalIndex]
+      const preLinkC = 'https://www.bestchange.ru/info.php?id='
+      const preLinkBC = 'https://www.bestchange.ru/click.php?id='
+      for (let i = 0; i < chainRates.length - 3; i++) {
+        const element = chainRates[i];
+        window.open(preLinkC + element.changer)
+        window.open(preLinkBC + element.changer)
+      }
+      
     }
    /* eslint-disable */ console.log(params)
   },
@@ -79,7 +96,7 @@ export default {
     else return 0
   },
   genId: function(chain) {
-    return chain.slice(0, chain.length - 2).reduce((rateAcc, rateCur) => {
+    return chain.slice(0, chain.length - 3).reduce((rateAcc, rateCur) => {
       let accSum = ''
       if (rateAcc.from) {
         accSum = rateAcc.from + rateAcc.to + rateAcc.changer
@@ -104,15 +121,15 @@ export default {
     const currTwo = '<i class="fas fa-arrow-right"></i> ' + calcFirst + ' ' + row[1].fromTitle
     const exchTwo = ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[1].changer + '">'
     + ' <i class="fas fa-arrow-right"></i> - ' + row[1].changerTitle + '</a> ' + '(' + row[1].give + ':' + row[1].receive + '; ' + row[1].amount + ') <br>'
-    const currThree = toDolIndex >= 4 ? '<i class="fas fa-arrow-right"></i> ' + calcSecond + ' ' + row[2].fromTitle : ''
-    const exchThree = toDolIndex >= 4 ? ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[2].changer + '">'
+    const currThree = toDolIndex >= 3 ? '<i class="fas fa-arrow-right"></i> ' + calcSecond + ' ' + row[2].fromTitle : ''
+    const exchThree = toDolIndex >= 3 ? ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[2].changer + '">'
     + ' <i class="fas fa-arrow-right"></i> - ' + row[2].changerTitle + '</a> ' + '(' + row[2].give + ':' + row[2].receive + '; ' + row[2].amount + ') <br>' : ''
     
-    const currFour = toDolIndex === 5 ? '<i class="fas fa-arrow-right"></i> ' + calcSecond + ' ' + row[3].fromTitle : ''
-    const exchFour = toDolIndex === 5 ? ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[3].changer + '">'
+    const currFour = toDolIndex === 4 ? '<i class="fas fa-arrow-right"></i> ' + calcSecond + ' ' + row[3].fromTitle : ''
+    const exchFour = toDolIndex === 4 ? ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[3].changer + '">'
     + ' <i class="fas fa-arrow-right"></i> - ' + row[3].changerTitle + '</a> ' + '(' + row[3].give + ':' + row[3].receive + '; ' + row[3].amount + ') <br>' : ''
     
-    const exitSum = toDolIndex === 3 ? calcSecond : toDolIndex === 4 ? calcThird : calcFourth
+    const exitSum = toDolIndex === 2 ? calcSecond : toDolIndex === 3 ? calcThird : calcFourth
     const endChain = '<span style="color: green"><i class="fas fa-arrow-right"></i> ' + exitSum + ' ' + row[0].fromTitle + '</span>'
 
     return currOne + exchOne + currTwo + exchTwo + currThree + exchThree + currFour + exchFour + endChain
@@ -125,19 +142,31 @@ export default {
       .get('http://localhost:9000/best-change?minBalance=' + this.minBalance + '&minProfit=' + this.minProfit + subcribeParam)
       .then(response => {
         /* eslint-disable */ console.log(response.data)
-        console.log(this.rows)
         this.currentDataArr = response.data
+      
+        if (this.notif) document.getElementById('aud').play()
+        
         this.rows = response.data.map(element => {
-          const toDolIndex = element.length - 1
+          const toDolIndex = element.length - 3
+          const btnText = element[element.length - 1] ? '-' : '+'
+          const btnClass = (element[element.length - 1] ? 'red' : 'blue')
           return {
-            pin: '<a class="btn-floating waves-effect waves-light red btn-small">+</a>',
-            gain: (element[toDolIndex - 1] * 10) + ' $',
+            pin: '<a class="btn-floating waves-effect waves-light ' + btnClass + ' btn-small pl-btn">' + btnText + '</a>',
+            gain: (element[element.length - 2] * 10) + ' $',
             chain: this.getChainCol(element, toDolIndex),
-            score: element[toDolIndex - 1] / 100,
+            score: element[element.length - 2] / 100,
             age: this.rows.length ? this.getAgeOfChain(this.genId(element)) : 0,
+            links: '<i class="fas fa-arrow-right"></i>',
             id: this.genId(element)
           }
         });
+        if (response.data.length) {
+          this.notif = false
+        } else {
+          this.rows = []
+          this.notif = true
+        }
+        
         this.timer = 0
       });
     
@@ -145,6 +174,7 @@ export default {
   },
   data: function() {
     return {
+      notif: false,
       chainSubscriptions: '',
       minBalance: 0,
       minProfit: -1,
@@ -179,6 +209,11 @@ export default {
           field: 'age',
           tdClass: 'age',
           globalSearchDisabled: true
+        },
+        {
+          label: '',
+          field: 'links',
+          html: true
         }
       ],
       rows: []

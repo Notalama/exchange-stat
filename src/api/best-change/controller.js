@@ -67,7 +67,7 @@ module.exports = {
                 if (err) console.error(err, '--- allCurrencies err')
                 else if (res === null) console.error('null currencies found')
               })
-              result.profitArr.forEach(chain => {
+              result.profitArr.forEach((chain, index) => {
                 const compiled = []
                 for (let i = 0; i < chain.length - 2; i++) {
                   const el = chain[i]
@@ -86,19 +86,7 @@ module.exports = {
                     amount: el[5]
                   })
                 }
-                switch (chain.length) {
-                  case 4:
-                    compiled.push(chain[2], chain[3])
-                    break
-                  case 5:
-                    compiled.push(chain[3], chain[4])
-                    break
-                  case 6:
-                    compiled.push(chain[4], chain[5])
-                    break
-                  default:
-                    break
-                }
+                compiled.push(chain[chain.length - 1], chain[chain.length - 2], index < result.subs)
                 response.push(compiled)
               })
               res.status(200).json(response)

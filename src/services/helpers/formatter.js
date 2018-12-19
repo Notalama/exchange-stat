@@ -8,15 +8,16 @@ module.exports = {
       const profitArr = []
       const subscriptionsU = chainSubscriptions ? chainSubscriptions.split('n') : null
       const subscriptions = subscriptionsU ? subscriptionsU.map(el => el.split(';')) : null
-      // console.log(subscriptionsU)
+      // subscriptions.shift()
+      
       if (subscriptions) {
         for (let i = 0; i < subscriptions.length; i++) {
           subscriptions[i].forEach((el, j) => {
-            subscriptions[i][j] = subscriptions[i][j].split(',')
+            subscriptions[i][j] = el.split(',')
           })
         }
       }
-      // console.log(subscriptions)
+      // console.log(subscriptions, 'subs top -----')
       const readySubs = []
       const usedCurrencies = []
       const usedExchangers = []
@@ -73,7 +74,16 @@ module.exports = {
         })
         return sum
       }
-      // **** after complete chain, need to calculate absolute commission ****
+      const calcSum = (give, receive, sum) => {
+        return receive > 1 ? sum * receive : sum / give
+      }
+      const calcChain = (chain) => {
+        let chainSum = [+chain[0][3]]
+        chain.forEach(rate => {
+          chainSum.push(calcSum(+rate[3], +rate[4], chainSum[chainSum.length - 1]))
+        })
+        return chainSum[chainSum.length - 1] - chain[0][3]
+      }
       for (let i = 0; i < unformattedList.length; i++) {
         let rowArray = unformattedList[i].split(';')
         if (!omitValues[0].hiddenCurrencies.every(el => el !== rowArray[0] && (el !== rowArray[1]))) continue
@@ -81,13 +91,13 @@ module.exports = {
         if (subscriptions) {
           // *** pin to top the subscriptions
           const rowId = rowArray[0] + rowArray[1] + rowArray[2]
-          subscriptions.forEach((chain, i) => {
+          subscriptions.forEach((chain, index) => {
             for (let j = 0; j < chain.length; j++) {
               const rateSub = chain[j]
               const subId = rateSub[0] + rateSub[1] + rateSub[2]
               if (subId === rowId) {
-                if (!readySubs[i]) readySubs[i] = []
-                readySubs[i][j] = rowArray.slice(0, 6)
+                if (!readySubs[index]) readySubs[index] = []
+                readySubs[index][j] = rowArray.slice(0, 6)
                 continue
               }
             }
@@ -131,9 +141,9 @@ module.exports = {
           if (byCurr[firstEl[1]]) {
             byCurr[firstEl[1]].forEach(secondEl => {
               if (secondEl[1] === firstEl[0]) {
-                let sumOne = +firstEl[4] > 1 ? +firstEl[3] * +firstEl[4] : +firstEl[3] / +firstEl[3]
+                let sumOne = calcSum(+firstEl[3], +firstEl[4], +firstEl[3])
                 sumOne = calcAbsCommission(firstEl, sumOne)
-                let sumTwo = +secondEl[4] > 1 ? sumOne * +secondEl[4] : sumOne / +secondEl[3]
+                let sumTwo = calcSum(+secondEl[3], +secondEl[4], sumOne)
                 sumTwo = calcAbsCommission(secondEl, sumTwo)
                 const profit = ((sumTwo - +firstEl[3]) * 100) / +firstEl[3]
                 if (profit > minProfit) {
@@ -165,11 +175,11 @@ module.exports = {
               if (byCurr[secondEl[1]]) {
                 byCurr[secondEl[1]].forEach(thirdEl => {
                   if (thirdEl[1] === firstEl[0]) {
-                    let sumOne = +firstEl[4] > 1 ? +firstEl[3] * +firstEl[4] : +firstEl[3] / +firstEl[3]
+                    let sumOne = calcSum(+firstEl[3], +firstEl[4], +firstEl[3])
                     sumOne = calcAbsCommission(firstEl, sumOne)
-                    let sumTwo = +secondEl[4] > 1 ? sumOne * +secondEl[4] : sumOne / +secondEl[3]
+                    let sumTwo = calcSum(+secondEl[3], +secondEl[4], sumOne)
                     sumTwo = calcAbsCommission(secondEl, sumTwo)
-                    let sumThree = +thirdEl[4] > 1 ? sumTwo * +thirdEl[4] : sumTwo / +thirdEl[3]
+                    let sumThree = calcSum(+thirdEl[3], +thirdEl[4], sumTwo)
                     sumThree = calcAbsCommission(thirdEl, sumThree)
                     const profit = ((sumThree - +firstEl[3]) * 100) / +firstEl[3]
                     if (profit > minProfit) {
@@ -208,14 +218,14 @@ module.exports = {
       //             if (byCurr[thirdEl[1]]) {
       //               byCurr[thirdEl[1]].forEach(fourthEl => {
       //                 if (fourthEl[1] === firstEl[0]) {
-      //                  le[t sumOne = +firstEl[4] > 1 ? +firstEl[3] * +firstEl[4] : +firstEl[3] / +firstEl[3]
-      //                  sumOne = calcAbsCommission(firstEl, sumOne)
-      //                  let sumTwo = +secondEl[4] > 1 ? sumOne * +secondEl[4] : sumOne / +secondEl[3]
-      //                  sumTwo = calcAbsCommission(secondEl, sumTwo)
-      //                  let sumThree = +thirdEl[4] > 1 ? sumTwo * +thirdEl[4] : sumTwo / +thirdEl[3]
-      //                  sumThree = calcAbsCommission(thirdEl, sumThree)
-      //                  let sumFour = +fourthEl[4] > 1 ? sumThree * +fourthEl[4] : sumThree / +fourthEl[3]
-      //                  sum]Four = calcAbsCommission(fourthEl, sumFour)
+      //                   let sumOne = calcSum(+firstEl[3], +firstEl[4], +firstEl[3])
+      //                   sumOne = calcAbsCommission(firstEl, sumOne)
+      //                   let sumTwo = calcSum(+secondEl[3], +secondEl[4], sumOne)
+      //                   sumTwo = calcAbsCommission(secondEl, sumTwo)
+      //                   let sumThree = calcSum(+thirdEl[3], +thirdEl[4], sumTwo)
+      //                   sumThree = calcAbsCommission(thirdEl, sumThree)
+      //                   let sumFour = calcSum(+fourthEl[3], +fourthEl[4], sumThree)
+      //                   sumFour = calcAbsCommission(fourthEl, sumFour)
       //                   const profit = ((sumFour - +firstEl[3]) * 100) / +firstEl[3]
       //                   if (profit > minProfit) {
       //                     // *** Chain currencies to dollar compare ***
@@ -246,31 +256,23 @@ module.exports = {
       //     }
       //   })
       // })
-      const calcSum = (give, receive, sum) => {
-        return receive > give ? sum * receive : sum / give
-      }
-      const calcChain = (chain) => {
-        let chainSum = []
-        let start = null
-        chain.forEach(rate => {
-          start = +rate[3]
-          chainSum.push(calcSum(+rate[3], +rate[4], chainSum.length ? chainSum[chainSum.length - 1] : +rate[3]))
+      if (subscriptions) {
+        readySubs.forEach((chain, i) => {
+          if (chain) readySubs[i].push(calcChain(chain), byCurr[40][chain[0][0]])
         })
-        return chainSum[chainSum.length - 1] - start
       }
-      readySubs.forEach((chain, i) => {
-        readySubs[i].push(calcChain(chain), byCurr[40][chain[0][0]])
-      })
       const sorted = profitArr.sort((a, b) => +b[b.length - 2] - +a[a.length - 2])
       const filtered = []
       sorted.forEach((el, i) => {
         const prevElProfit = sorted[i - 1] ? sorted[i - 1][sorted[i - 1].length - 2] : 0
         if (sorted[i - 1] && el[el.length - 2].toFixed(4) !== prevElProfit.toFixed(4)) filtered.push(el)
       })
+      console.log(readySubs, 'readysubs ---bot')
       return {
         profitArr: readySubs.concat(filtered),
         usedCurrencies,
-        usedExchangers
+        usedExchangers,
+        subs: subscriptions ? readySubs.length : undefined
       }
     } catch (rejectedValue) {
       console.error('formatter err caught ---', rejectedValue)

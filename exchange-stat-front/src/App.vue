@@ -24,6 +24,9 @@ export default {
 body {
   background-color: lightgrey
 }
+.pl-btn {
+  text-align: center
+}
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
