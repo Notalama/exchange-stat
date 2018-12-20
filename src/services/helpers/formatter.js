@@ -43,7 +43,7 @@ module.exports = {
         const forAll = bonus.from && !bonus.to
         const forOneCurr = !bonus.from && bonus.to && rate[1] === bonus.to
         const forPair = bonus.from && bonus.to && rate[1] === bonus.to && bonus.from === rate[0]
-        if (forAll || forOneCurr || forPair) +rate[4] > 1 ? rate[4] = +rate[4] * (+bonus.multi / 10 + 1) : rate[3] = +rate[3] / (+bonus.multi / 10 + 1)
+        if (forAll || forOneCurr || forPair) +rate[4] > 1 ? rate[4] = +rate[4] * (+bonus.multi / 100 + 1) : rate[3] = +rate[3] / (+bonus.multi / 100 + 1)
         return rate
       }
       const calcCommission = (rate) => {
@@ -51,11 +51,11 @@ module.exports = {
           if ((com.currency === rate[0] && com.inOut === 'IN') || (com.currency === rate[1] && com.inOut === 'OUT')) {
             if (com.changer && rate[2] === com.changer) {
               if (+com.commission) {
-                +rate[4] > 1 ? rate[4] = +rate[4] - (+rate[4] * (+com.commission / 10)) : rate[3] = +rate[3] + (+rate[3] * (+com.commission / 10))
+                +rate[4] > 1 ? rate[4] = +rate[4] - +rate[4] * (+com.commission / 100) : rate[3] = +rate[3] + +rate[3] * (+com.commission / 100)
               }
             }
             if (!com.changer && +com.commission) {
-              +rate[4] > 1 ? rate[4] = +rate[4] - (+rate[4] * (+com.commission / 10)) : rate[3] = +rate[3] + (+rate[3] * (+com.commission / 10))
+              +rate[4] > 1 ? rate[4] = +rate[4] - +rate[4] * (+com.commission / 100) : rate[3] = +rate[3] + +rate[3] * (+com.commission / 100)
             }
           }
         })
@@ -82,9 +82,8 @@ module.exports = {
         chain.forEach(rate => {
           chainSum.push(calcSum(+rate[3], +rate[4], chainSum[chainSum.length - 1]))
         })
-        console.log(chain, ' \n', chainSum[chainSum.length - 1])
-        console.log(chainSum[chainSum.length - 1] - chainSum[0])
-        return chainSum[chainSum.length - 1] - chainSum[0]
+        const profit = ((chainSum[chainSum.length - 1] - chainSum[0]) * 100) / chainSum[0]
+        return profit
       }
       for (let i = 0; i < unformattedList.length; i++) {
         let rowArray = unformattedList[i].split(';')
@@ -115,14 +114,14 @@ module.exports = {
                 if (isProfitable) {
                   const bonus = bonuses.find(bon => bon.changer === rowArray[2])
                   if (bonus) rowArray = calcBonus(rowArray, bonus)
-                  // rowArray = calcCommission(rowArray)
+                  rowArray = calcCommission(rowArray)
                   byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
                 }
                 break
               } else if (j === byCurr[id].length - 1) {
                 const bonus = bonuses.find(bon => bon.changer === rowArray[2])
                 if (bonus) rowArray = calcBonus(rowArray, bonus)
-                // rowArray = calcCommission(rowArray)
+                rowArray = calcCommission(rowArray)
                 byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
                 break
               }
@@ -132,7 +131,7 @@ module.exports = {
           byCurr[id] = []
           const bonus = bonuses.find(bon => bon.changer === rowArray[2])
           if (bonus) rowArray = calcBonus(rowArray, bonus)
-          // rowArray = calcCommission(rowArray)
+          rowArray = calcCommission(rowArray)
           byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
         }
       }
@@ -211,57 +210,56 @@ module.exports = {
       })
 
       // **** four steps ****
-      byCurr.slice(0, 40).forEach(currArr => {
-        currArr.forEach(firstEl => {
-          if (byCurr[firstEl[1]]) {
-            byCurr[firstEl[1]].forEach(secondEl => {
-              if (byCurr[secondEl[1]]) {
-                byCurr[secondEl[1]].forEach(thirdEl => {
-                  if (byCurr[thirdEl[1]]) {
-                    byCurr[thirdEl[1]].forEach(fourthEl => {
-                      if (fourthEl[1] === firstEl[0]) {
-                        let sumOne = calcSum(+firstEl[3], +firstEl[4], +firstEl[3])
-                        sumOne = calcAbsCommission(firstEl, sumOne)
-                        let sumTwo = calcSum(+secondEl[3], +secondEl[4], sumOne)
-                        sumTwo = calcAbsCommission(secondEl, sumTwo)
-                        let sumThree = calcSum(+thirdEl[3], +thirdEl[4], sumTwo)
-                        sumThree = calcAbsCommission(thirdEl, sumThree)
-                        let sumFour = calcSum(+fourthEl[3], +fourthEl[4], sumThree)
-                        sumFour = calcAbsCommission(fourthEl, sumFour)
-                        const profit = ((sumFour - +firstEl[3]) * 100) / +firstEl[3]
-                        if (profit > minProfit) {
-                          // *** Chain currencies to dollar compare ***
-                          const dolToFirst = byCurr[firstEl[1]][40]
-                          const dolToSecond = byCurr[secondEl[1]][40]
-                          const dolToThird = byCurr[thirdEl[1]][40]
-                          const dolToFourth = byCurr[fourthEl[1]][40]
-                          let [amountFirst, amountSecond, amountThird, amountFourth] = [
-                            dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : +minAmount,
-                            dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : +minAmount,
-                            dolToThird ? +dolToThird[4] > 1 ? +thirdEl[5] * +dolToThird[4] : +thirdEl[5] / +dolToThird[3] : +minAmount,
-                            dolToFourth ? +dolToFourth[4] > 1 ? +fourthEl[5] * +dolToFourth[4] : +fourthEl[5] / +dolToFourth[3] : +minAmount
-                          ]
-                          const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount && amountThird > minAmount && amountFourth > minAmount
-                          if (exchHaveEnoughMoney) {
-                            const dolToInit = byCurr[40][firstEl[0]]
-                            profitArr.push([firstEl, secondEl, thirdEl, fourthEl, profit, dolToInit])
-                          }
-                        }
-                      }
-                    })
-                  }
-                })
-              }
-            })
-          }
-        })
-      })
+      // byCurr.slice(0, 40).forEach(currArr => {
+      //   currArr.forEach(firstEl => {
+      //     if (byCurr[firstEl[1]]) {
+      //       byCurr[firstEl[1]].forEach(secondEl => {
+      //         if (byCurr[secondEl[1]]) {
+      //           byCurr[secondEl[1]].forEach(thirdEl => {
+      //             if (byCurr[thirdEl[1]]) {
+      //               byCurr[thirdEl[1]].forEach(fourthEl => {
+      //                 if (fourthEl[1] === firstEl[0]) {
+      //                   let sumOne = calcSum(+firstEl[3], +firstEl[4], +firstEl[3])
+      //                   sumOne = calcAbsCommission(firstEl, sumOne)
+      //                   let sumTwo = calcSum(+secondEl[3], +secondEl[4], sumOne)
+      //                   sumTwo = calcAbsCommission(secondEl, sumTwo)
+      //                   let sumThree = calcSum(+thirdEl[3], +thirdEl[4], sumTwo)
+      //                   sumThree = calcAbsCommission(thirdEl, sumThree)
+      //                   let sumFour = calcSum(+fourthEl[3], +fourthEl[4], sumThree)
+      //                   sumFour = calcAbsCommission(fourthEl, sumFour)
+      //                   const profit = ((sumFour - +firstEl[3]) * 100) / +firstEl[3]
+      //                   if (profit > minProfit) {
+      //                     // *** Chain currencies to dollar compare ***
+      //                     const dolToFirst = byCurr[firstEl[1]][40]
+      //                     const dolToSecond = byCurr[secondEl[1]][40]
+      //                     const dolToThird = byCurr[thirdEl[1]][40]
+      //                     const dolToFourth = byCurr[fourthEl[1]][40]
+      //                     let [amountFirst, amountSecond, amountThird, amountFourth] = [
+      //                       dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : +minAmount,
+      //                       dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : +minAmount,
+      //                       dolToThird ? +dolToThird[4] > 1 ? +thirdEl[5] * +dolToThird[4] : +thirdEl[5] / +dolToThird[3] : +minAmount,
+      //                       dolToFourth ? +dolToFourth[4] > 1 ? +fourthEl[5] * +dolToFourth[4] : +fourthEl[5] / +dolToFourth[3] : +minAmount
+      //                     ]
+      //                     const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount && amountThird > minAmount && amountFourth > minAmount
+      //                     if (exchHaveEnoughMoney) {
+      //                       const dolToInit = byCurr[40][firstEl[0]]
+      //                       profitArr.push([firstEl, secondEl, thirdEl, fourthEl, profit, dolToInit])
+      //                     }
+      //                   }
+      //                 }
+      //               })
+      //             }
+      //           })
+      //         }
+      //       })
+      //     }
+      //   })
+      // })
       if (subscriptions) {
         readySubs.forEach((chain, i) => {
           if (chain) readySubs[i].push(calcChain(chain), byCurr[40][chain[0][0]])
         })
       }
-      // console.log(profitArr.slice(0, 50), '-----slice 50')
       const sorted = profitArr.sort((a, b) => +b[b.length - 2] - +a[a.length - 2])
       const filtered = []
       sorted.forEach((el, i) => {

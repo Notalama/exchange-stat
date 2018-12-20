@@ -54,8 +54,8 @@ export default {
       this.timer++
       this.rows.forEach(el => el.age++)
     }, 997);
-    this.loadItems()
-    // this.reloadInterval()
+    // this.loadItems()
+    this.reloadInterval()
   },
   methods: {
   pinToTop: function(params) {
@@ -109,7 +109,7 @@ export default {
     return receive > give ? sum * receive : sum / give
   },
   getChainCol: function(row, toDolIndex) {
-    const sum = this.calcRate(+row[toDolIndex][3], +row[toDolIndex][4], 1000)
+    let sum = row[toDolIndex] ? this.calcRate(+row[toDolIndex][3], +row[toDolIndex][4], 1000) : 1
     const calcFirst = this.calcRate(+row[0].give, +row[0].receive, sum)
     const calcSecond = this.calcRate(+row[1].give, +row[1].receive, calcFirst)
     const calcThird = toDolIndex >= 3 ? this.calcRate(+row[2].give, +row[2].receive, calcSecond) : null
@@ -174,8 +174,8 @@ export default {
     return {
       notif: false,
       chainSubscriptions: '',
-      minBalance: 0,
-      minProfit: -1,
+      minBalance: 100,
+      minProfit: 1,
       timer: 0,
       interval: 10000,
       currentDataArr: null,
