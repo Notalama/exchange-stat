@@ -51,11 +51,11 @@ module.exports = {
           if ((com.currency === rate[0] && com.inOut === 'IN') || (com.currency === rate[1] && com.inOut === 'OUT')) {
             if (com.changer && rate[2] === com.changer) {
               if (+com.commission) {
-                +rate[4] > 1 ? rate[4] = +rate[4] - +rate[4] * (+com.commission / 10) : rate[3] = +rate[3] + +rate[3] * (+com.commission / 10)
+                +rate[4] > 1 ? rate[4] = +rate[4] - (+rate[4] * (+com.commission / 10)) : rate[3] = +rate[3] + (+rate[3] * (+com.commission / 10))
               }
             }
             if (!com.changer && +com.commission) {
-              +rate[4] > 1 ? rate[4] = +rate[4] - +rate[4] * (+com.commission / 10) : rate[3] = +rate[3] + +rate[3] * (+com.commission / 10)
+              +rate[4] > 1 ? rate[4] = +rate[4] - (+rate[4] * (+com.commission / 10)) : rate[3] = +rate[3] + (+rate[3] * (+com.commission / 10))
             }
           }
         })
@@ -75,14 +75,16 @@ module.exports = {
         return sum
       }
       const calcSum = (give, receive, sum) => {
-        return receive > 1 ? sum * receive : sum / give
+        return receive > give ? sum * receive : sum / give
       }
       const calcChain = (chain) => {
         let chainSum = [+chain[0][3]]
         chain.forEach(rate => {
           chainSum.push(calcSum(+rate[3], +rate[4], chainSum[chainSum.length - 1]))
         })
-        return chainSum[chainSum.length - 1] - chain[0][3]
+        console.log(chain, ' \n', chainSum[chainSum.length - 1])
+        console.log(chainSum[chainSum.length - 1] - chainSum[0])
+        return chainSum[chainSum.length - 1] - chainSum[0]
       }
       for (let i = 0; i < unformattedList.length; i++) {
         let rowArray = unformattedList[i].split(';')
@@ -113,14 +115,14 @@ module.exports = {
                 if (isProfitable) {
                   const bonus = bonuses.find(bon => bon.changer === rowArray[2])
                   if (bonus) rowArray = calcBonus(rowArray, bonus)
-                  rowArray = calcCommission(rowArray)
+                  // rowArray = calcCommission(rowArray)
                   byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
                 }
                 break
               } else if (j === byCurr[id].length - 1) {
                 const bonus = bonuses.find(bon => bon.changer === rowArray[2])
                 if (bonus) rowArray = calcBonus(rowArray, bonus)
-                rowArray = calcCommission(rowArray)
+                // rowArray = calcCommission(rowArray)
                 byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
                 break
               }
@@ -130,7 +132,7 @@ module.exports = {
           byCurr[id] = []
           const bonus = bonuses.find(bon => bon.changer === rowArray[2])
           if (bonus) rowArray = calcBonus(rowArray, bonus)
-          rowArray = calcCommission(rowArray)
+          // rowArray = calcCommission(rowArray)
           byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
         }
       }
@@ -188,9 +190,9 @@ module.exports = {
                       const dolToSecond = byCurr[secondEl[1]][40]
                       const dolToThird = byCurr[thirdEl[1]][40]
                       let [amountFirst, amountSecond, amountThird] = [
-                        dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : minAmount,
-                        dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : minAmount,
-                        dolToThird ? +dolToThird[4] > 1 ? +thirdEl[5] * +dolToThird[4] : +thirdEl[5] / +dolToThird[3] : minAmount
+                        dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : +minAmount,
+                        dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : +minAmount,
+                        dolToThird ? +dolToThird[4] > 1 ? +thirdEl[5] * +dolToThird[4] : +thirdEl[5] / +dolToThird[3] : +minAmount
                       ]
                       const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount && amountThird > minAmount
                       if (exchHaveEnoughMoney) {
@@ -209,67 +211,65 @@ module.exports = {
       })
 
       // **** four steps ****
-      // byCurr.forEach(currArr => {
-      //   currArr.forEach(firstEl => {
-      //     if (byCurr[firstEl[1]]) {
-      //       byCurr[firstEl[1]].forEach(secondEl => {
-      //         if (byCurr[secondEl[1]]) {
-      //           byCurr[secondEl[1]].forEach(thirdEl => {
-      //             if (byCurr[thirdEl[1]]) {
-      //               byCurr[thirdEl[1]].forEach(fourthEl => {
-      //                 if (fourthEl[1] === firstEl[0]) {
-      //                   let sumOne = calcSum(+firstEl[3], +firstEl[4], +firstEl[3])
-      //                   sumOne = calcAbsCommission(firstEl, sumOne)
-      //                   let sumTwo = calcSum(+secondEl[3], +secondEl[4], sumOne)
-      //                   sumTwo = calcAbsCommission(secondEl, sumTwo)
-      //                   let sumThree = calcSum(+thirdEl[3], +thirdEl[4], sumTwo)
-      //                   sumThree = calcAbsCommission(thirdEl, sumThree)
-      //                   let sumFour = calcSum(+fourthEl[3], +fourthEl[4], sumThree)
-      //                   sumFour = calcAbsCommission(fourthEl, sumFour)
-      //                   const profit = ((sumFour - +firstEl[3]) * 100) / +firstEl[3]
-      //                   if (profit > minProfit) {
-      //                     // *** Chain currencies to dollar compare ***
-      //                     const dolToFirst = byCurr[firstEl[1]][40]
-      //                     const dolToSecond = byCurr[secondEl[1]][40]
-      //                     const dolToThird = byCurr[thirdEl[1]][40]
-      //                     const dolToFourth = byCurr[fourthEl[1]][40]
-      //                     let [amountFirst, amountSecond, amountThird, amountFourth] = [
-      //                       dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : minAmount,
-      //                       dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : minAmount,
-      //                       dolToThird ? +dolToThird[4] > 1 ? +thirdEl[5] * +dolToThird[4] : +thirdEl[5] / +dolToThird[3] : minAmount,
-      //                       dolToFourth ? +dolToFourth[4] > 1 ? +fourthEl[5] * +dolToFourth[4] : +fourthEl[5] / +dolToFourth[3] : minAmount
-      //                     ]
-      //                     const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount && amountThird > minAmount && amountFourth > minAmount
-      //                     if (exchHaveEnoughMoney) {
-      //                       const dolToInit = byCurr[40][firstEl[0]]
-      //                       profitArr.push([firstEl, secondEl, thirdEl, fourthEl, profit, dolToInit])
-      //                       // usedCurrencies.push(firstEl[0], secondEl[0], thirdEl[0], fourthEl[0])
-      //                       // usedExchangers.push(firstEl[2], secondEl[2], thirdEl[2], fourthEl[2])
-      //                     }
-      //                   }
-      //                 }
-      //               })
-      //             }
-      //           })
-      //         }
-      //       })
-      //     }
-      //   })
-      // })
+      byCurr.slice(0, 40).forEach(currArr => {
+        currArr.forEach(firstEl => {
+          if (byCurr[firstEl[1]]) {
+            byCurr[firstEl[1]].forEach(secondEl => {
+              if (byCurr[secondEl[1]]) {
+                byCurr[secondEl[1]].forEach(thirdEl => {
+                  if (byCurr[thirdEl[1]]) {
+                    byCurr[thirdEl[1]].forEach(fourthEl => {
+                      if (fourthEl[1] === firstEl[0]) {
+                        let sumOne = calcSum(+firstEl[3], +firstEl[4], +firstEl[3])
+                        sumOne = calcAbsCommission(firstEl, sumOne)
+                        let sumTwo = calcSum(+secondEl[3], +secondEl[4], sumOne)
+                        sumTwo = calcAbsCommission(secondEl, sumTwo)
+                        let sumThree = calcSum(+thirdEl[3], +thirdEl[4], sumTwo)
+                        sumThree = calcAbsCommission(thirdEl, sumThree)
+                        let sumFour = calcSum(+fourthEl[3], +fourthEl[4], sumThree)
+                        sumFour = calcAbsCommission(fourthEl, sumFour)
+                        const profit = ((sumFour - +firstEl[3]) * 100) / +firstEl[3]
+                        if (profit > minProfit) {
+                          // *** Chain currencies to dollar compare ***
+                          const dolToFirst = byCurr[firstEl[1]][40]
+                          const dolToSecond = byCurr[secondEl[1]][40]
+                          const dolToThird = byCurr[thirdEl[1]][40]
+                          const dolToFourth = byCurr[fourthEl[1]][40]
+                          let [amountFirst, amountSecond, amountThird, amountFourth] = [
+                            dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : +minAmount,
+                            dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : +minAmount,
+                            dolToThird ? +dolToThird[4] > 1 ? +thirdEl[5] * +dolToThird[4] : +thirdEl[5] / +dolToThird[3] : +minAmount,
+                            dolToFourth ? +dolToFourth[4] > 1 ? +fourthEl[5] * +dolToFourth[4] : +fourthEl[5] / +dolToFourth[3] : +minAmount
+                          ]
+                          const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount && amountThird > minAmount && amountFourth > minAmount
+                          if (exchHaveEnoughMoney) {
+                            const dolToInit = byCurr[40][firstEl[0]]
+                            profitArr.push([firstEl, secondEl, thirdEl, fourthEl, profit, dolToInit])
+                          }
+                        }
+                      }
+                    })
+                  }
+                })
+              }
+            })
+          }
+        })
+      })
       if (subscriptions) {
         readySubs.forEach((chain, i) => {
           if (chain) readySubs[i].push(calcChain(chain), byCurr[40][chain[0][0]])
         })
       }
+      // console.log(profitArr.slice(0, 50), '-----slice 50')
       const sorted = profitArr.sort((a, b) => +b[b.length - 2] - +a[a.length - 2])
       const filtered = []
       sorted.forEach((el, i) => {
         const prevElProfit = sorted[i - 1] ? sorted[i - 1][sorted[i - 1].length - 2] : 0
-        if (sorted[i - 1] && el[el.length - 2].toFixed(4) !== prevElProfit.toFixed(4)) filtered.push(el)
+        if (sorted[i - 1] && el[el.length - 2].toFixed(6) !== prevElProfit.toFixed(6)) filtered.push(el)
       })
-      console.log(readySubs, 'readysubs ---bot')
       return {
-        profitArr: readySubs.concat(filtered),
+        profitArr: readySubs.concat(sorted),
         usedCurrencies,
         usedExchangers,
         subs: subscriptions ? readySubs.length : undefined

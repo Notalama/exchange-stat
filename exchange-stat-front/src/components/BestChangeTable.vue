@@ -73,12 +73,12 @@ export default {
       this.loadItems()
     } else if (params.column.field === 'links') {
       const chainRates = this.currentDataArr[params.row.originalIndex]
-      const preLinkC = 'https://www.bestchange.ru/info.php?id='
+      const preLinkC = 'https://www.bestchange.ru/index.php?from='
       const preLinkBC = 'https://www.bestchange.ru/click.php?id='
       for (let i = 0; i < chainRates.length - 3; i++) {
         const element = chainRates[i];
-        window.open(preLinkC + element.changer)
-        window.open(preLinkBC + element.changer)
+        window.open(preLinkC + element.from + '&to=' + element.to)
+        window.open(preLinkBC + element.changer + '&from=' + element.from + '&to=' + element.to + '&url=1')
       }
       
     }
@@ -143,10 +143,8 @@ export default {
       .then(response => {
         /* eslint-disable */ console.log(response.data)
         this.currentDataArr = response.data
-      
-        if (this.notif) document.getElementById('aud').play()
-        
-        this.rows = response.data.map(element => {
+        this.rows = response.data.map((element, i) => {
+          if (this.notif && element) document.getElementById('aud').play()
           const toDolIndex = element.length - 3
           const btnText = element[element.length - 1] ? '-' : '+'
           const btnClass = (element[element.length - 1] ? 'red' : 'blue')
