@@ -27,6 +27,9 @@ body {
 .pl-btn {
   text-align: center
 }
+.fa-arrow-right {
+  cursor: pointer
+}
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
