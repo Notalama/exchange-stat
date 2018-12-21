@@ -74,14 +74,16 @@ module.exports = {
         })
         return sum
       }
-      const calcSum = (give, receive, sum) => {
-        return receive > give ? sum * receive : sum / give
+      const calcSum = (give, receive, sum, rate) => {
+        const profit = receive > give ? sum * receive : sum / give
+        return calcAbsCommission(rate, profit)
       }
       const calcChain = (chain) => {
         let chainSum = [+chain[0][3]]
-        chain.forEach(rate => {
-          chainSum.push(calcSum(+rate[3], +rate[4], chainSum[chainSum.length - 1]))
-        })
+        for (let i = 0; i < chain.length; i++) {
+          const rate = chain[i]
+          chainSum.push(calcSum(+rate[3], +rate[4], chainSum[chainSum.length - 1], rate))
+        }
         const profit = ((chainSum[chainSum.length - 1] - chainSum[0]) * 100) / chainSum[0]
         return profit
       }
@@ -142,11 +144,7 @@ module.exports = {
           if (byCurr[firstEl[1]]) {
             byCurr[firstEl[1]].forEach(secondEl => {
               if (secondEl[1] === firstEl[0]) {
-                let sumOne = calcSum(+firstEl[3], +firstEl[4], +firstEl[3])
-                sumOne = calcAbsCommission(firstEl, sumOne)
-                let sumTwo = calcSum(+secondEl[3], +secondEl[4], sumOne)
-                sumTwo = calcAbsCommission(secondEl, sumTwo)
-                const profit = ((sumTwo - +firstEl[3]) * 100) / +firstEl[3]
+                const profit = calcChain([firstEl, secondEl])
                 if (profit > minProfit) {
                   // *** Chain currencies to dollar compare ***
                   const dolToFirst = byCurr[firstEl[1]][40]
@@ -176,13 +174,7 @@ module.exports = {
               if (byCurr[secondEl[1]]) {
                 byCurr[secondEl[1]].forEach(thirdEl => {
                   if (thirdEl[1] === firstEl[0]) {
-                    let sumOne = calcSum(+firstEl[3], +firstEl[4], +firstEl[3])
-                    sumOne = calcAbsCommission(firstEl, sumOne)
-                    let sumTwo = calcSum(+secondEl[3], +secondEl[4], sumOne)
-                    sumTwo = calcAbsCommission(secondEl, sumTwo)
-                    let sumThree = calcSum(+thirdEl[3], +thirdEl[4], sumTwo)
-                    sumThree = calcAbsCommission(thirdEl, sumThree)
-                    const profit = ((sumThree - +firstEl[3]) * 100) / +firstEl[3]
+                    const profit = calcChain([firstEl, secondEl, thirdEl])
                     if (profit > minProfit) {
                       // *** Chain currencies to dollar compare ***
                       const dolToFirst = byCurr[firstEl[1]][40]
@@ -219,15 +211,7 @@ module.exports = {
       //             if (byCurr[thirdEl[1]]) {
       //               byCurr[thirdEl[1]].forEach(fourthEl => {
       //                 if (fourthEl[1] === firstEl[0]) {
-      //                   let sumOne = calcSum(+firstEl[3], +firstEl[4], +firstEl[3])
-      //                   sumOne = calcAbsCommission(firstEl, sumOne)
-      //                   let sumTwo = calcSum(+secondEl[3], +secondEl[4], sumOne)
-      //                   sumTwo = calcAbsCommission(secondEl, sumTwo)
-      //                   let sumThree = calcSum(+thirdEl[3], +thirdEl[4], sumTwo)
-      //                   sumThree = calcAbsCommission(thirdEl, sumThree)
-      //                   let sumFour = calcSum(+fourthEl[3], +fourthEl[4], sumThree)
-      //                   sumFour = calcAbsCommission(fourthEl, sumFour)
-      //                   const profit = ((sumFour - +firstEl[3]) * 100) / +firstEl[3]
+      //                   const profit = calcChain([firstEl, secondEl, thirdEl, fourthEl])
       //                   if (profit > minProfit) {
       //                     // *** Chain currencies to dollar compare ***
       //                     const dolToFirst = byCurr[firstEl[1]][40]
