@@ -1,16 +1,19 @@
 <template>
   <div id="app">
     <BestChangeTable v-bind:msg="message"/>
+    <Options/>
   </div>
 </template>
 
 <script>
 import BestChangeTable from './components/BestChangeTable.vue'
+import Options from './components/Options.vue'
 
 export default {
   name: 'app',
   components: {
-    BestChangeTable
+    BestChangeTable,
+    Options
   },
   data: function() {
     return {

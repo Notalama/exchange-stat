@@ -141,9 +141,9 @@ export default {
   loadItems: function() {
       // this.chainSubscriptions = this.chainSubscriptions.substring(0, this.chainSubscriptions.length - 1)
       let subcribeParam = this.chainSubscriptions ? '&chainSubscriptions=' + this.chainSubscriptions : ''
-
+      const ltThree = '&ltThreeLinks=' + this.ltThreeLinks
       axios
-      .get('http://localhost:9000/best-change?minBalance=' + this.minBalance + '&minProfit=' + this.minProfit + subcribeParam)
+      .get('http://localhost:9000/best-change?minBalance=' + this.minBalance + '&minProfit=' + this.minProfit + subcribeParam + ltThree)
       .then(response => {
         /* eslint-disable */ console.log(response.data)
         this.currentDataArr = response.data
@@ -176,12 +176,13 @@ export default {
   },
   data: function() {
     return {
+      ltThreeLinks: true,
       notif: false,
       chainSubscriptions: '',
       minBalance: 100,
       minProfit: 1,
       timer: 0,
-      interval: 30000,
+      interval: 990000,
       currentDataArr: null,
       columns: [
         {
