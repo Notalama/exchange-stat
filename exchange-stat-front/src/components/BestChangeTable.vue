@@ -3,7 +3,7 @@
     <audio id="aud" type="audio/mp3">
       <source src="./../assets/to-the-point.mp3" type="audio/mp3">
     </audio>
-    <h2>{{ 'Last update timer: ' + timer + ' seconds ago' + links}}</h2>
+    <h2>{{ 'Last update timer: ' + timer + ' seconds ago' }}</h2>
     <div class="settings">
       <div class="container">
         <div class="col s6">
@@ -47,7 +47,7 @@ import axios from 'axios'
 export default {
   name: "BestChangeTable",
   props: {
-    links: Boolean
+    links: true
   },
   mounted: function() {
     setInterval(() => {
@@ -120,17 +120,17 @@ export default {
     const calcFourth = toDolIndex >= 4 ? this.calcRate(+row[3].give, +row[3].receive, calcThird) : null
 
     const currOne = sum + ' ' + row[0].fromTitle
-    const exchOne = ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[0].changer + '&from=' + row[0].from + '&to=' + row[0].to + '&url=1">'
+    const exchOne = ' <a target="_blank" href="https://www.bestchange.ru/index.php?id=' + row[0].changer + '&from=' + row[0].from + '&to=' + row[0].to + '&url=1">'
     + ' <i class="fas fa-arrow-right"></i> - ' + row[0].changerTitle + '</a> ' + '(' + row[0].give + ':' + row[0].receive + '; ' + row[0].amount + ') <br>'
     const currTwo = '<i class="fas fa-arrow-right"></i> ' + calcFirst + ' ' + row[1].fromTitle
-    const exchTwo = ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[1].changer + '&from=' + row[1].from + '&to=' + row[1].to + '&url=1">'
+    const exchTwo = ' <a target="_blank" href="https://www.bestchange.ru/index.php?id=' + row[1].changer + '&from=' + row[1].from + '&to=' + row[1].to + '&url=1">'
     + ' <i class="fas fa-arrow-right"></i> - ' + row[1].changerTitle + '</a> ' + '(' + row[1].give + ':' + row[1].receive + '; ' + row[1].amount + ') <br>'
     const currThree = toDolIndex >= 3 ? '<i class="fas fa-arrow-right"></i> ' + calcSecond + ' ' + row[2].fromTitle : ''
-    const exchThree = toDolIndex >= 3 ? ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[2].changer + '&from=' + row[2].from + '&to=' + row[2].to + '&url=1">'
+    const exchThree = toDolIndex >= 3 ? ' <a target="_blank" href="https://www.bestchange.ru/index.php?id=' + row[2].changer + '&from=' + row[2].from + '&to=' + row[2].to + '&url=1">'
     + ' <i class="fas fa-arrow-right"></i> - ' + row[2].changerTitle + '</a> ' + '(' + row[2].give + ':' + row[2].receive + '; ' + row[2].amount + ') <br>' : ''
     
     const currFour = toDolIndex === 4 ? '<i class="fas fa-arrow-right"></i> ' + calcSecond + ' ' + row[3].fromTitle : ''
-    const exchFour = toDolIndex === 4 ? ' <a target="_blank" href="https://www.bestchange.ru/click.php?id=' + row[3].changer + '&from=' + row[3].from + '&to=' + row[3].to + '&url=1">'
+    const exchFour = toDolIndex === 4 ? ' <a target="_blank" href="https://www.bestchange.ru/index.php?id=' + row[3].changer + '&from=' + row[3].from + '&to=' + row[3].to + '&url=1">'
     + ' <i class="fas fa-arrow-right"></i> - ' + row[3].changerTitle + '</a> ' + '(' + row[3].give + ':' + row[3].receive + '; ' + row[3].amount + ') <br>' : ''
     
     const exitSum = toDolIndex === 2 ? calcSecond : toDolIndex === 3 ? calcThird : calcFourth

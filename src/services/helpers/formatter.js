@@ -136,7 +136,7 @@ module.exports = {
       }
 
       // **** two steps ****
-      if (ltThreeLinks) {
+      if (!ltThreeLinks) {
         byCurr.forEach(currArr => {
           currArr.forEach(firstEl => {
             if (byCurr[firstEl[1]]) {

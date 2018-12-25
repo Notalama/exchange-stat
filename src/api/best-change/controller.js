@@ -47,7 +47,6 @@ module.exports = {
             exchangersModel.collection.drop()
             exchangersModel.insertMany(exchangersBase, (err, val) => {
               if (err) console.log(err)
-              else console.log(val[0], 'success fill exch')
             })
             // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
 

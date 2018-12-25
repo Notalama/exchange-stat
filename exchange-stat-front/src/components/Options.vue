@@ -8,7 +8,6 @@
         </option>
       </select>
       <button type="button" v-on:click="$emit('links-to-count', searchType)">ok</button>
-      option: {{searchType}}
     </div>
   </div>
 </template>
@@ -23,13 +22,13 @@ export default {
     return {
       options: [
         {
-            text: "Find Four Only",
+            text: "Find Three and Two",
             value: false
         }, {
-            text: "Find Three and Two",
+            text: "Find Four Only",
             value: true
         }],
-      searchType:  true
+      searchType:  false
     };
   }
 };
