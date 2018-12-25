@@ -154,7 +154,7 @@ export default {
           const btnClass = (element[element.length - 1] ? 'red' : 'blue')
           return {
             pin: '<a class="btn-floating waves-effect waves-light ' + btnClass + ' btn-small pl-btn">' + btnText + '</a>',
-            gain: (element[element.length - 2] * 10) + ' $',
+            gain: (element[element.length - 2] * 10).toFixed(2) + ' $',
             chain: this.getChainCol(element, toDolIndex),
             score: element[element.length - 2] / 100,
             age: this.rows.length ? this.getAgeOfChain(this.genId(element)) : 0,

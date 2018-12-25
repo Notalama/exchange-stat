@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <BestChangeTable v-bind:msg="message"/>
     <Options/>
+    <BestChangeTable v-bind:msg="message"/>
   </div>
 </template>
 

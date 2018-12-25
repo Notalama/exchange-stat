@@ -1,18 +1,19 @@
 <template>
   <div id="options">
-    <div class="input-field col s12">
+    <div class="select">
       <select v-model="searchType">
+        <option disabled value>Please select one</option>
         <option v-for="(option, i) in options" v-bind:value="option.value" v-bind:key="i">
             {{ option.text }}
         </option>
       </select>
-      <label>Materialize Select</label>
+      option: {{searchType}}
     </div>
-    option: {{searchType}}
   </div>
 </template>
 
 <script>
+
 export default {
   name: "Options",
   components: {
@@ -34,4 +35,7 @@ export default {
 </script>
 
 <style>
+.select select {
+  display: block;
+}
 </style>
