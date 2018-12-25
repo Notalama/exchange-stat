@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <Options/>
-    <BestChangeTable v-bind:msg="message"/>
+    <Options v-on:links-to-count="changeLinksAmout"/>
+    <BestChangeTable v-bind:links="linksAmount"/>
   </div>
 </template>
 
@@ -15,8 +15,14 @@ export default {
     BestChangeTable,
     Options
   },
+  methods: {
+    changeLinksAmout: function(amount) {
+      this.linksAmount = amount
+    }
+  },
   data: function() {
     return {
+      linksAmount: false,
       message: 'Welcome to Exchange-Stat App'
     }
   }

@@ -7,6 +7,7 @@
             {{ option.text }}
         </option>
       </select>
+      <button type="button" v-on:click="$emit('links-to-count', searchType)">ok</button>
       option: {{searchType}}
     </div>
   </div>
@@ -35,6 +36,10 @@ export default {
 </script>
 
 <style>
+.select {
+    width: 90%;
+    margin: 0 auto;
+}
 .select select {
   display: block;
 }

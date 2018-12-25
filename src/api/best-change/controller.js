@@ -34,24 +34,24 @@ module.exports = {
             const ratesBuffer = iconv.convert(rates).toString()
 
             // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
-            //   const cy = zip.entryDataSync('bm_cy.dat')
-            //   const cyBuffer = iconv.convert(cy).toString()
-            //   const currencyTypes = formatCurrencies(cyBuffer.split('\n'))
-            //   currenciesModel.insertMany(currencyTypes, (err, val) => {
-            //     if (err) console.log(err)
-            //     else console.log(val[0], 'success fill curr')
-            //   })
-            //   const excahngers = zip.entryDataSync('bm_exch.dat')
-            //   const excahngersBuffer = iconv.convert(excahngers).toString()
-            //   const exchangersBase = formatExchangers(excahngersBuffer.split('\n'))
-            //   exchangersModel.collection.drop()
-            //   exchangersModel.insertMany(exchangersBase, (err, val) => {
-            //     if (err) console.log(err)
-            //     else console.log(val[0], 'success fill exch')
-            //   })
+            // const cy = zip.entryDataSync('bm_cy.dat')
+            // const cyBuffer = iconv.convert(cy).toString()
+            // const currencyTypes = formatCurrencies(cyBuffer.split('\n'))
+            // currenciesModel.insertMany(currencyTypes, (err, val) => {
+            //   if (err) console.log(err)
+            //   else console.log(val[0], 'success fill curr')
+            // })
+            const excahngers = zip.entryDataSync('bm_exch.dat')
+            const excahngersBuffer = iconv.convert(excahngers).toString()
+            const exchangersBase = formatExchangers(excahngersBuffer.split('\n'))
+            exchangersModel.collection.drop()
+            exchangersModel.insertMany(exchangersBase, (err, val) => {
+              if (err) console.log(err)
+              else console.log(val[0], 'success fill exch')
+            })
             // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
 
-            await formatRates(ratesBuffer.split('\n'), +minBalance, +minProfit, chainSubscriptions, ltThreeLinks).then(async result => {
+            await formatRates(ratesBuffer.split('\n'), +minBalance, +minProfit, chainSubscriptions, JSON.parse(ltThreeLinks)).then(async result => {
               const response = []
               const allCurrencies = await currenciesModel.find({}, {
                 currencyId: 1,

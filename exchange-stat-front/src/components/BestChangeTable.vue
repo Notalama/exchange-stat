@@ -3,7 +3,7 @@
     <audio id="aud" type="audio/mp3">
       <source src="./../assets/to-the-point.mp3" type="audio/mp3">
     </audio>
-    <h2>{{ 'Last update timer: ' + timer + ' seconds ago' }}</h2>
+    <h2>{{ 'Last update timer: ' + timer + ' seconds ago' + links}}</h2>
     <div class="settings">
       <div class="container">
         <div class="col s6">
@@ -47,7 +47,7 @@ import axios from 'axios'
 export default {
   name: "BestChangeTable",
   props: {
-    msg: String
+    links: Boolean
   },
   mounted: function() {
     setInterval(() => {
@@ -141,7 +141,7 @@ export default {
   loadItems: function() {
       // this.chainSubscriptions = this.chainSubscriptions.substring(0, this.chainSubscriptions.length - 1)
       let subcribeParam = this.chainSubscriptions ? '&chainSubscriptions=' + this.chainSubscriptions : ''
-      const ltThree = '&ltThreeLinks=' + this.ltThreeLinks
+      const ltThree = '&ltThreeLinks=' + this.links
       axios
       .get('http://localhost:9000/best-change?minBalance=' + this.minBalance + '&minProfit=' + this.minProfit + subcribeParam + ltThree)
       .then(response => {
@@ -176,7 +176,6 @@ export default {
   },
   data: function() {
     return {
-      ltThreeLinks: true,
       notif: false,
       chainSubscriptions: '',
       minBalance: 100,

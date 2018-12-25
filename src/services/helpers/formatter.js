@@ -201,7 +201,7 @@ module.exports = {
       // **** four steps ****
       } else {
         let n = []
-        omitValues.fourLinks.forEach(id => {
+        omitValues[0].fourLinks.forEach(id => {
           if (byCurr[id]) n[id] = byCurr[id]
         })
         n.forEach(currArr => {
