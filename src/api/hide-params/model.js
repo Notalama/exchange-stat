@@ -8,7 +8,7 @@ const hideParamsSchema = new Schema({
   hiddenExchangers: {
     type: Array
   },
-  hiddenPairs: {
+  fourLinks: {
     type: Array
   }
 }, {
