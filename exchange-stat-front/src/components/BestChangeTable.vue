@@ -181,7 +181,7 @@ export default {
       minBalance: 100,
       minProfit: 1,
       timer: 0,
-      interval: 990000,
+      interval: 10000,
       currentDataArr: null,
       columns: [
         {
