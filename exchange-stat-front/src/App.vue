@@ -15,6 +15,10 @@ export default {
     BestChangeTable,
     Options
   },
+  mounted: function() {
+    // eslint-disable-next-line
+    M.AutoInit()
+  },
   methods: {
     changeLinksAmout: function(amount) {
       this.linksAmount = amount
@@ -36,7 +40,7 @@ body {
 .pl-btn {
   text-align: center
 }
-.fa-arrow-right {
+.fa-arrow-right, .fa-times {
   cursor: pointer
 }
 #app {

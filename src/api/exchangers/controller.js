@@ -1,4 +1,5 @@
 const exchangersModel = require('./model')
+const filterHidden = require('./../../services/helpers/filter-hidden')
 module.exports = {
   index: ({
     querymen: {
@@ -10,11 +11,11 @@ module.exports = {
     exchangersModel.find(query, (err, result) => {
       if (err) res.status(400).send(err)
       else {
-        const response = {
-          currencyTypes: null
-        }
-        response.currencyTypes = result
-        res.send(response)
+        const response = filterHidden.filterExchangers(result)
+        response.then(r => res.send(r)).catch(err => {
+          console.log(err, 'error on filtering currencies')
+          res.status(400).send('something went wrong on filtering currencies')
+        })
       }
     })
   },

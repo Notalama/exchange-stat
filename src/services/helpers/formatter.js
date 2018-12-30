@@ -9,6 +9,7 @@ module.exports = {
       const subscriptionsU = chainSubscriptions ? chainSubscriptions.split('n') : null
       const subscriptions = subscriptionsU ? subscriptionsU.map(el => el.split(';')) : null
       if (subscriptions) {
+        // parse pairs to subscribe to
         for (let i = 0; i < subscriptions.length; i++) {
           subscriptions[i].forEach((el, j) => {
             subscriptions[i][j] = el.split(',')
@@ -36,54 +37,6 @@ module.exports = {
         else if (res === null) console.error('null bonuses found')
       })
       const absCommis = commissions.filter(el => el.commissionA[0])
-      const calcBonus = (rate, bonus) => {
-        const forAll = bonus.from && !bonus.to
-        const forOneCurr = !bonus.from && bonus.to && rate[1] === bonus.to
-        const forPair = bonus.from && bonus.to && rate[1] === bonus.to && bonus.from === rate[0]
-        if (forAll || forOneCurr || forPair) +rate[4] > 1 ? rate[4] = +rate[4] * (+bonus.multi / 100 + 1) : rate[3] = +rate[3] / (+bonus.multi / 100 + 1)
-        return rate
-      }
-      const calcCommission = (rate) => {
-        commissions.forEach(com => {
-          if ((com.currency === rate[0] && com.inOut === 'IN') || (com.currency === rate[1] && com.inOut === 'OUT')) {
-            if (com.changer && rate[2] === com.changer) {
-              if (+com.commission) {
-                +rate[4] > 1 ? rate[4] = +rate[4] - +rate[4] * (+com.commission / 100) : rate[3] = +rate[3] + +rate[3] * (+com.commission / 100)
-              }
-            }
-            if (!com.changer && +com.commission) {
-              +rate[4] > 1 ? rate[4] = +rate[4] - +rate[4] * (+com.commission / 100) : rate[3] = +rate[3] + +rate[3] * (+com.commission / 100)
-            }
-          }
-        })
-        return rate
-      }
-      const calcAbsCommission = (rate, sum) => {
-        absCommis.forEach(com => {
-          if ((com.currency === rate[0] && com.inOut === 'IN') || (com.currency === rate[1] && com.inOut === 'OUT')) {
-            if (com.changer && rate[2] === com.changer) {
-              sum = sum - com.commissionA[0]
-            }
-            if (!com.changer) {
-              sum = sum - com.commissionA[0]
-            }
-          }
-        })
-        return sum
-      }
-      const calcSum = (give, receive, sum, rate) => {
-        const profit = receive > give ? sum * receive : sum / give
-        return calcAbsCommission(rate, profit)
-      }
-      const calcChain = (chain) => {
-        let chainSum = [+chain[0][3]]
-        for (let i = 0; i < chain.length; i++) {
-          const rate = chain[i]
-          chainSum.push(calcSum(+rate[3], +rate[4], chainSum[chainSum.length - 1], rate))
-        }
-        const profit = ((chainSum[chainSum.length - 1] - chainSum[0]) * 100) / chainSum[0]
-        return profit
-      }
       for (let i = 0; i < unformattedList.length; i++) {
         let rowArray = unformattedList[i].split(';')
         if (!omitValues[0].hiddenCurrencies.every(el => el !== rowArray[0] && (el !== rowArray[1]))) continue
@@ -113,14 +66,14 @@ module.exports = {
                 if (isProfitable) {
                   const bonus = bonuses.find(bon => bon.changer === rowArray[2])
                   if (bonus) rowArray = calcBonus(rowArray, bonus)
-                  rowArray = calcCommission(rowArray)
+                  rowArray = calcCommission(rowArray, commissions)
                   byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
                 }
                 break
               } else if (j === byCurr[id].length - 1) {
                 const bonus = bonuses.find(bon => bon.changer === rowArray[2])
                 if (bonus) rowArray = calcBonus(rowArray, bonus)
-                rowArray = calcCommission(rowArray)
+                rowArray = calcCommission(rowArray, commissions)
                 byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
                 break
               }
@@ -130,11 +83,11 @@ module.exports = {
           byCurr[id] = []
           const bonus = bonuses.find(bon => bon.changer === rowArray[2])
           if (bonus) rowArray = calcBonus(rowArray, bonus)
-          rowArray = calcCommission(rowArray)
+          rowArray = calcCommission(rowArray, commissions)
           byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
         }
       }
-
+      const edgeRateDiffs = []
       // **** two steps ****
       if (!ltThreeLinks) {
         byCurr.forEach(currArr => {
@@ -142,7 +95,8 @@ module.exports = {
             if (byCurr[firstEl[1]]) {
               byCurr[firstEl[1]].forEach(secondEl => {
                 if (secondEl[1] === firstEl[0]) {
-                  const profit = calcChain([firstEl, secondEl])
+                  const profit = calcChain([firstEl, secondEl], absCommis)
+                  edgeRateDiffs.push(profit)
                   if (profit > minProfit) {
                     // *** Chain currencies to dollar compare ***
                     const dolToFirst = byCurr[firstEl[1]][40]
@@ -168,11 +122,11 @@ module.exports = {
         byCurr.forEach(currArr => {
           currArr.forEach(firstEl => {
             if (byCurr[firstEl[1]]) {
-              byCurr[firstEl[1]].forEach((secondEl, ind) => {
+              byCurr[firstEl[1]].forEach(secondEl => {
                 if (byCurr[secondEl[1]]) {
                   byCurr[secondEl[1]].forEach(thirdEl => {
                     if (thirdEl[1] === firstEl[0]) {
-                      const profit = calcChain([firstEl, secondEl, thirdEl])
+                      const profit = calcChain([firstEl, secondEl, thirdEl], absCommis)
                       if (profit > minProfit) {
                         // *** Chain currencies to dollar compare ***
                         const dolToFirst = byCurr[firstEl[1]][40]
@@ -208,12 +162,16 @@ module.exports = {
           currArr.forEach(firstEl => {
             if (byCurr[firstEl[1]]) {
               byCurr[firstEl[1]].forEach(secondEl => {
-                if (byCurr[secondEl[1]]) {
+                if (byCurr[secondEl[1]] &&
+                  (byCurr[secondEl[0]][firstEl[0]]
+                    ? +calcChain([firstEl, secondEl, byCurr[secondEl[0]][firstEl[0]]], absCommis) > -5
+                    : true)) {
+                  // console.log('test')
                   byCurr[secondEl[1]].forEach(thirdEl => {
                     if (byCurr[thirdEl[1]]) {
                       byCurr[thirdEl[1]].forEach(fourthEl => {
                         if (fourthEl[1] === firstEl[0]) {
-                          const profit = calcChain([firstEl, secondEl, thirdEl, fourthEl])
+                          const profit = calcChain([firstEl, secondEl, thirdEl, fourthEl], absCommis)
                           if (profit > minProfit) {
                             // *** Chain currencies to dollar compare ***
                             const dolToFirst = byCurr[firstEl[1]][40]
@@ -242,9 +200,10 @@ module.exports = {
           })
         })
       }
+      // calc and format pairs for subscriptions
       if (subscriptions) {
         readySubs.forEach((chain, i) => {
-          if (chain) readySubs[i].push(calcChain(chain), byCurr[40][chain[0][0]])
+          if (chain) readySubs[i].push(calcChain(chain), byCurr[40][chain[0][0]], absCommis)
         })
       }
       const sorted = profitArr.sort((a, b) => +b[b.length - 2] - +a[a.length - 2])
@@ -257,7 +216,8 @@ module.exports = {
         profitArr: readySubs.concat(sorted),
         usedCurrencies,
         usedExchangers,
-        subs: subscriptions ? readySubs.length : undefined
+        subs: subscriptions ? readySubs.length : undefined,
+        edgeRateDiffs: edgeRateDiffs
       }
     } catch (rejectedValue) {
       console.error('formatter err caught ---', rejectedValue)
@@ -297,4 +257,54 @@ module.exports = {
     }
     return result
   }
+}
+
+function calcCommission (rate, commissions) {
+  commissions.forEach(com => {
+    if ((com.currency === rate[0] && com.inOut === 'IN') || (com.currency === rate[1] && com.inOut === 'OUT')) {
+      if (com.changer && rate[2] === com.changer) {
+        if (+com.commission) {
+          +rate[4] > 1 ? rate[4] = +rate[4] - +rate[4] * (+com.commission / 100) : rate[3] = +rate[3] + +rate[3] * (+com.commission / 100)
+        }
+      }
+      if (!com.changer && +com.commission) {
+        +rate[4] > 1 ? rate[4] = +rate[4] - +rate[4] * (+com.commission / 100) : rate[3] = +rate[3] + +rate[3] * (+com.commission / 100)
+      }
+    }
+  })
+  return rate
+}
+function calcAbsCommission (rate, sum, absCommis) {
+  absCommis.forEach(com => {
+    if ((com.currency === rate[0] && com.inOut === 'IN') || (com.currency === rate[1] && com.inOut === 'OUT')) {
+      if (com.changer && rate[2] === com.changer) {
+        sum = sum - com.commissionA[0]
+      }
+      if (!com.changer) {
+        sum = sum - com.commissionA[0]
+      }
+    }
+  })
+  return sum
+}
+
+function calcBonus (rate, bonus) {
+  const forAll = bonus.from && !bonus.to
+  const forOneCurr = !bonus.from && bonus.to && rate[1] === bonus.to
+  const forPair = bonus.from && bonus.to && rate[1] === bonus.to && bonus.from === rate[0]
+  if (forAll || forOneCurr || forPair) +rate[4] > 1 ? rate[4] = +rate[4] * (+bonus.multi / 100 + 1) : rate[3] = +rate[3] / (+bonus.multi / 100 + 1)
+  return rate
+}
+function calcSum (give, receive, sum, rate, absCommis) {
+  const profit = receive > give ? sum * receive : sum / give
+  return calcAbsCommission(rate, profit, absCommis)
+}
+function calcChain (chain, absCommis) {
+  let chainSum = [+chain[0][3]]
+  for (let i = 0; i < chain.length; i++) {
+    const rate = chain[i]
+    chainSum.push(calcSum(+rate[3], +rate[4], chainSum[chainSum.length - 1], rate, absCommis))
+  }
+  const profit = ((chainSum[chainSum.length - 1] - chainSum[0]) * 100) / chainSum[0]
+  return profit
 }

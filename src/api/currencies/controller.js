@@ -1,26 +1,21 @@
-const {
-  success,
-  notFound
-} = require('./../../services/response')
 const currencyModel = require('./model')
+const filterHidden = require('./../../services/helpers/filter-hidden')
 module.exports = {
-  index: ({
+  index: async ({
     querymen: {
       query,
       select,
       cursor
     }
   }, res, next) => {
-    console.log(query)
     currencyModel.find(query, (err, result) => {
       if (err) res.status(400).send(err)
       else {
-        const response = {
-          currencyTypes: null
-        }
-        console.log(result)
-        response.currencyTypes = result
-        res.send(response)
+        const response = filterHidden.filterCurrencies(result)
+        response.then(r => res.send(r)).catch(err => {
+          console.log(err, 'error on filtering currencies')
+          res.status(400).send('something went wrong on filtering currencies')
+        })
       }
     })
   },
@@ -45,12 +40,11 @@ module.exports = {
     })
   },
   saveList: (query, res, next) => {
-    currenciesModel.insertMany(query, (err, docs) => {
+    currencyModel.insertMany(query, (err, docs) => {
       if (err) {
         console.error('saveMany err -----> ', err)
         res.status(400).send(err.errmsg)
-      }
-      else {
+      } else {
         res.send({message: 'success', value: docs})
       }
     })

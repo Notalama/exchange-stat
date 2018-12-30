@@ -46,7 +46,7 @@ module.exports = {
             const exchangersBase = formatExchangers(excahngersBuffer.split('\n'))
             exchangersModel.collection.drop()
             exchangersModel.insertMany(exchangersBase, (err, val) => {
-              if (err) console.log(err)
+              if (err) console.log('err', err)
             })
             // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
 
@@ -87,6 +87,8 @@ module.exports = {
                 }
                 compiled.push(chain[chain.length - 1], chain[chain.length - 2], index < result.subs)
                 response.push(compiled)
+                // console.log(result.edgeRateDiffs)
+                // response.push(result.edgeRateDiffs)
               })
               res.status(200).json(response)
               zip.close()

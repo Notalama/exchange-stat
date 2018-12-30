@@ -9,7 +9,8 @@ import '../node_modules/materialize-css/dist/css/materialize.min.css';
 import 'vue-good-table/dist/vue-good-table.css'
 import '../node_modules/@fortawesome/fontawesome-free/css/all.min.css';
 
-  M.AutoInit();
+
+M.AutoInit();
 Vue.use(VueGoodTablePlugin);
 new Vue({
   render: h => h(App),

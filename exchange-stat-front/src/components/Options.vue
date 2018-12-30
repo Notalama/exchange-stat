@@ -7,7 +7,7 @@
             {{ option.text }}
         </option>
       </select>
-      <button type="button" v-on:click="$emit('links-to-count', searchType)">ok</button>
+      <button class="waves-effect waves-light btn inc" type="button" v-on:click="$emit('links-to-count', searchType)">ok</button>
     </div>
   </div>
 </template>
@@ -16,8 +16,6 @@
 
 export default {
   name: "Options",
-  components: {
-  },
   data: function() {
     return {
       options: [
@@ -38,8 +36,5 @@ export default {
 .select {
     width: 90%;
     margin: 0 auto;
-}
-.select select {
-  display: block;
 }
 </style>

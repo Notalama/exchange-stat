@@ -2,6 +2,8 @@ const { Router } = require('express')
 // const {bestChange } = require('./best-change'
 const bestChange = require('./best-change')
 const currencies = require('./currencies')
+const exchangers = require('./exchangers')
+const tempHide = require('./temp-hide')
 const router = new Router()
 
 /**
@@ -29,5 +31,6 @@ const router = new Router()
  */
 router.use('/best-change', bestChange)
 router.use('/currencies', currencies)
-
+router.use('/exchangers', exchangers)
+router.use('/temp-hide', tempHide)
 module.exports = router

@@ -1,5 +1,19 @@
 <template>
   <div class="hello">
+    
+
+  <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+      <div class="modal-content">
+        <h4>Заховати тимчасово</h4>
+        <SettingsForm/>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+      </div>
+    </div>
+
+
     <audio id="aud" type="audio/mp3">
       <source src="./../assets/to-the-point.mp3" type="audio/mp3">
     </audio>
@@ -25,17 +39,19 @@
           <button class="btn waves-effect waves-light" type="button" name="action" v-on:click="loadItems()">Submit
             <i class="fas fa-arrow-right"></i>
           </button>
+          <a class="waves-effect waves-light btn-flat modal-trigger settings-trigger" href="#modal1">Settings</a>
         </div>
+        
       </div>
     </div>
-      
-      <vue-good-table
+    
+    <vue-good-table
       mode="remote"
       class="bc-table"
       :columns="columns"
       :rows="rows"
       :sort-options="{
-        enabled: false,
+        enabled: false
       }"
       @on-cell-click="pinToTop"
       />
@@ -44,10 +60,15 @@
 
 <script>
 import axios from 'axios'
+import SettingsForm from './Settings-form.vue'
+
 export default {
   name: "BestChangeTable",
   props: {
-    links: true
+    links: Boolean
+  },
+  components: {
+    SettingsForm
   },
   mounted: function() {
     setInterval(() => {
@@ -59,20 +80,11 @@ export default {
   },
   methods: {
   pinToTop: function(params) {
+    const chainRates = this.currentDataArr[params.row.originalIndex]
     if (params.column.field === 'pin') {
-      const chainRates = this.currentDataArr[params.row.originalIndex]
-      if (chainRates[chainRates.length - 1]) {
-        this.chainSubscriptions = ''
-      } else {
-        let getParams = this.chainSubscriptions ? 'n' : ''
-        for (let i = 0; i < chainRates.length - 3; i++) {
-          getParams += (getParams.length <= 1 ? '' : ';') + chainRates[i].from + ',' + chainRates[i].to + ',' + chainRates[i].changer
-        }
-        this.chainSubscriptions += getParams
-      }
+      this.buildChainSubscriptions(chainRates)
       // this.loadItems()
     } else if (params.column.field === 'links') {
-      const chainRates = this.currentDataArr[params.row.originalIndex]
       const preLinkC = 'https://www.bestchange.ru/index.php?from='
       const preLinkBC = 'https://www.bestchange.ru/click.php?id='
       for (let i = 0; i < chainRates.length - 3; i++) {
@@ -80,9 +92,18 @@ export default {
         window.open(preLinkC + element.from + '&to=' + element.to)
         window.open(preLinkBC + element.changer + '&from=' + element.from + '&to=' + element.to + '&url=1')
       }
-      
     }
-   /* eslint-disable */ console.log(params)
+  },
+  buildChainSubscriptions: function(chainRates) {
+    if (chainRates[chainRates.length - 1]) {
+      this.chainSubscriptions = ''
+    } else {
+      let getParams = this.chainSubscriptions ? 'n' : ''
+      for (let i = 0; i < chainRates.length - 3; i++) {
+        getParams += (getParams.length <= 1 ? '' : ';') + chainRates[i].from + ',' + chainRates[i].to + ',' + chainRates[i].changer
+      }
+      this.chainSubscriptions += getParams
+    }
   },
   updateInterval: function(interval) {
     if (interval < 0 && this.interval < 5000) {}
@@ -145,7 +166,9 @@ export default {
       axios
       .get('http://localhost:9000/best-change?minBalance=' + this.minBalance + '&minProfit=' + this.minProfit + subcribeParam + ltThree)
       .then(response => {
-        /* eslint-disable */ console.log(response.data)
+        // /* eslint-disable */ 
+        console.log(response)
+
         this.currentDataArr = response.data
         this.rows = response.data.map((element, i) => {
           if (this.notif && element) document.getElementById('aud').play()
@@ -179,7 +202,7 @@ export default {
       notif: false,
       chainSubscriptions: '',
       minBalance: 100,
-      minProfit: 1,
+      minProfit: 0,
       timer: 0,
       interval: 990000,
       currentDataArr: null,
@@ -226,6 +249,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.settings-trigger {
+  position: absolute;
+  right: 0;
+}
 .age {
   text-align: center;
   width: 80px;
