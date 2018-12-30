@@ -106,8 +106,7 @@ export default {
     }
   },
   updateInterval: function(interval) {
-    if (interval < 0 && this.interval < 5000) {}
-    else this.interval += interval
+    if (interval >= 0 || this.interval >= 5000) this.interval += interval
   },
   reloadInterval: function() {
     this.loadItems()
@@ -166,11 +165,11 @@ export default {
       axios
       .get('http://localhost:9000/best-change?minBalance=' + this.minBalance + '&minProfit=' + this.minProfit + subcribeParam + ltThree)
       .then(response => {
-        // /* eslint-disable */ 
+        // eslint-disable-next-line 
         console.log(response)
 
         this.currentDataArr = response.data
-        this.rows = response.data.map((element, i) => {
+        this.rows = response.data.map(element => {
           if (this.notif && element) document.getElementById('aud').play()
           const toDolIndex = element.length - 3
           const btnText = element[element.length - 1] ? '-' : '+'
@@ -204,7 +203,7 @@ export default {
       minBalance: 100,
       minProfit: 0,
       timer: 0,
-      interval: 990000,
+      interval: 10000,
       currentDataArr: null,
       columns: [
         {

@@ -1,6 +1,7 @@
 const hideParamsModel = require('./../../api/hide-params/model')
 const bonusesModel = require('./../../api/bonuses/model')
 const commissionModel = require('./../../api/commision/model')
+const tempHideModel = require('./../../api/temp-hide/model')
 module.exports = {
   formatRates: async (unformattedList, minAmount, minProfit, chainSubscriptions, ltThreeLinks) => {
     try {
@@ -27,6 +28,14 @@ module.exports = {
         if (err) console.error(err, '--- bonuses err')
         else if (res === null) console.error('null bonuses found')
       })
+      const tempHiddens = await tempHideModel.find({}, (err, res) => {
+        if (err) console.error(err, '--- tempHideModel err')
+        else if (res === null) console.error('null tempHiddens found')
+      })
+      tempHiddens.forEach(el => {
+        const isActual = new Date(el.createdAt).getTime() + el.hidePeriod - new Date().getTime()
+        if (isActual < 0) tempHideModel.deleteOne({_id: el._id}, (err, doc) => err ? console.error(err, '--- removeTempHidden err') : console.log(doc))
+      })
       // const wrCom = await commissionModel.insertMany(arr, (err, res) => {
       //   if (err) console.error(err, '--- bonuses err')
       //   else if (res === null) console.error('null bonuses found')
@@ -41,6 +50,7 @@ module.exports = {
         let rowArray = unformattedList[i].split(';')
         if (!omitValues[0].hiddenCurrencies.every(el => el !== rowArray[0] && (el !== rowArray[1]))) continue
         if (!omitValues[0].hiddenExchangers.every(el => el !== rowArray[2] && +rowArray[5] > 0.01)) continue
+        if (!tempHiddens.every(el => removeTempHidden(el, rowArray))) continue
         if (subscriptions) {
           // *** pin to top the subscriptions
           const rowId = rowArray[0] + rowArray[1] + rowArray[2]
@@ -166,7 +176,6 @@ module.exports = {
                   (byCurr[secondEl[0]][firstEl[0]]
                     ? +calcChain([firstEl, secondEl, byCurr[secondEl[0]][firstEl[0]]], absCommis) > -5
                     : true)) {
-                  // console.log('test')
                   byCurr[secondEl[1]].forEach(thirdEl => {
                     if (byCurr[thirdEl[1]]) {
                       byCurr[thirdEl[1]].forEach(fourthEl => {
@@ -200,6 +209,8 @@ module.exports = {
           })
         })
       }
+
+      // remove hidden 
       // calc and format pairs for subscriptions
       if (subscriptions) {
         readySubs.forEach((chain, i) => {
@@ -261,8 +272,10 @@ module.exports = {
 
 function calcCommission (rate, commissions) {
   commissions.forEach(com => {
-    if ((com.currency === rate[0] && com.inOut === 'IN') || (com.currency === rate[1] && com.inOut === 'OUT')) {
-      if (com.changer && rate[2] === com.changer) {
+    const isCommissedCurr = (com.currency === rate[0] && com.inOut === 'IN') || (com.currency === rate[1] && com.inOut === 'OUT')
+    if (isCommissedCurr) {
+      const isRateChangerCommissed = com.changer && rate[2] === com.changer
+      if (isRateChangerCommissed) {
         if (+com.commission) {
           +rate[4] > 1 ? rate[4] = +rate[4] - +rate[4] * (+com.commission / 100) : rate[3] = +rate[3] + +rate[3] * (+com.commission / 100)
         }
@@ -276,8 +289,10 @@ function calcCommission (rate, commissions) {
 }
 function calcAbsCommission (rate, sum, absCommis) {
   absCommis.forEach(com => {
-    if ((com.currency === rate[0] && com.inOut === 'IN') || (com.currency === rate[1] && com.inOut === 'OUT')) {
-      if (com.changer && rate[2] === com.changer) {
+    const isCommissedCurr = (com.currency === rate[0] && com.inOut === 'IN') || (com.currency === rate[1] && com.inOut === 'OUT')
+    if (isCommissedCurr) {
+      const isRateChangerCommissed = com.changer && rate[2] === com.changer
+      if (isRateChangerCommissed) {
         sum = sum - com.commissionA[0]
       }
       if (!com.changer) {
@@ -295,6 +310,7 @@ function calcBonus (rate, bonus) {
   if (forAll || forOneCurr || forPair) +rate[4] > 1 ? rate[4] = +rate[4] * (+bonus.multi / 100 + 1) : rate[3] = +rate[3] / (+bonus.multi / 100 + 1)
   return rate
 }
+
 function calcSum (give, receive, sum, rate, absCommis) {
   const profit = receive > give ? sum * receive : sum / give
   return calcAbsCommission(rate, profit, absCommis)
@@ -307,4 +323,9 @@ function calcChain (chain, absCommis) {
   }
   const profit = ((chainSum[chainSum.length - 1] - chainSum[0]) * 100) / chainSum[0]
   return profit
+}
+
+function removeTempHidden (hideParams, rate) {
+  const toRemove = (rate[0] === hideParams.inCurrencyId || rate[1] === hideParams.outCurrencyId) && rate[2] === hideParams.changerId
+  return !toRemove
 }
