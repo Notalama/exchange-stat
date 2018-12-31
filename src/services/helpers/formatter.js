@@ -36,11 +36,6 @@ module.exports = {
         const isActual = new Date(el.createdAt).getTime() + el.hidePeriod - new Date().getTime()
         if (isActual < 0) tempHideModel.deleteOne({_id: el._id}, (err, doc) => err ? console.error(err, '--- removeTempHidden err') : console.log(doc))
       })
-      // const wrCom = await commissionModel.insertMany(arr, (err, res) => {
-      //   if (err) console.error(err, '--- bonuses err')
-      //   else if (res === null) console.error('null bonuses found')
-      //   console.log(res)
-      // })
       const commissions = await commissionModel.find({}, (err, res) => {
         if (err) console.error(err, '--- bonuses err')
         else if (res === null) console.error('null bonuses found')
@@ -60,7 +55,7 @@ module.exports = {
               const subId = rateSub[0] + rateSub[1] + rateSub[2]
               if (subId === rowId) {
                 if (!readySubs[index]) readySubs[index] = []
-                readySubs[index][j] = rowArray.slice(0, 6)
+                readySubs[index][j] = calcCommission(rowArray, commissions).slice(0, 6)
                 continue
               }
             }
@@ -99,132 +94,134 @@ module.exports = {
       }
       const edgeRateDiffs = []
       // **** two steps ****
-      if (!ltThreeLinks) {
-        byCurr.forEach(currArr => {
-          currArr.forEach(firstEl => {
-            if (byCurr[firstEl[1]]) {
-              byCurr[firstEl[1]].forEach(secondEl => {
-                if (secondEl[1] === firstEl[0]) {
-                  const profit = calcChain([firstEl, secondEl], absCommis)
-                  edgeRateDiffs.push(profit)
-                  if (profit > minProfit) {
-                    // *** Chain currencies to dollar compare ***
-                    const dolToFirst = byCurr[firstEl[1]][40]
-                    const dolToSecond = byCurr[secondEl[1]][40]
-                    let [amountFirst, amountSecond] = [
-                      dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : minAmount,
-                      dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : minAmount
-                    ]
-                    const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount
-                    if (exchHaveEnoughMoney) {
-                      const dolToInit = byCurr[40][firstEl[0]]
-                      profitArr.push([firstEl, secondEl, profit, dolToInit])
-                      usedCurrencies.push(firstEl[0], secondEl[0])
-                      usedExchangers.push(firstEl[2], secondEl[2])
-                    }
+      // if (!ltThreeLinks) {
+      byCurr.forEach(currArr => {
+        currArr.forEach((firstEl, ind) => {
+          if (firstEl && byCurr[firstEl[1]]) {
+            byCurr[firstEl[1]].forEach((secondEl, j) => {
+              if (secondEl && secondEl[1] === firstEl[0]) {
+                const profit = calcChain([firstEl, secondEl], absCommis)
+                edgeRateDiffs.push(profit)
+                if (profit > minProfit) {
+                  // *** Chain currencies to dollar compare ***
+                  const dolToFirst = byCurr[firstEl[1]][40]
+                  const dolToSecond = byCurr[secondEl[1]][40]
+                  let [amountFirst, amountSecond] = [
+                    dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : minAmount,
+                    dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : minAmount
+                  ]
+                  const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount
+                  if (exchHaveEnoughMoney) {
+                    const dolToInit = byCurr[40][firstEl[0]]
+                    profitArr.push([firstEl, secondEl, profit, dolToInit])
+                    usedCurrencies.push(firstEl[0], secondEl[0])
+                    usedExchangers.push(firstEl[2], secondEl[2])
                   }
+                } else if (profit < -5) {
+                  byCurr[ind][j] = undefined
                 }
-              })
-            }
-          })
+              }
+            })
+          }
         })
-        // **** three steps ****
-        byCurr.forEach(currArr => {
-          currArr.forEach(firstEl => {
-            if (byCurr[firstEl[1]]) {
-              byCurr[firstEl[1]].forEach(secondEl => {
-                if (byCurr[secondEl[1]]) {
-                  byCurr[secondEl[1]].forEach(thirdEl => {
-                    if (thirdEl[1] === firstEl[0]) {
-                      const profit = calcChain([firstEl, secondEl, thirdEl], absCommis)
-                      if (profit > minProfit) {
-                        // *** Chain currencies to dollar compare ***
-                        const dolToFirst = byCurr[firstEl[1]][40]
-                        const dolToSecond = byCurr[secondEl[1]][40]
-                        const dolToThird = byCurr[thirdEl[1]][40]
-                        let [amountFirst, amountSecond, amountThird] = [
-                          dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : +minAmount,
-                          dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : +minAmount,
-                          dolToThird ? +dolToThird[4] > 1 ? +thirdEl[5] * +dolToThird[4] : +thirdEl[5] / +dolToThird[3] : +minAmount
-                        ]
-                        const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount && amountThird > minAmount
-                        if (exchHaveEnoughMoney) {
-                          const dolToInit = byCurr[40][firstEl[0]]
-                          profitArr.push([firstEl, secondEl, thirdEl, profit, dolToInit])
-                          usedCurrencies.push(firstEl[0], secondEl[0], thirdEl[0])
-                          usedExchangers.push(firstEl[2], secondEl[2], thirdEl[2])
-                        }
+      })
+      // **** three steps ****
+      byCurr.forEach(currArr => {
+        currArr.forEach(firstEl => {
+          if (firstEl && byCurr[firstEl[1]]) {
+            byCurr[firstEl[1]].forEach(secondEl => {
+              if (secondEl && byCurr[secondEl[1]]) {
+                byCurr[secondEl[1]].forEach(thirdEl => {
+                  if (thirdEl && firstEl && thirdEl[1] === firstEl[0]) {
+                    const profit = calcChain([firstEl, secondEl, thirdEl], absCommis)
+                    if (profit > minProfit) {
+                      // *** Chain currencies to dollar compare ***
+                      const dolToFirst = byCurr[firstEl[1]][40]
+                      const dolToSecond = byCurr[secondEl[1]][40]
+                      const dolToThird = byCurr[thirdEl[1]][40]
+                      let [amountFirst, amountSecond, amountThird] = [
+                        dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : +minAmount,
+                        dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : +minAmount,
+                        dolToThird ? +dolToThird[4] > 1 ? +thirdEl[5] * +dolToThird[4] : +thirdEl[5] / +dolToThird[3] : +minAmount
+                      ]
+                      const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount && amountThird > minAmount
+                      if (exchHaveEnoughMoney) {
+                        const dolToInit = byCurr[40][firstEl[0]]
+                        profitArr.push([firstEl, secondEl, thirdEl, profit, dolToInit])
+                        usedCurrencies.push(firstEl[0], secondEl[0], thirdEl[0])
+                        usedExchangers.push(firstEl[2], secondEl[2], thirdEl[2])
                       }
                     }
-                  })
-                }
-              })
-            }
-          })
+                  }
+                })
+              }
+            })
+          }
         })
+      })
       // **** four steps ****
-      } else {
-        let n = []
-        omitValues[0].fourLinks.forEach(id => {
-          if (byCurr[id]) n[id] = byCurr[id]
-        })
-        n.forEach(currArr => {
-          currArr.forEach(firstEl => {
-            if (byCurr[firstEl[1]]) {
-              byCurr[firstEl[1]].forEach(secondEl => {
-                if (byCurr[secondEl[1]] &&
-                  (byCurr[secondEl[0]][firstEl[0]]
-                    ? +calcChain([firstEl, secondEl, byCurr[secondEl[0]][firstEl[0]]], absCommis) > -5
-                    : true)) {
-                  byCurr[secondEl[1]].forEach(thirdEl => {
-                    if (byCurr[thirdEl[1]]) {
-                      byCurr[thirdEl[1]].forEach(fourthEl => {
-                        if (fourthEl[1] === firstEl[0]) {
-                          const profit = calcChain([firstEl, secondEl, thirdEl, fourthEl], absCommis)
-                          if (profit > minProfit) {
-                            // *** Chain currencies to dollar compare ***
-                            const dolToFirst = byCurr[firstEl[1]][40]
-                            const dolToSecond = byCurr[secondEl[1]][40]
-                            const dolToThird = byCurr[thirdEl[1]][40]
-                            const dolToFourth = byCurr[fourthEl[1]][40]
-                            let [amountFirst, amountSecond, amountThird, amountFourth] = [
-                              dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : +minAmount,
-                              dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : +minAmount,
-                              dolToThird ? +dolToThird[4] > 1 ? +thirdEl[5] * +dolToThird[4] : +thirdEl[5] / +dolToThird[3] : +minAmount,
-                              dolToFourth ? +dolToFourth[4] > 1 ? +fourthEl[5] * +dolToFourth[4] : +fourthEl[5] / +dolToFourth[3] : +minAmount
-                            ]
-                            const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount && amountThird > minAmount && amountFourth > minAmount
-                            if (exchHaveEnoughMoney) {
-                              const dolToInit = byCurr[40][firstEl[0]]
-                              profitArr.push([firstEl, secondEl, thirdEl, fourthEl, profit, dolToInit])
-                            }
+      // } else {
+      let n = []
+      omitValues[0].fourLinks.forEach(id => {
+        if (byCurr[id]) n[id] = byCurr[id]
+      })
+      n.forEach(currArr => {
+        currArr.forEach(firstEl => {
+          if (firstEl && byCurr[firstEl[1]]) {
+            byCurr[firstEl[1]].forEach(secondEl => {
+              if (secondEl && byCurr[secondEl[1]]) {
+                //  &&
+                // (byCurr[secondEl[0]][firstEl[0]]
+                //   ? +calcChain([firstEl, secondEl, byCurr[secondEl[0]][firstEl[0]]], absCommis) > -5
+                //   : true))
+                byCurr[secondEl[1]].forEach(thirdEl => {
+                  if (thirdEl && byCurr[thirdEl[1]]) {
+                    byCurr[thirdEl[1]].forEach(fourthEl => {
+                      if (fourthEl && fourthEl[1] === firstEl[0]) {
+                        const profit = calcChain([firstEl, secondEl, thirdEl, fourthEl], absCommis)
+                        if (profit > minProfit) {
+                          // *** Chain currencies to dollar compare ***
+                          const dolToFirst = byCurr[firstEl[1]][40]
+                          const dolToSecond = byCurr[secondEl[1]][40]
+                          const dolToThird = byCurr[thirdEl[1]][40]
+                          const dolToFourth = byCurr[fourthEl[1]][40]
+                          let [amountFirst, amountSecond, amountThird, amountFourth] = [
+                            dolToFirst ? +dolToFirst[4] > 1 ? +firstEl[5] * +dolToFirst[4] : +firstEl[5] / +dolToFirst[3] : +minAmount,
+                            dolToSecond ? +dolToSecond[4] > 1 ? +secondEl[5] * +dolToSecond[4] : +secondEl[5] / +dolToSecond[3] : +minAmount,
+                            dolToThird ? +dolToThird[4] > 1 ? +thirdEl[5] * +dolToThird[4] : +thirdEl[5] / +dolToThird[3] : +minAmount,
+                            dolToFourth ? +dolToFourth[4] > 1 ? +fourthEl[5] * +dolToFourth[4] : +fourthEl[5] / +dolToFourth[3] : +minAmount
+                          ]
+                          const exchHaveEnoughMoney = amountFirst > minAmount && amountSecond > minAmount && amountThird > minAmount && amountFourth > minAmount
+                          if (exchHaveEnoughMoney) {
+                            const dolToInit = byCurr[40][firstEl[0]]
+                            profitArr.push([firstEl, secondEl, thirdEl, fourthEl, profit, dolToInit])
                           }
                         }
-                      })
-                    }
-                  })
-                }
-              })
-            }
-          })
+                      }
+                    })
+                  }
+                })
+              }
+            })
+          }
         })
-      }
-
-      // remove hidden 
+      })
+      // }
       // calc and format pairs for subscriptions
       if (subscriptions) {
         readySubs.forEach((chain, i) => {
-          if (chain) readySubs[i].push(calcChain(chain), byCurr[40][chain[0][0]], absCommis)
+          if (chain) readySubs[i].push(calcChain(chain, absCommis), byCurr[40][chain[0][0]])
         })
       }
       const sorted = profitArr.sort((a, b) => +b[b.length - 2] - +a[a.length - 2])
       const filtered = []
+      // hide clone chains
       sorted.forEach((el, i) => {
         const prevElProfit = sorted[i - 1] ? sorted[i - 1][sorted[i - 1].length - 2] : 0
         if (sorted[i - 1] && el[el.length - 2].toFixed(6) !== prevElProfit.toFixed(6)) filtered.push(el)
       })
       return {
-        profitArr: readySubs.concat(sorted),
+        profitArr: readySubs.concat(filtered),
         usedCurrencies,
         usedExchangers,
         subs: subscriptions ? readySubs.length : undefined,

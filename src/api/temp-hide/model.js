@@ -9,8 +9,7 @@ const tempHideSchema = new Schema({
   },
   inCurrencyId: {
     type: String,
-    trim: true,
-    unique: true
+    trim: true
   },
   outCurrencyTitle: {
     type: String,
@@ -19,8 +18,7 @@ const tempHideSchema = new Schema({
   },
   outCurrencyId: {
     type: String,
-    trim: true,
-    unique: true
+    trim: true
   },
   changerTitle: {
     type: String,
@@ -28,7 +26,8 @@ const tempHideSchema = new Schema({
   },
   changerId: {
     type: String,
-    trim: true
+    trim: true,
+    required: true
   },
   hidePeriod: {
     type: Number,
