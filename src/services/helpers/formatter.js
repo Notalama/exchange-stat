@@ -95,7 +95,7 @@ module.exports = {
       const edgeRateDiffs = []
       // **** two steps ****
       // if (!ltThreeLinks) {
-      byCurr.forEach(currArr => {
+      byCurr.forEach((currArr, a) => {
         currArr.forEach((firstEl, ind) => {
           if (firstEl && byCurr[firstEl[1]]) {
             byCurr[firstEl[1]].forEach((secondEl, j) => {
@@ -122,17 +122,19 @@ module.exports = {
                 }
               }
             })
+          } else {
+            byCurr[a][ind] = undefined
           }
         })
       })
       // **** three steps ****
-      byCurr.forEach(currArr => {
-        currArr.forEach(firstEl => {
+      byCurr.forEach((currArr, a) => {
+        currArr.forEach((firstEl, ind) => {
           if (firstEl && byCurr[firstEl[1]]) {
             byCurr[firstEl[1]].forEach(secondEl => {
               if (secondEl && byCurr[secondEl[1]]) {
                 byCurr[secondEl[1]].forEach(thirdEl => {
-                  if (thirdEl && firstEl && thirdEl[1] === firstEl[0]) {
+                  if (thirdEl && thirdEl[1] === firstEl[0]) {
                     const profit = calcChain([firstEl, secondEl, thirdEl], absCommis)
                     if (profit > minProfit) {
                       // *** Chain currencies to dollar compare ***
@@ -156,6 +158,8 @@ module.exports = {
                 })
               }
             })
+          } else {
+            byCurr[a][ind] = undefined
           }
         })
       })
