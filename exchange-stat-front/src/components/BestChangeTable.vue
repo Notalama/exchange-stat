@@ -106,7 +106,7 @@ export default {
     }
   },
   updateInterval: function(interval) {
-    if (interval >= 0 || this.interval >= 5000) this.interval += interval
+    if (interval >= 0 || this.interval >= this.minInterval) this.interval += interval
   },
   reloadInterval: function() {
     this.loadItems()
@@ -130,7 +130,17 @@ export default {
     })
   },
   calcRate: function(give, receive, sum) {
-    return receive > give ? sum * receive : sum / give
+    const res = receive > give ? sum * receive : sum / give
+    return res.toFixed(4)
+  },
+  calcChainProfit: function(row, profit) {
+    const rateAmounts = []
+    for (let i = 0; i < row.length - 3; i++) {
+      const rate = row[i];
+      rateAmounts.push(+rate.amount.dollarAmount)
+    }
+    const minAmount = Math.min(...rateAmounts)
+    return (minAmount / 100 * profit).toFixed(2) + ' $'
   },
   getChainCol: function(row, toDolIndex) {
     let sum = row[toDolIndex] ? this.calcRate(+row[toDolIndex][3], +row[toDolIndex][4], 1000) : 1
@@ -141,49 +151,63 @@ export default {
 
     const currOne = sum + ' ' + row[0].fromTitle
     const exchOne = ' <a target="_blank" href="https://www.bestchange.ru/index.php?id=' + row[0].changer + '&from=' + row[0].from + '&to=' + row[0].to + '&url=1">'
-    + ' <i class="fas fa-arrow-right"></i> - ' + row[0].changerTitle + '</a> ' + '(' + row[0].give + ':' + row[0].receive + '; ' + row[0].amount + ') <br>'
+    + ' <i class="fas fa-arrow-right"></i> - ' + row[0].changerTitle + '</a> ' + '(' + row[0].give + ':' + row[0].receive + '; '
+    + row[0].amount.amount + ', ' + row[0].amount.dollarAmount.toFixed(4) + '$) <br>'
     const currTwo = '<i class="fas fa-arrow-right"></i> ' + calcFirst + ' ' + row[1].fromTitle
     const exchTwo = ' <a target="_blank" href="https://www.bestchange.ru/index.php?id=' + row[1].changer + '&from=' + row[1].from + '&to=' + row[1].to + '&url=1">'
-    + ' <i class="fas fa-arrow-right"></i> - ' + row[1].changerTitle + '</a> ' + '(' + row[1].give + ':' + row[1].receive + '; ' + row[1].amount + ') <br>'
+    + ' <i class="fas fa-arrow-right"></i> - ' + row[1].changerTitle + '</a> ' + '(' + row[1].give + ':' + row[1].receive + '; '
+    + row[1].amount.amount + ', ' + row[1].amount.dollarAmount.toFixed(4) + '$) <br>'
     const currThree = toDolIndex >= 3 ? '<i class="fas fa-arrow-right"></i> ' + calcSecond + ' ' + row[2].fromTitle : ''
     const exchThree = toDolIndex >= 3 ? ' <a target="_blank" href="https://www.bestchange.ru/index.php?id=' + row[2].changer + '&from=' + row[2].from + '&to=' + row[2].to + '&url=1">'
-    + ' <i class="fas fa-arrow-right"></i> - ' + row[2].changerTitle + '</a> ' + '(' + row[2].give + ':' + row[2].receive + '; ' + row[2].amount + ') <br>' : ''
+    + ' <i class="fas fa-arrow-right"></i> - ' + row[2].changerTitle + '</a> ' + '(' + row[2].give + ':' + row[2].receive + '; '
+    + row[2].amount.amount + ', ' + row[2].amount.dollarAmount.toFixed(4) + '$) <br>' : ''
     
     const currFour = toDolIndex === 4 ? '<i class="fas fa-arrow-right"></i> ' + calcSecond + ' ' + row[3].fromTitle : ''
     const exchFour = toDolIndex === 4 ? ' <a target="_blank" href="https://www.bestchange.ru/index.php?id=' + row[3].changer + '&from=' + row[3].from + '&to=' + row[3].to + '&url=1">'
-    + ' <i class="fas fa-arrow-right"></i> - ' + row[3].changerTitle + '</a> ' + '(' + row[3].give + ':' + row[3].receive + '; ' + row[3].amount + ') <br>' : ''
+    + ' <i class="fas fa-arrow-right"></i> - ' + row[3].changerTitle + '</a> ' + '(' + row[3].give + ':' + row[3].receive + '; '
+    + row[3].amount.amount + ', ' + row[3].amount.dollarAmount.toFixed(4) + '$) <br>' : ''
     
     const exitSum = toDolIndex === 2 ? calcSecond : toDolIndex === 3 ? calcThird : calcFourth
     const endChain = '<span style="color: green"><i class="fas fa-arrow-right"></i> ' + exitSum + ' ' + row[0].fromTitle + '</span>'
-
+    // this.maxChainProfits[rowIndex] = (exitSum - sum).toFixed(4) + ' $'
     return currOne + exchOne + currTwo + exchTwo + currThree + exchThree + currFour + exchFour + endChain
   },
   loadItems: function() {
-      // this.chainSubscriptions = this.chainSubscriptions.substring(0, this.chainSubscriptions.length - 1)
+      this.maxChainProfits = []
+      if (this.links) {
+        this.minInterval = 11000
+        if (this.interval < 11000) this.interval = 11000
+      } else {
+        this.minInterval = 5000
+      }
       let subcribeParam = this.chainSubscriptions ? '&chainSubscriptions=' + this.chainSubscriptions : ''
       const ltThree = '&ltThreeLinks=' + this.links
       axios
       .get('http://localhost:9000/best-change?minBalance=' + this.minBalance + '&minProfit=' + this.minProfit + subcribeParam + ltThree)
       .then(response => {
         // eslint-disable-next-line 
-        console.log(response)
+        console.log(response.data)
 
         this.currentDataArr = response.data
-        this.rows = response.data.map(element => {
+        this.rows = response.data.sort((a, b) => a.length - b.length).map((element, i) => {
+
           if (this.notif && element) document.getElementById('aud').play()
           const toDolIndex = element.length - 3
           const btnText = element[element.length - 1] ? '-' : '+'
           const btnClass = (element[element.length - 1] ? 'red' : 'blue')
+          // const maxChainGain = element
           return {
             pin: '<a class="btn-floating waves-effect waves-light ' + btnClass + ' btn-small pl-btn">' + btnText + '</a>',
-            gain: (element[element.length - 2] * 10).toFixed(4) + ' $',
-            chain: this.getChainCol(element, toDolIndex),
+            gain: (element[element.length - 2] * 10).toFixed(4) + ' $ <br>' + this.calcChainProfit(element, element[element.length - 2]),
+            chain: this.getChainCol(element, toDolIndex, i),
             score: element[element.length - 2] / 100,
             age: this.rows.length ? this.getAgeOfChain(this.genId(element)) : 0,
-            links: '<i class="fas fa-arrow-right"></i>',
+            links: '<i class="fas fa-arrow-right" style="color: #039be5"></i>',
             id: this.genId(element)
           }
-        });
+        })
+        // this.insertChainProfit()
+        
         if (response.data.length) {
           this.notif = false
         } else {
@@ -200,10 +224,12 @@ export default {
     return {
       notif: false,
       chainSubscriptions: '',
-      minBalance: 100,
-      minProfit: 0,
+      minBalance: 0,
+      minProfit: -1,
       timer: 0,
-      interval: 10000,
+      interval: 100000,
+      minInterval: 5000,
+      maxChainProfits: [],
       currentDataArr: null,
       columns: [
         {
@@ -212,15 +238,17 @@ export default {
           html: true
         },
         {
-          label: 'Дохід з 1000$',
+          label: '1000$ / ланцюжок',
           field: 'gain',
-          globalSearchDisabled: true
+          html: true,
+          globalSearchDisabled: true,
+          width: '125px'
         },
         {
           label: 'Ланцюжки',
           field: 'chain',
           type: 'string',
-          html: true,
+          html: true
         },
         {
           label: '%',

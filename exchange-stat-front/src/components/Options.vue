@@ -20,10 +20,10 @@ export default {
     return {
       options: [
         {
-            text: "Find Three and Two",
+            text: "Не показувати 4-крокові ланцюжки",
             value: false
         }, {
-            text: "Find Four Only",
+            text: "Показувати 4-крокові ланцюжки",
             value: true
         }],
       searchType:  false
