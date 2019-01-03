@@ -71,6 +71,8 @@ export default {
     SettingsForm
   },
   mounted: function() {
+    this.minBalance = 100
+    this.minProfit = -1
     setInterval(() => {
       this.timer++
       this.rows.forEach(el => el.age++)
@@ -96,13 +98,32 @@ export default {
   },
   buildChainSubscriptions: function(chainRates) {
     if (chainRates[chainRates.length - 1]) {
-      this.chainSubscriptions = ''
+      let removeParams = ''
+      // this.chainSubscriptions ? 'n' : ''
+      for (let i = 0; i < chainRates.length - 3; i++) {
+        removeParams += (removeParams.length <= 1 ? '' : ';') + chainRates[i].from + ',' + chainRates[i].to + ',' + chainRates[i].changer
+      }
+      let removeIndex = this.chainSubscriptions.search(removeParams)
+      let removeCount = removeParams.length
+      if (this.chainSubscriptions[removeIndex - 1] === 'n') {
+        removeIndex -= 1
+        removeCount += 1
+      }
+      this.chainSubscriptions = this.chainSubscriptions.split('')
+      this.chainSubscriptions.splice(removeIndex, removeCount)
+      this.chainSubscriptions = this.chainSubscriptions.join('')
+      if (this.chainSubscriptions[0] === 'n') {
+        this.chainSubscriptions.split('')
+        this.chainSubscriptions.shift()
+        this.chainSubscriptions.join()
+      }
+      // eslint-disable-next-line
     } else {
       let getParams = this.chainSubscriptions ? 'n' : ''
       for (let i = 0; i < chainRates.length - 3; i++) {
         getParams += (getParams.length <= 1 ? '' : ';') + chainRates[i].from + ',' + chainRates[i].to + ',' + chainRates[i].changer
       }
-      this.chainSubscriptions += getParams
+      if (this.chainSubscriptions.search(getParams) < 0) this.chainSubscriptions += getParams
     }
   },
   updateInterval: function(interval) {
@@ -169,14 +190,13 @@ export default {
     
     const exitSum = toDolIndex === 2 ? calcSecond : toDolIndex === 3 ? calcThird : calcFourth
     const endChain = '<span style="color: green"><i class="fas fa-arrow-right"></i> ' + exitSum + ' ' + row[0].fromTitle + '</span>'
-    // this.maxChainProfits[rowIndex] = (exitSum - sum).toFixed(4) + ' $'
     return currOne + exchOne + currTwo + exchTwo + currThree + exchThree + currFour + exchFour + endChain
   },
   loadItems: function() {
       this.maxChainProfits = []
       if (this.links) {
-        this.minInterval = 11000
-        if (this.interval < 11000) this.interval = 11000
+        this.minInterval = 14000
+        if (this.interval < 14000) this.interval = 14000
       } else {
         this.minInterval = 5000
       }
@@ -224,10 +244,10 @@ export default {
     return {
       notif: false,
       chainSubscriptions: '',
-      minBalance: 0,
-      minProfit: -1,
+      minBalance: null,
+      minProfit: null,
       timer: 0,
-      interval: 100000,
+      interval: 30000,
       minInterval: 5000,
       maxChainProfits: [],
       currentDataArr: null,
