@@ -252,7 +252,7 @@ export default {
       minBalance: null,
       minProfit: null,
       timer: 0,
-      interval: 30000,
+      interval: 10000,
       minInterval: 5000,
       maxChainProfits: [],
       currentDataArr: null,
