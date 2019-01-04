@@ -9,7 +9,7 @@
         <SettingsForm/>
       </div>
       <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Заховати форму</a>
       </div>
     </div>
 
@@ -39,7 +39,7 @@
           <button class="btn waves-effect waves-light" type="button" name="action" v-on:click="loadItems()">Submit
             <i class="fas fa-arrow-right"></i>
           </button>
-          <a class="waves-effect waves-light btn-flat modal-trigger settings-trigger" href="#modal1">Settings</a>
+          <a class="waves-effect waves-light btn-flat modal-trigger settings-trigger" href="#modal1" v-on:click="showSettings = true">Settings</a>
         </div>
         
       </div>
@@ -81,6 +81,10 @@ export default {
     this.reloadInterval()
   },
   methods: {
+  // hideSettings: function(e) {
+  //   console.log(e)
+  //   this.showSettings = false
+  // },
   pinToTop: function(params) {
     const chainRates = this.currentDataArr[params.row.originalIndex]
     if (params.column.field === 'pin') {
@@ -113,7 +117,7 @@ export default {
       this.chainSubscriptions.splice(removeIndex, removeCount)
       this.chainSubscriptions = this.chainSubscriptions.join('')
       if (this.chainSubscriptions[0] === 'n') {
-        this.chainSubscriptions.split('')
+        this.chainSubscriptions = this.chainSubscriptions.split('')
         this.chainSubscriptions.shift()
         this.chainSubscriptions.join()
       }
@@ -242,6 +246,7 @@ export default {
   },
   data: function() {
     return {
+      showSettings: false,
       notif: false,
       chainSubscriptions: '',
       minBalance: null,
@@ -296,6 +301,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.hideModal {
+  display: none
+}
+.hideModalOverlay .modal-overlay {
+  display: none
+}
 .settings-trigger {
   position: absolute;
   right: 0;

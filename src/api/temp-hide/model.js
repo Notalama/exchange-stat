@@ -4,7 +4,6 @@ const { Schema } = require('mongoose')
 const tempHideSchema = new Schema({
   inCurrencyTitle: {
     type: String,
-    index: true,
     trim: true
   },
   inCurrencyId: {
@@ -13,7 +12,6 @@ const tempHideSchema = new Schema({
   },
   outCurrencyTitle: {
     type: String,
-    index: true,
     trim: true
   },
   outCurrencyId: {

@@ -24,6 +24,7 @@
         </select>
       </div>
     </div>
+    <p v-if="!formData.inCurr.currencyId && !formData.outCurr.currencyId" style="color: red">Необхідно обрати валюту</p>
     <div class="row">
       <div class="input-field col s12">
         <p class="s-label">Обмінник</p>
@@ -38,7 +39,7 @@
             {{exchanger.exchangerTitle}}
           </option>
         </select>
-        <p :if="error" style="color: red">Необхідно обрати обмінник</p>
+        <p v-if="!formData.changer.exchangerId" style="color: red">Необхідно обрати обмінник</p>
       </div>
     </div>
     <div class="row">
@@ -62,19 +63,16 @@
       </div>
     </div>
     <div class="row">
-      <!-- <a href="#!"> -->
-        <button :disabled="isDisabled" class="btn waves-effect waves-light" type="submit" name="action">Submit
-          <i class="fas fa-arrow-right"></i>
-        </button>
-      <!-- </a> -->
+      <button type="submit" v-bind:disabled="!formData.changer.exchangerId || (!formData.inCurr.currencyId && !formData.outCurr.currencyId)"
+       class="btn waves-effect waves-light">Submit
+        <i class="fas fa-arrow-right"></i>
+      </button>
     </div>
   </form>
   
 </template>
-<script src="/path/to/vue-router.js"></script>
 <script>
 import axios from 'axios'
-
 export default {
   name: "SettingsForm",
   methods: {
@@ -90,11 +88,35 @@ export default {
           outCurrencyId: this.formData.outCurr.currencyId,
           changerTitle: this.formData.changer.exchangerTitle,
           changerId: this.formData.changer.exchangerId,
-          hidePeriod: this.formData.days * 86400000 + this.formData.hours * 3600000 + this.formData.minutes * 60000
+          hidePeriod: (this.formData.days || 0) * 86400000 + (this.formData.hours || 0) * 3600000 + (this.formData.minutes || 0) * 60000
         }
         axios.post('http://localhost:9000/temp-hide', params).then(response => {
-          router.push('/')
+          // eslint-disable-next-line
+          console.log(response)
+          if (response.status === 200) {
+            this.resetForm()
+            // this.$emit('hideform', false)
+          }
         })
+      }
+    },
+    resetForm: function () {
+      this.formData = {
+        inCurr: {
+          currencyId: undefined,
+          currencyTitle: undefined
+        },
+        outCurr: {
+          currencyId: undefined,
+          currencyTitle: undefined
+        },
+        changer: {
+          exchangerId: undefined,
+          exchangerTitle: undefined
+        },
+        days: undefined,
+        hours: 1,
+        minutes: undefined
       }
     },
     onSelectChange: function () {
@@ -114,9 +136,7 @@ export default {
         // console.log(response.data)
         if (response.data && response.status === 200) this.exchangers = response.data
       })
-    }
-  },
-  computed: {
+    },
     isDisabled: function () {
       return !this.formData.changer.exchangerId
     }
@@ -125,20 +145,20 @@ export default {
     return {
       formData: {
         inCurr: {
-          currencyId: null,
-          currencyTitle: null
+          currencyId: undefined,
+          currencyTitle: undefined
         },
         outCurr: {
-          currencyId: null,
-          currencyTitle: null
+          currencyId: undefined,
+          currencyTitle: undefined
         },
         changer: {
-          exchangerId: null,
-          exchangerTitle: null
+          exchangerId: undefined,
+          exchangerTitle: undefined
         },
-        days: null,
-        hours: null,
-        minutes: null
+        days: undefined,
+        hours: 1,
+        minutes: undefined
       },
       error: false,
       exchangers: [],
