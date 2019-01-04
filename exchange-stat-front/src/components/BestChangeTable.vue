@@ -71,8 +71,8 @@ export default {
     SettingsForm
   },
   mounted: function() {
-    this.minBalance = 50
-    this.minProfit = 0
+    this.minBalance = 100
+    this.minProfit = 0.4
     setInterval(() => {
       this.timer++
       this.rows.forEach(el => el.age++)
