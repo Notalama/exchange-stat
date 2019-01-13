@@ -17,7 +17,7 @@ module.exports = {
           res.status(400).send('something went wrong on filtering currencies')
         })
       }
-    })
+    }).sort({'currencyTitle': 1})
   },
   show: ({
     querymen: {

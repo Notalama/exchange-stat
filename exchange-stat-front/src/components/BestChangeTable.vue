@@ -44,7 +44,12 @@
         
       </div>
     </div>
-    <input v-model="searchTerm" type="text">
+    <div class="container">
+      <div class="input-field s6">
+        <input v-model="searchTerm" type="text" id="searchTerm">
+        <label for="searchTerm">Search</label>
+      </div>
+    </div>
     <vue-good-table
       mode="remote"
       class="bc-table"

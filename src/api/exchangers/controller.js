@@ -17,7 +17,7 @@ module.exports = {
           res.status(400).send('something went wrong on filtering currencies')
         })
       }
-    })
+    }).sort({'exchangerTitle': 1})
   },
   show: (query, res, next) => {
     exchangersModel.findOne(query, (err, result) => {
