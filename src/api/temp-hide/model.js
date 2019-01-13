@@ -24,8 +24,7 @@ const tempHideSchema = new Schema({
   },
   changerId: {
     type: String,
-    trim: true,
-    required: true
+    trim: true
   },
   hidePeriod: {
     type: Number,

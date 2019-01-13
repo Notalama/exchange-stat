@@ -24,7 +24,7 @@
         </select>
       </div>
     </div>
-    <p v-if="!formData.inCurr.currencyId && !formData.outCurr.currencyId" style="color: red">Необхідно обрати валюту</p>
+    <p v-if="!formData.changer.exchangerId && !formData.inCurr.currencyId && !formData.outCurr.currencyId" style="color: red">Необхідно обрати валюту або обмінник</p>
     <div class="row">
       <div class="input-field col s12">
         <p class="s-label">Обмінник</p>
@@ -39,7 +39,7 @@
             {{exchanger.exchangerTitle}}
           </option>
         </select>
-        <p v-if="!formData.changer.exchangerId" style="color: red">Необхідно обрати обмінник</p>
+        <p v-if="!formData.changer.exchangerId && !formData.inCurr.currencyId && !formData.outCurr.currencyId" style="color: red">Необхідно обрати валюту або обмінник</p>
       </div>
     </div>
     <div class="row">
@@ -63,7 +63,7 @@
       </div>
     </div>
     <div class="row">
-      <button type="submit" v-bind:disabled="!formData.changer.exchangerId || (!formData.inCurr.currencyId && !formData.outCurr.currencyId)"
+      <button type="submit" v-bind:disabled="!formData.changer.exchangerId && !formData.inCurr.currencyId && !formData.outCurr.currencyId"
        class="btn waves-effect waves-light">Submit
         <i class="fas fa-arrow-right"></i>
       </button>
@@ -78,7 +78,7 @@ export default {
   methods: {
     checkForm: function(event) {
       event.preventDefault()
-      if (!this.formData.changer) {
+      if (!this.formData.changer && !this.formData.inCurr.currencyId && !this.formData.outCurr.currencyId) {
         this.error = true
       } else {
         const params = {
