@@ -83,7 +83,7 @@ export default {
   },
   mounted: function() {
     this.minBalance = 100
-    this.minProfit = -2
+    this.minProfit = 0.4
     setInterval(() => {
       this.timer++
       this.rows.forEach(el => el.age++)
