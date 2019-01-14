@@ -2,7 +2,9 @@
   <form
     @submit="sendForm"
     method="post">
+      <h2>Редактор ланцюжків</h2>
     <div class="row">
+      <div class="container">
       <div class="input-field col s4">
         <p class="s-label">Перший крок</p>
         <select class="browser-default" v-model="formData.firstStep">
@@ -10,6 +12,8 @@
           <option v-for="currency in currencies" :value="currency" :key="currency.currencyId">{{currency.currencyTitle}}</option>
         </select>
       </div>
+      </div>
+      <div class="container">
       <div class="input-field col s4">
         <p class="s-label">Другий крок</p>
         <select class="browser-default" v-model="formData.secondStep">
@@ -17,6 +21,8 @@
           <option v-for="currency in currencies" :value="currency" :key="currency.currencyId">{{currency.currencyTitle}}</option>
         </select>
       </div>
+      </div>
+      <div class="container">
       <div class="input-field col s4">
         <p class="s-label">Третій крок</p>
         <select class="browser-default" v-model="formData.thirdStep">
@@ -24,10 +30,13 @@
           <option v-for="currency in currencies" :value="currency" :key="currency.currencyId">{{currency.currencyTitle}}</option>
         </select>
       </div>
+      </div>
     </div>
-    <div class="input-field col s6">
-      <input id="first_name" type="number" class="validate" placeholder="Min Balance" v-model="formData.minBalance">
-      <label for="first_name">Min Balance $</label>
+    <div class="container">
+      <div class="input-field col s6">
+        <input id="first_name" type="number" class="validate" placeholder="Min Balance" v-model="formData.minBalance">
+        <label for="first_name">Min Balance $</label>
+      </div>
     </div>
     <div class="row">
       <button type="submit" v-bind:disabled="!formData.secondStep.currencyId || !formData.thirdStep.currencyId || !formData.firstStep.currencyId || !formData.minBalance" 
@@ -55,12 +64,13 @@ export default {
           secondStepId: this.formData.secondStep.currencyId,
           thirdStepTitle: this.formData.thirdStep.currencyTitle,
           thirdStepId: this.formData.thirdStep.currencyId,
+          minBalance: this.formData.minBalance
         }
         axios.post('http://localhost:9000/custom-chain', data).then(response => {
           // eslint-disable-next-line
           console.log(response)
           if (response.status === 200) {
-            this.resetForm()
+            
             // this.$emit('hideform', false)
           }
         })
@@ -100,3 +110,12 @@ export default {
   }
 };
 </script>
+
+<style>
+h2 {
+  text-align: center;
+}
+.btn {
+  margin-left: 45%;
+}
+</style>
