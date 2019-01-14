@@ -2,6 +2,7 @@ const hideParamsModel = require('./../../api/hide-params/model')
 const bonusesModel = require('./../../api/bonuses/model')
 const commissionModel = require('./../../api/commision/model')
 const tempHideModel = require('./../../api/temp-hide/model')
+const { formatAndFilterRates } = require('./format-and-filter')
 module.exports = {
   formatRates: async (unformattedList, minAmount, minProfit, chainSubscriptions, ltThreeLinks) => {
     try {
@@ -41,6 +42,7 @@ module.exports = {
         else if (res === null) console.error('null bonuses found')
       })
       const absCommis = commissions.filter(el => el.commissionA[0])
+      formatAndFilterRates('tets')
       for (let i = 0; i < unformattedList.length; i++) {
         let rowArray = unformattedList[i].split(';')
         if (!omitValues[0].hiddenCurrencies.every(el => el !== rowArray[0] && (el !== rowArray[1]))) continue
