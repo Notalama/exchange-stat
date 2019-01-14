@@ -92,8 +92,8 @@ export default {
     this.reloadInterval()
   },
   methods: {
-    searchTable: function(params) {
-      this.rows = this.rows.filter(el => {
+    searchTable: function() {
+      this.rows = this.rowsCopy.filter(el => {
         return el.chain.search(this.searchTerm) >= 0
       })
     },
@@ -257,6 +257,7 @@ export default {
         }
         
         this.timer = 0
+        this.rowsCopy = this.rows
         this.searchTable()
       });
     }
@@ -312,7 +313,8 @@ export default {
           html: true
         }
       ],
-      rows: []
+      rows: [],
+      rowsCopy: []
     }
   }
 };
