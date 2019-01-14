@@ -1,7 +1,5 @@
 <template>
   <div class="hello">
-    
-
   <!-- Modal Structure -->
     <div id="modal1" class="modal">
       <div class="modal-content">
@@ -40,8 +38,8 @@
             <i class="fas fa-arrow-right"></i>
           </button>
           <a class="waves-effect waves-light btn-flat modal-trigger settings-trigger" href="#modal1" v-on:click="showSettings = true">Settings</a>
+          <a class="waves-effect waves-light btn-flat custom-chain-link" href="custom-chain" v-on:click="go">Побудувати ланцюжок <i class="fas fa-arrow-right"></i></a>
         </div>
-        
       </div>
     </div>
     <div class="container">
@@ -72,7 +70,7 @@
 <script>
 import axios from 'axios'
 import SettingsForm from './Settings-form.vue'
-
+import routes from '../routes'
 export default {
   name: "BestChangeTable",
   props: {
@@ -260,6 +258,16 @@ export default {
         this.rowsCopy = this.rows
         this.searchTable()
       });
+    },
+    go: function (event) {
+      event.preventDefault()
+      const route = event.target.pathname
+      this.$root.currentRoute = route
+        window.history.pushState(
+          null,
+          routes[route],
+          route
+        )
     }
   },
   data: function() {
@@ -346,6 +354,11 @@ export default {
 }
 .bc-table tr.v-table-row td {
   border: 1px solid #000;
+}
+.custom-chain-link {
+  position: absolute;
+  top: 30px;
+  right: 0px;
 }
 h3 {
   margin: 40px 0 0;
