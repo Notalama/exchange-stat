@@ -4,7 +4,7 @@ const commissionModel = require('./../../api/commision/model')
 const tempHideModel = require('./../../api/temp-hide/model')
 
 module.exports = {
-  formatAndFilterRates: async ({unformattedList = [], subscriptions = []}) => {
+  formatAndFilterRates: async ({unformattedList = [], subscriptions = [], amount = 0}) => {
     const result = {
       byCurr: [],
       readySubs: [],
@@ -64,14 +64,16 @@ module.exports = {
                 const bonus = bonuses.find(bon => bon.changer === rowArray[2])
                 if (bonus) rowArray = calcBonus(rowArray, bonus)
                 rowArray = calcCommission(rowArray, commissions)
-                result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
+                if (!amount) result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
+                else result.byCurr[id][rowArray[1]].push(rowArray.slice(0, 6))
               }
               break
             } else if (j === result.byCurr[id].length - 1) {
               const bonus = bonuses.find(bon => bon.changer === rowArray[2])
               if (bonus) rowArray = calcBonus(rowArray, bonus)
               rowArray = calcCommission(rowArray, commissions)
-              result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
+              if (!amount) result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
+              else result.byCurr[id][rowArray[1]].push(rowArray.slice(0, 6))
               break
             }
           }
@@ -81,13 +83,13 @@ module.exports = {
         const bonus = bonuses.find(bon => bon.changer === rowArray[2])
         if (bonus) rowArray = calcBonus(rowArray, bonus)
         rowArray = calcCommission(rowArray, commissions)
-        result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
+        !amount ? result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
+          : result.byCurr[id][rowArray[1]] = [rowArray.slice(0, 6)]
       }
     }
     return result
   }
 }
-
 
 function removeTempHidden (hideParams, rate) {
   const isInCurrInExch = hideParams.inCurrencyId && !hideParams.outCurrencyId && hideParams.changerId
@@ -122,7 +124,6 @@ function calcCommission (rate, commissions) {
   })
   return rate
 }
-
 
 function calcBonus (rate, bonus) {
   const forAll = bonus.from && !bonus.to

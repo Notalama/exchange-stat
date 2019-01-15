@@ -5,7 +5,8 @@ const Iconv = require('iconv').Iconv
 const {
   formatCurrencies,
   formatExchangers,
-  compileResponse
+  compileResponse,
+  formatOne
 } = require('./../../services/helpers/formatter')
 
 const exchangersModel = require('./../exchangers/model')
@@ -13,7 +14,7 @@ const currenciesModel = require('./../currencies/model')
 module.exports = {
   buildChain: (req, res, next) => {
     try {
-      const params = req.body
+      const {chain, amount} = req.body
       http.get('http://api.bestchange.ru/info.zip', (data) => {
         const {
           statusCode
@@ -49,7 +50,12 @@ module.exports = {
                 if (err) console.log('err', err)
               })
               // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
-              
+              await formatOne({ratesBuffer, chain: ['88', '165', '93'], amount: 5}).then(async (result) => {
+                let response
+                if (typeof result !== 'string') response = await compileResponse(result)
+                res.status(200).json(response)
+                zip.close()
+              })
             })
           })
         }

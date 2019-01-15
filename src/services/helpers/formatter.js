@@ -125,8 +125,30 @@ module.exports = {
       console.error('formatter err caught ---', rejectedValue)
     }
   },
-  formatOne: async (unformattedList) => {
+  formatOne: async ({unformattedList = [], chain = [], amount = 0}) => {
+    const {byCurr, absCommis} = await formatAndFilterRates({unformattedList, amount})
+    const builtChain = []
+    console.log(chain, 'chain')
+    chain.forEach((el, i) => {
+      const currFrom = byCurr[el[0]]
+      if (currFrom) {
+        if (currFrom[el[1]]) {
+          const currTo = currFrom[el[1]]
+          builtChain[i] = currTo.reduce((prev, curr) => {
+            const dollToCurr = byCurr[curr[1]][40] || 0
 
+            const isRateBetter = +curr[3] <= +prev[3] && +curr[4] >= +prev[4]
+            const rateAmout = +dollToCurr[4] > 1 ? +curr[5] * +dollToCurr[4] : +curr[5] / +dollToCurr[3]
+            curr[6] = rateAmout
+            return isRateBetter && rateAmout > amount ? curr : prev
+          })
+        } else return 'Select other currencies'
+      } else return 'Select other currencies'
+    })
+    console.log(builtChain)
+    const profit = calcChain(builtChain, absCommis)
+    const dolToInit = byCurr[40][builtChain[0]]
+    return builtChain.concat([profit, dolToInit])
   },
   formatCurrencies: async (unformattedList) => {
     const result = []
@@ -197,7 +219,7 @@ module.exports = {
           amount: {amount: el[5], dollarAmount: el[6]}
         })
       }
-      
+
       compiled.push(chain[chain.length - 1], chain[chain.length - 2], index < result.subs)
       response.push(compiled)
     })

@@ -34,5 +34,5 @@ router.use('/best-change', bestChange)
 router.use('/currencies', currencies)
 router.use('/exchangers', exchangers)
 router.use('/temp-hide', tempHide)
-router.use('./custom-chain', customChain)
+router.use('/custom-chain', customChain)
 module.exports = router
