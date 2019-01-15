@@ -132,11 +132,12 @@ module.exports = {
     chain.forEach((el, i) => {
       const currFrom = byCurr[el[0]]
       if (currFrom) {
-        if (currFrom[el[1]]) {
-          const currTo = currFrom[el[1]]
+        const currTo = currFrom[el[1]]
+        if (currTo) {
+          console.log(currTo)
           builtChain[i] = currTo.reduce((prev, curr) => {
             const dollToCurr = byCurr[curr[1]][40] || 0
-
+            console.log(curr)
             const isRateBetter = +curr[3] <= +prev[3] && +curr[4] >= +prev[4]
             const rateAmout = +dollToCurr[4] > 1 ? +curr[5] * +dollToCurr[4] : +curr[5] / +dollToCurr[3]
             curr[6] = rateAmout
@@ -145,7 +146,7 @@ module.exports = {
         } else return 'Select other currencies'
       } else return 'Select other currencies'
     })
-    console.log(builtChain)
+    console.log(builtChain, 'builtChain')
     const profit = calcChain(builtChain, absCommis)
     const dolToInit = byCurr[40][builtChain[0]]
     return builtChain.concat([profit, dolToInit])
