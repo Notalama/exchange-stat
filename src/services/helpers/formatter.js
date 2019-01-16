@@ -130,7 +130,9 @@ module.exports = {
     }
   },
   formatOne: async ({ratesBuffer = [], chain = [], amount = 0}) => {
-    const {profitArr, absCommis} = await formatAndFilterOne({unformattedList: ratesBuffer, chain, amount})
+    const {byCurr} = await formatAndFilterRates({unformattedList: ratesBuffer})
+
+    const {profitArr, absCommis} = await formatAndFilterOne({unformattedList: ratesBuffer, chain, amount, dollToAll: byCurr[40]})
     console.log(profitArr, '------profitArr')
     return profitArr
   },

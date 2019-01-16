@@ -91,7 +91,7 @@ module.exports = {
     }
     return result
   },
-  formatAndFilterOne: async ({unformattedList, chain, amount}) => {
+  formatAndFilterOne: async ({unformattedList, chain, amount, dollToAll}) => {
     const profitArr = []
     const omitValues = await hideParamsModel.find({}, (err, res) => {
       if (err) console.error(err, '--- omitValues err')
@@ -114,6 +114,7 @@ module.exports = {
       const isActual = new Date(el.createdAt).getTime() + el.hidePeriod - new Date().getTime()
       if (isActual < 0) tempHideModel.deleteOne({_id: el._id}, (err, doc) => err ? console.error(err, '--- removeTempHidden err') : console.log(doc))
     })
+    
     for (let i = 0; i < unformattedList.length; i++) {
       let rowArray = unformattedList[i].split(';')
       const toRemove = filterOmitValues({
@@ -126,7 +127,6 @@ module.exports = {
       for (let j = 0; j < chain.length; j++) {
         const currIdTo = (j + 1) < (chain.length) ? j + 1 : 0
         if (chain[j] === rowArray[0] && chain[currIdTo] === rowArray[1]) {
-          console.log(currIdTo, 'ccurridto')
           if (profitArr[j] !== undefined) {
             const bonus = bonuses.find(bon => bon.changer === rowArray[2])
             if (bonus) rowArray = calcBonus(rowArray, bonus)
@@ -141,7 +141,6 @@ module.exports = {
         }
       }
     }
-    console.log(profitArr, 'chain in async')
     return {profitArr, absCommis}
   }
 }
