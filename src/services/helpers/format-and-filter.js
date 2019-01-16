@@ -4,17 +4,18 @@ const commissionModel = require('./../../api/commision/model')
 const tempHideModel = require('./../../api/temp-hide/model')
 const {filterOmitValues} = require('./filter-hidden')
 module.exports = {
-  formatAndFilterRates: async ({unformattedList = [], subscriptions = [], amount = 0}) => {
+  formatAndFilterRates: async ({unformattedList = [], subscriptions = [], omitValues = null}) => {
     const result = {
       byCurr: [],
       readySubs: [],
-      absCommis: [],
-      omitValues: []
+      absCommis: []
     }
-    result.omitValues = await hideParamsModel.find({}, (err, res) => {
-      if (err) console.error(err, '--- omitValues err')
-      else if (res === null) console.error('null hideparams found')
-    })
+    if (!omitValues) {
+      omitValues = await hideParamsModel.find({}, (err, res) => {
+        if (err) console.error(err, '--- omitValues err')
+        else if (res === null) console.error('null hideparams found')
+      })
+    }
     const bonuses = await bonusesModel.find({}, (err, res) => {
       if (err) console.error(err, '--- bonuses err')
       else if (res === null) console.error('null bonuses found')
@@ -35,10 +36,10 @@ module.exports = {
 
     for (let i = 0; i < unformattedList.length; i++) {
       let rowArray = unformattedList[i].split(';')
-      const toRemove = await filterOmitValues({
+      const toRemove = filterOmitValues({
         rowArray,
-        hiddenCurrencies: result.omitValues[0].hiddenCurrencies,
-        hiddenExchangers: result.omitValues[0].hiddenExchangers,
+        hiddenCurrencies: omitValues[0].hiddenCurrencies,
+        hiddenExchangers: omitValues[0].hiddenExchangers,
         tempHiddens
       })
       if (toRemove) continue
@@ -63,21 +64,19 @@ module.exports = {
           if (result.byCurr[id][j]) {
             const el = result.byCurr[id][j]
             if (rowArray[1] === el[1]) {
+              const bonus = bonuses.find(bon => bon.changer === rowArray[2])
+              if (bonus) rowArray = calcBonus(rowArray, bonus)
+              rowArray = calcCommission(rowArray, commissions)
               const isProfitable = +rowArray[3] <= +el[3] && +rowArray[4] >= +el[4]
               if (isProfitable) {
-                const bonus = bonuses.find(bon => bon.changer === rowArray[2])
-                if (bonus) rowArray = calcBonus(rowArray, bonus)
-                rowArray = calcCommission(rowArray, commissions)
-                if (!amount) result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
-                else result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
+                result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
               }
               break
             } else if (j === result.byCurr[id].length - 1) {
               const bonus = bonuses.find(bon => bon.changer === rowArray[2])
               if (bonus) rowArray = calcBonus(rowArray, bonus)
               rowArray = calcCommission(rowArray, commissions)
-              if (!amount) result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
-              else result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
+              result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
               break
             }
           }
@@ -87,12 +86,63 @@ module.exports = {
         const bonus = bonuses.find(bon => bon.changer === rowArray[2])
         if (bonus) rowArray = calcBonus(rowArray, bonus)
         rowArray = calcCommission(rowArray, commissions)
-        !amount ? result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
-          : result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
+        result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
       }
     }
-    console.log(result)
     return result
+  },
+  formatAndFilterOne: async ({unformattedList, chain, amount}) => {
+    const profitArr = []
+    const omitValues = await hideParamsModel.find({}, (err, res) => {
+      if (err) console.error(err, '--- omitValues err')
+      else if (res === null) console.error('null hideparams found')
+    })
+    const commissions = await commissionModel.find({}, (err, res) => {
+      if (err) console.error(err, '--- bonuses err')
+      else if (res === null) console.error('null bonuses found')
+    })
+    const absCommis = commissions.filter(el => el.commissionA[0])
+    const bonuses = await bonusesModel.find({}, (err, res) => {
+      if (err) console.error(err, '--- bonuses err')
+      else if (res === null) console.error('null bonuses found')
+    })
+    const tempHiddens = await tempHideModel.find({}, (err, res) => {
+      if (err) console.error(err, '--- tempHideModel err')
+      else if (res === null) console.error('null tempHiddens found')
+    })
+    tempHiddens.forEach(el => {
+      const isActual = new Date(el.createdAt).getTime() + el.hidePeriod - new Date().getTime()
+      if (isActual < 0) tempHideModel.deleteOne({_id: el._id}, (err, doc) => err ? console.error(err, '--- removeTempHidden err') : console.log(doc))
+    })
+    for (let i = 0; i < unformattedList.length; i++) {
+      let rowArray = unformattedList[i].split(';')
+      const toRemove = filterOmitValues({
+        rowArray,
+        hiddenCurrencies: omitValues[0].hiddenCurrencies,
+        hiddenExchangers: omitValues[0].hiddenExchangers,
+        tempHiddens
+      })
+      if (toRemove) continue
+      for (let j = 0; j < chain.length; j++) {
+        const currIdTo = (j + 1) < (chain.length) ? j + 1 : 0
+        if (chain[j] === rowArray[0] && chain[currIdTo] === rowArray[1]) {
+          console.log(currIdTo, 'ccurridto')
+          if (profitArr[j] !== undefined) {
+            const bonus = bonuses.find(bon => bon.changer === rowArray[2])
+            if (bonus) rowArray = calcBonus(rowArray, bonus)
+            rowArray = calcCommission(rowArray, commissions)
+            const isProfitable = +rowArray[3] <= +profitArr[j][3] && +rowArray[4] >= +profitArr[j][4]
+            if (isProfitable) {
+              profitArr[j] = rowArray.slice(0, 6)
+            }
+          } else {
+            profitArr[j] = rowArray.slice(0, 6)
+          }
+        }
+      }
+    }
+    console.log(profitArr, 'chain in async')
+    return {profitArr, absCommis}
   }
 }
 

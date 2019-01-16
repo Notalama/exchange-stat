@@ -1,11 +1,15 @@
 const hideParamsModel = require('./../../api/hide-params/model')
-const { formatAndFilterRates } = require('./format-and-filter')
+const { formatAndFilterRates, formatAndFilterOne } = require('./format-and-filter')
 const exchangersModel = require('./../../api/exchangers/model')
 const currenciesModel = require('./../../api/currencies/model')
 module.exports = {
   formatRates: async (unformattedList, minAmount, minProfit, chainSubscriptions, ltThreeLinks) => {
     try {
       const profitArr = []
+      const omitValues = await hideParamsModel.find({}, (err, res) => {
+        if (err) console.error(err, '--- omitValues err')
+        else if (res === null) console.error('null hideparams found')
+      })
       const subscriptionsU = chainSubscriptions ? chainSubscriptions.split('n') : null
       const subscriptions = subscriptionsU ? subscriptionsU.map(el => el.split(';')) : null // to return
       if (subscriptions) {
@@ -16,7 +20,7 @@ module.exports = {
           })
         }
       }
-      const { byCurr, readySubs, absCommis, omitValues } = await formatAndFilterRates({unformattedList, subscriptions})
+      const { byCurr, readySubs, absCommis } = await formatAndFilterRates({unformattedList, subscriptions, omitValues})
 
       // **** two steps ****
       byCurr.forEach((currArr, a) => {
@@ -125,34 +129,10 @@ module.exports = {
       console.error('formatter err caught ---', rejectedValue)
     }
   },
-  formatOne: async ({unformattedList = [], chain = [], amount = 0}) => {
-    let byCurr = await formatAndFilterRates({unformattedList, amount})
-    byCurr = byCurr.byCurr
-    const absCommis = 0
-    const builtChain = []
-    console.log(byCurr, 'bycurr')
-    chain.forEach((el, i) => {
-      const currFrom = byCurr[el]
-      console.log(currFrom)
-      if (currFrom) {
-        const currTo = currFrom[i < chain.length - 1 ? i + 1 : 0]
-        if (currTo) {
-          console.log(currTo, 'currTo')
-          builtChain[i] = currTo.reduce((prev, curr) => {
-            const dollToCurr = byCurr[curr[1]][40] || 0
-            console.log(curr)
-            const isRateBetter = +curr[3] <= +prev[3] && +curr[4] >= +prev[4]
-            const rateAmout = +dollToCurr[4] > 1 ? +curr[5] * +dollToCurr[4] : +curr[5] / +dollToCurr[3]
-            curr[6] = rateAmout
-            return isRateBetter && rateAmout > amount ? curr : prev
-          })
-        } else return 'Select other currencies'
-      } else return 'Select other currencies'
-    })
-    console.log(builtChain, 'builtChain')
-    const profit = calcChain(builtChain, absCommis)
-    const dolToInit = byCurr[40][builtChain[0]]
-    return builtChain.concat([profit, dolToInit])
+  formatOne: async ({ratesBuffer = [], chain = [], amount = 0}) => {
+    const {profitArr, absCommis} = await formatAndFilterOne({unformattedList: ratesBuffer, chain, amount})
+    console.log(profitArr, '------profitArr')
+    return profitArr
   },
   formatCurrencies: async (unformattedList) => {
     const result = []

@@ -50,7 +50,12 @@ module.exports = {
                 if (err) console.log('err', err)
               })
               // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
-              await formatOne({ratesBuffer, chain, amount}).then(async (result) => {
+
+              await formatOne({
+                ratesBuffer: ratesBuffer.split('\n'),
+                chain,
+                amount
+              }).then(async (result) => {
                 let response
                 if (typeof result !== 'string') response = await compileResponse(result)
                 res.status(200).json(response)

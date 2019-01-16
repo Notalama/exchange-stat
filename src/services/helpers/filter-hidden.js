@@ -14,7 +14,7 @@ module.exports = {
     })
     return exchangers.filter(currency => omitValues[0].hiddenExchangers.every(el => el !== currency.exchangerId))
   },
-  filterOmitValues: async ({rowArray = [], hiddenCurrencies = [], hiddenExchangers = [], tempHiddens = []}) => {
+  filterOmitValues: ({rowArray = [], hiddenCurrencies = [], hiddenExchangers = [], tempHiddens = []}) => {
     if (!hiddenCurrencies.every(el => el !== rowArray[0] && (el !== rowArray[1]))) return true
     if (!hiddenExchangers.every(el => el !== rowArray[2] && +rowArray[5] > 0.01)) return true
     if (!tempHiddens.every(el => removeTempHidden(el, rowArray))) return true
