@@ -127,6 +127,8 @@ module.exports = {
       for (let j = 0; j < chain.length; j++) {
         const currIdTo = (j + 1) < (chain.length) ? j + 1 : 0
         if (chain[j] === rowArray[0] && chain[currIdTo] === rowArray[1]) {
+          const dollToCurr = dollToAll[rowArray[1]]
+          if (!rowArray[6]) rowArray[6] = dollToCurr ? +dollToCurr[4] > 1 ? +rowArray[5] * +dollToCurr[4] : +rowArray[5] / +dollToCurr[3] : +amount
           if (profitArr[j] !== undefined) {
             const bonus = bonuses.find(bon => bon.changer === rowArray[2])
             if (bonus) rowArray = calcBonus(rowArray, bonus)
@@ -169,4 +171,14 @@ function calcBonus (rate, bonus) {
   const forPair = bonus.from && bonus.to && rate[1] === bonus.to && bonus.from === rate[0]
   if (forAll || forOneCurr || forPair) +rate[4] > 1 ? rate[4] = +rate[4] * (+bonus.multi / 100 + 1) : rate[3] = +rate[3] / (+bonus.multi / 100 + 1)
   return rate
+}
+
+function calcAmountToDoll (chain, allRates, minAmount) {
+  let exchHaveEnoughMoney = true
+  chain.forEach(rate => {
+    const dollToCurr = allRates[rate[1]][40]
+    if (!rate[6]) rate[6] = dollToCurr ? +dollToCurr[4] > 1 ? +rate[5] * +dollToCurr[4] : +rate[5] / +dollToCurr[3] : +minAmount
+    if (rate[6] <= +minAmount) exchHaveEnoughMoney = false
+  })
+  return {chain, exchHaveEnoughMoney}
 }
