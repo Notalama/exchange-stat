@@ -146,7 +146,7 @@ export default {
       if (interval >= 0 || this.interval >= this.minInterval) this.interval += interval
     },
     reloadInterval: function() {
-      // this.loadItems()
+      this.loadItems()
       setTimeout(() => {
         this.reloadInterval()
       }, this.interval);
