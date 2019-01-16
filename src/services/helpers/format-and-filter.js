@@ -2,7 +2,7 @@ const hideParamsModel = require('./../../api/hide-params/model')
 const bonusesModel = require('./../../api/bonuses/model')
 const commissionModel = require('./../../api/commision/model')
 const tempHideModel = require('./../../api/temp-hide/model')
-
+const {filterOmitValues} = require('./filter-hidden')
 module.exports = {
   formatAndFilterRates: async ({unformattedList = [], subscriptions = [], amount = 0}) => {
     const result = {
@@ -35,9 +35,13 @@ module.exports = {
 
     for (let i = 0; i < unformattedList.length; i++) {
       let rowArray = unformattedList[i].split(';')
-      if (!result.omitValues[0].hiddenCurrencies.every(el => el !== rowArray[0] && (el !== rowArray[1]))) continue
-      if (!result.omitValues[0].hiddenExchangers.every(el => el !== rowArray[2] && +rowArray[5] > 0.01)) continue
-      if (!tempHiddens.every(el => removeTempHidden(el, rowArray))) continue
+      const toRemove = await filterOmitValues({
+        rowArray,
+        hiddenCurrencies: result.omitValues[0].hiddenCurrencies,
+        hiddenExchangers: result.omitValues[0].hiddenExchangers,
+        tempHiddens
+      })
+      if (toRemove) continue
       if (subscriptions) {
         // *** pin to top the subscriptions
         const rowId = rowArray[0] + rowArray[1] + rowArray[2]
@@ -65,7 +69,7 @@ module.exports = {
                 if (bonus) rowArray = calcBonus(rowArray, bonus)
                 rowArray = calcCommission(rowArray, commissions)
                 if (!amount) result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
-                else result.byCurr[id][rowArray[1]].push(rowArray.slice(0, 6))
+                else result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
               }
               break
             } else if (j === result.byCurr[id].length - 1) {
@@ -73,7 +77,7 @@ module.exports = {
               if (bonus) rowArray = calcBonus(rowArray, bonus)
               rowArray = calcCommission(rowArray, commissions)
               if (!amount) result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
-              else result.byCurr[id][rowArray[1]].push(rowArray.slice(0, 6))
+              else result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
               break
             }
           }
@@ -84,27 +88,12 @@ module.exports = {
         if (bonus) rowArray = calcBonus(rowArray, bonus)
         rowArray = calcCommission(rowArray, commissions)
         !amount ? result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
-          : result.byCurr[id][rowArray[1]] = [rowArray.slice(0, 6)]
+          : result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
       }
     }
+    console.log(result)
     return result
   }
-}
-
-function removeTempHidden (hideParams, rate) {
-  const isInCurrInExch = hideParams.inCurrencyId && !hideParams.outCurrencyId && hideParams.changerId
-  const isOutCurrInExch = !hideParams.inCurrencyId && hideParams.outCurrencyId && hideParams.changerId
-  const isPairWithoutExch = hideParams.inCurrencyId && hideParams.outCurrencyId && !hideParams.changerId
-  const isPairInExchanger = hideParams.inCurrencyId && hideParams.outCurrencyId && hideParams.changerId
-  let toRemove = false
-  if (isInCurrInExch) toRemove = rate[0] === hideParams.inCurrencyId && rate[2] === hideParams.changerId
-  else if (isOutCurrInExch) toRemove = rate[1] === hideParams.outCurrencyId && rate[2] === hideParams.changerId
-  else if (isPairWithoutExch) toRemove = rate[0] === hideParams.inCurrencyId && rate[1] === hideParams.outCurrencyId
-  else if (isPairInExchanger) toRemove = rate[0] === hideParams.inCurrencyId && rate[1] === hideParams.outCurrencyId && rate[2] === hideParams.changerId
-  else {
-    toRemove = rate[0] === hideParams.inCurrencyId || rate[1] === hideParams.outCurrencyId || rate[2] === hideParams.changerId
-  }
-  return !toRemove
 }
 
 function calcCommission (rate, commissions) {

@@ -126,13 +126,16 @@ module.exports = {
     }
   },
   formatOne: async ({unformattedList = [], chain = [], amount = 0}) => {
-    const {byCurr, absCommis} = await formatAndFilterRates({unformattedList, amount})
+    let byCurr = await formatAndFilterRates({unformattedList, amount})
+    byCurr = byCurr.byCurr
+    const absCommis = 0
     const builtChain = []
-    console.log(chain, 'chain')
+    console.log(byCurr, 'bycurr')
     chain.forEach((el, i) => {
-      const currFrom = byCurr[el[0]]
+      const currFrom = byCurr[el]
+      console.log(currFrom)
       if (currFrom) {
-        const currTo = currFrom[el[1]]
+        const currTo = currFrom[i < chain.length - 1 ? i + 1 : 0]
         if (currTo) {
           console.log(currTo, 'currTo')
           builtChain[i] = currTo.reduce((prev, curr) => {

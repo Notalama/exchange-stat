@@ -15,7 +15,6 @@ module.exports = {
   buildChain: (req, res, next) => {
     try {
       const {chain, amount} = req.body
-      console.log(req.body, 'req body -----')
       http.get('http://api.bestchange.ru/info.zip', (data) => {
         const {
           statusCode
