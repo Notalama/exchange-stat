@@ -20,7 +20,7 @@ module.exports = {
         } = data
         if (statusCode !== 200) {
           res.status(400).send('info.zip not found', data)
-          throw console.error(data)
+          console.error(data)
         } else {
           const zipWriteBuffer = fs.createWriteStream('info.zip')
           data.pipe(zipWriteBuffer)
