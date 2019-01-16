@@ -1,4 +1,5 @@
 <template>
+<div>
   <form
     @submit="sendForm"
     method="post">
@@ -40,14 +41,25 @@
     </div>
     <div class="row">
       <button type="submit" v-bind:disabled="!formData.secondStep.currencyId || !formData.thirdStep.currencyId || !formData.firstStep.currencyId || !formData.minBalance" 
-      class="btn waves-effect waves-light">Submit
+      class="submit-btn btn waves-effect waves-light" v-on:click="loadChain()" >Submit
         <i class="fas fa-arrow-right"></i>
       </button>
     </div>
   </form>
+    <vue-good-table
+      mode="remote"
+      class="bc-table"
+      :columns="columns"
+      :rows="rows"
+      :sort-options="{
+        enabled: false
+      }"
+      />
+  </div>
 </template>
 
 <script>
+import helper from '../helper.js';
 import axios from 'axios'
 export default {
   name: "CustomChain",
@@ -66,14 +78,14 @@ export default {
           thirdStepId: this.formData.thirdStep.currencyId,
           minBalance: this.formData.minBalance
         }
-        axios.post('http://localhost:9000/custom-chain', data).then(response => {
-          // eslint-disable-next-line
-          console.log(response)
-          if (response.status === 200) {
+        // axios.post('http://localhost:9000/custom-chain', data).then(response => {
+        //   // eslint-disable-next-line
+        //   console.log(response)
+        //   if (response.status === 200) {
             
-            // this.$emit('hideform', false)
-          }
-        })
+        //     // this.$emit('hideform', false)
+        //   }
+        // })
       }
     },
   getCurrencies: function() {
@@ -83,6 +95,41 @@ export default {
         if (response.data && response.status === 200) this.currencies = response.data
       })
     },
+    loadChain: function() {
+    axios
+    .get('http://localhost:9000/best-change?minBalance=' + this.formData.minBalance + '&minProfit=-1&ltThreeLinks=false')
+      .then(response => {
+        // eslint-disable-next-line 
+        console.log(response.data)
+
+        this.currentDataArr = response.data
+        this.rows = response.data.map((element, i) => {
+
+          if (this.notif && element) document.getElementById('aud').play()
+          const toDolIndex = element.length - 3
+          // const btnText = element[element.length - 1] ? '-' : '+'
+          // const btnClass = (element[element.length - 1] ? 'red' : 'blue')
+          // const maxChainGain = element
+          return {
+            gain: helper.calcChainProfit(element, element[element.length - 2]),
+            chain: helper.getChainCol(element, toDolIndex, i),
+            score: element[element.length - 2] / 100,
+            age: this.rows.length ? helper.getAgeOfChain(helper.genId(element)) : 0,
+            links: '<i class="fas fa-arrow-right" style="color: #039be5"></i>',
+            id: helper.genId(element)
+          }
+        })
+        // this.insertChainProfit()
+        
+        if (response.data.length) {
+          this.notif = false
+        } else {
+          this.rows = []
+          this.notif = true
+        }
+        this.rowsCopy = this.rows
+      });
+    }
   },
   data: function() {
     return {
@@ -102,7 +149,47 @@ export default {
         minBalance: null
       },
       error: false,
-      currencies: []
+      currencies: [],
+      showSettings: false,
+      notif: false,
+      chainSubscriptions: '',
+      maxChainProfits: [],
+      currentDataArr: null,
+      columns: [
+        {
+          label: 'Max Profit',
+          field: 'gain',
+          html: true,
+          globalSearchDisabled: true,
+          width: '125px'
+        },
+        {
+          label: 'Ланцюжки',
+          field: 'chain',
+          type: 'string',
+          html: true,
+          globalSearchDisabled: false
+        },
+        {
+          label: '%',
+          field: 'score',
+          type: 'percentage',
+          globalSearchDisabled: true
+        },
+        {
+          label: 'Час с',
+          field: 'age',
+          tdClass: 'age',
+          globalSearchDisabled: true
+        },
+        {
+          label: '',
+          field: 'links',
+          html: true
+        }
+      ],
+      rows: [],
+      rowsCopy: []
     };
   },
   created: function() {
@@ -115,7 +202,8 @@ export default {
 h2 {
   text-align: center;
 }
-.btn {
-  margin-left: 45%;
+.submit-btn {
+  margin: 0 auto;
+  display: block;
 }
 </style>
