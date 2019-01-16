@@ -280,8 +280,6 @@ function calcAbsCommission (rate, sum, absCommis) {
 }
 
 function calcBonus (rate, bonus) {
-  const rateF = rate[3]
-  const rateT = rate[4]
   const forAll = !bonus.from && !bonus.to
   const forOneCurr = !bonus.from && bonus.to && rate[1] === bonus.to
   const forPair = bonus.from && bonus.to && rate[1] === bonus.to && bonus.from === rate[0]
