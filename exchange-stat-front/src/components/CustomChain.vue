@@ -138,10 +138,10 @@ export default {
       })
     },
   loadItems: function() {
-    axios.post('http://localhost:9000/custom-chain', {chain: ['88', '165', '93'], amount: 5})
-      .then(response => {
+    // axios.post('http://localhost:9000/custom-chain', {chain: ['88', '165', '93'], amount: 5})
+    //   .then(response => {
         // eslint-disable-next-line 
-        console.log(response.data)
+        console.log(test)
         this.currentDataArr = test
         this.rows = test.map((element, i) => {
           if (this.notif && element) document.getElementById('aud').play()
@@ -166,34 +166,34 @@ export default {
           this.notif = true
         }
         this.rowsCopy = this.rows
-      }, 
-      (e) => {
-        this.currentDataArr = test
-        this.rows = test.map((element, i) => {
+    //   }, 
+    //   (e) => {
+    //     this.currentDataArr = test
+    //     this.rows = test.map((element, i) => {
 
-          if (this.notif && element) document.getElementById('aud').play()
-          const toDolIndex = element.length - 3
-          // const btnText = element[element.length - 1] ? '-' : '+'
-          // const btnClass = (element[element.length - 1] ? 'red' : 'blue')
-          // const maxChainGain = element
-          return {
-            gain: helper.calcChainProfit(element, element[element.length - 2]),
-            chain: helper.getChainCol(element, toDolIndex, i),
-            score: element[element.length - 2] / 100,
-            age: this.rows.length ? helper.getAgeOfChain(helper.genId(element)) : 0,
-            links: '<i class="fas fa-arrow-right" style="color: #039be5"></i>',
-            id: helper.genId(element)
-          }
-        })
-        // this.insertChainProfit()
-        if (test.length) {
-          this.notif = false
-        } else {
-          this.rows = []
-          this.notif = true
-        }
-        this.rowsCopy = this.rows
-      })
+    //       if (this.notif && element) document.getElementById('aud').play()
+    //       const toDolIndex = element.length - 3
+    //       // const btnText = element[element.length - 1] ? '-' : '+'
+    //       // const btnClass = (element[element.length - 1] ? 'red' : 'blue')
+    //       // const maxChainGain = element
+    //       return {
+    //         gain: helper.calcChainProfit(element, element[element.length - 2]),
+    //         chain: helper.getChainCol(element, toDolIndex, i),
+    //         score: element[element.length - 2] / 100,
+    //         age: this.rows.length ? helper.getAgeOfChain(helper.genId(element)) : 0,
+    //         links: '<i class="fas fa-arrow-right" style="color: #039be5"></i>',
+    //         id: helper.genId(element)
+    //       }
+    //     })
+    //     // this.insertChainProfit()
+    //     if (test.length) {
+    //       this.notif = false
+    //     } else {
+    //       this.rows = []
+    //       this.notif = true
+    //     }
+    //     this.rowsCopy = this.rows
+    //   })
     }
   },
   data: function() {

@@ -134,7 +134,7 @@ module.exports = {
       if (currFrom) {
         const currTo = currFrom[el[1]]
         if (currTo) {
-          console.log(currTo)
+          console.log(currTo, 'currTo')
           builtChain[i] = currTo.reduce((prev, curr) => {
             const dollToCurr = byCurr[curr[1]][40] || 0
             console.log(curr)
