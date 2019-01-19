@@ -3,17 +3,18 @@ const fs = require('fs')
 const StreamZip = require('node-stream-zip')
 const Iconv = require('iconv').Iconv
 const {
-  formatRates,
   formatCurrencies,
   formatExchangers,
-  compileResponse
+  compileResponse,
+  formatOne
 } = require('./../../services/helpers/formatter')
+
 const exchangersModel = require('./../exchangers/model')
 const currenciesModel = require('./../currencies/model')
 module.exports = {
-  index: (req, res, next) => {
+  buildChain: (req, res, next) => {
     try {
-      const { minBalance, minProfit, chainSubscriptions, ltThreeLinks } = req.query
+      const {chain, amount} = req.body
       http.get('http://api.bestchange.ru/info.zip', (data) => {
         const {
           statusCode
@@ -40,7 +41,6 @@ module.exports = {
               // const currencyTypes = formatCurrencies(cyBuffer.split('\n'))
               // currenciesModel.insertMany(currencyTypes, (err, val) => {
               //   if (err) console.log(err)
-              //   else console.log(val[0], 'success fill curr')
               // })
               const excahngers = zip.entryDataSync('bm_exch.dat')
               const excahngersBuffer = iconv.convert(excahngers).toString()
@@ -50,14 +50,14 @@ module.exports = {
                 if (err) console.log('err', err)
               })
               // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
-              await formatRates(
-                ratesBuffer.split('\n'),
-                +minBalance,
-                +minProfit,
-                chainSubscriptions,
-                JSON.parse(ltThreeLinks)
-              ).then(async result => {
-                const response = await compileResponse(result)
+
+              await formatOne({
+                ratesBuffer: ratesBuffer.split('\n'),
+                chain,
+                amount
+              }).then(async (result) => {
+                let response
+                if (typeof result !== 'string') response = await compileResponse(result)
                 res.status(200).json(response)
                 zip.close()
               })
