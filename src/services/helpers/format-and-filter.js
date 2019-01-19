@@ -4,7 +4,7 @@ const commissionModel = require('./../../api/commision/model')
 const tempHideModel = require('./../../api/temp-hide/model')
 const {filterOmitValues} = require('./filter-hidden')
 module.exports = {
-  formatAndFilterRates: async ({unformattedList = [], subscriptions = [], omitValues = null}) => {
+  formatAndFilterRates: async ({unformattedList = [], subscriptions = [], omitValues = null, minAmount = 0, bestRates = [], forDol = false}) => {
     const result = {
       byCurr: [],
       readySubs: [],
@@ -33,9 +33,9 @@ module.exports = {
       else if (res === null) console.error('null bonuses found')
     })
     result.absCommis = commissions.filter(el => el.commissionA[0])
-
     for (let i = 0; i < unformattedList.length; i++) {
       let rowArray = unformattedList[i].split(';')
+      rowArray.splice(6, rowArray.length)
       const toRemove = filterOmitValues({
         rowArray,
         hiddenCurrencies: omitValues[0].hiddenCurrencies,
@@ -69,14 +69,14 @@ module.exports = {
               rowArray = calcCommission(rowArray, commissions)
               const isProfitable = +rowArray[3] <= +el[3] && +rowArray[4] >= +el[4]
               if (isProfitable) {
-                result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
+                result.byCurr[id][rowArray[1]] = rowArray
               }
               break
             } else if (j === result.byCurr[id].length - 1) {
               const bonus = bonuses.find(bon => bon.changer === rowArray[2])
               if (bonus) rowArray = calcBonus(rowArray, bonus)
               rowArray = calcCommission(rowArray, commissions)
-              result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
+              result.byCurr[id][rowArray[1]] = rowArray
               break
             }
           }
@@ -86,12 +86,24 @@ module.exports = {
         const bonus = bonuses.find(bon => bon.changer === rowArray[2])
         if (bonus) rowArray = calcBonus(rowArray, bonus)
         rowArray = calcCommission(rowArray, commissions)
-        result.byCurr[id][rowArray[1]] = rowArray.slice(0, 6)
+        // to filter by dollar amount of changer
+        if (rowArray[1] === '40') {
+          result.byCurr.forEach(currArr => {
+            let rateAmount
+            if (currArr[rowArray[1]]) {
+              rateAmount = calcDollAmount(currArr[rowArray[1]][5], rowArray, minAmount)
+              if (rateAmount < +minAmount) currArr[rowArray[1]] = undefined
+              else currArr[rowArray[1]][6] = rateAmount
+            }
+          })
+        }
+        result.byCurr[id][rowArray[1]] = rowArray
       }
     }
     return result
   },
-  formatAndFilterOne: async ({unformattedList, chain, amount, dollToAll}) => {
+  formatAndFilterOne: async ({unformattedList, chain, amount, allRates}) => {
+    console.log(chain, 'chainnnnn')
     const profitArr = []
     const omitValues = await hideParamsModel.find({}, (err, res) => {
       if (err) console.error(err, '--- omitValues err')
@@ -114,12 +126,12 @@ module.exports = {
       const isActual = new Date(el.createdAt).getTime() + el.hidePeriod - new Date().getTime()
       if (isActual < 0) tempHideModel.deleteOne({_id: el._id}, (err, doc) => err ? console.error(err, '--- removeTempHidden err') : console.log(doc))
     })
-    
     for (let i = 0; i < unformattedList.length; i++) {
       let rowArray = unformattedList[i].split(';')
+      rowArray.splice(6, rowArray.length)
       const toRemove = filterOmitValues({
         rowArray,
-        hiddenCurrencies: omitValues[0].hiddenCurrencies,
+        // hiddenCurrencies: omitValues[0].hiddenCurrencies,
         hiddenExchangers: omitValues[0].hiddenExchangers,
         tempHiddens
       })
@@ -127,18 +139,20 @@ module.exports = {
       for (let j = 0; j < chain.length; j++) {
         const currIdTo = (j + 1) < (chain.length) ? j + 1 : 0
         if (chain[j] === rowArray[0] && chain[currIdTo] === rowArray[1]) {
-          const dollToCurr = dollToAll[rowArray[1]]
+          const dollToCurr = allRates[rowArray[1]][40]
           if (!rowArray[6]) rowArray[6] = dollToCurr ? +dollToCurr[4] > 1 ? +rowArray[5] * +dollToCurr[4] : +rowArray[5] / +dollToCurr[3] : +amount
+          if (+rowArray[6] <= +amount) continue
+          // console.log(rowArray[6], 'roarray')
           if (profitArr[j] !== undefined) {
             const bonus = bonuses.find(bon => bon.changer === rowArray[2])
             if (bonus) rowArray = calcBonus(rowArray, bonus)
             rowArray = calcCommission(rowArray, commissions)
             const isProfitable = +rowArray[3] <= +profitArr[j][3] && +rowArray[4] >= +profitArr[j][4]
             if (isProfitable) {
-              profitArr[j] = rowArray.slice(0, 6)
+              profitArr[j] = rowArray
             }
           } else {
-            profitArr[j] = rowArray.slice(0, 6)
+            profitArr[j] = rowArray
           }
         }
       }
@@ -173,12 +187,6 @@ function calcBonus (rate, bonus) {
   return rate
 }
 
-function calcAmountToDoll (chain, allRates, minAmount) {
-  let exchHaveEnoughMoney = true
-  chain.forEach(rate => {
-    const dollToCurr = allRates[rate[1]][40]
-    if (!rate[6]) rate[6] = dollToCurr ? +dollToCurr[4] > 1 ? +rate[5] * +dollToCurr[4] : +rate[5] / +dollToCurr[3] : +minAmount
-    if (rate[6] <= +minAmount) exchHaveEnoughMoney = false
-  })
-  return {chain, exchHaveEnoughMoney}
+function calcDollAmount (amount, dollRate) {
+  return +dollRate[4] > 1 ? +amount * +dollRate[4] : +amount / +dollRate[3]
 }

@@ -20,8 +20,7 @@ module.exports = {
           })
         }
       }
-      const { byCurr, readySubs, absCommis } = await formatAndFilterRates({unformattedList, subscriptions, omitValues})
-
+      let { byCurr, readySubs, absCommis } = await formatAndFilterRates({unformattedList, subscriptions, omitValues, minAmount})
       // **** two steps ****
       byCurr.forEach((currArr, a) => {
         currArr.forEach((firstEl, ind) => {
@@ -45,8 +44,8 @@ module.exports = {
         })
       })
       // **** three steps ****
-      byCurr.forEach((currArr, a) => {
-        currArr.forEach((firstEl, ind) => {
+      byCurr.forEach(currArr => {
+        currArr.forEach(firstEl => {
           if (firstEl && byCurr[firstEl[1]]) {
             byCurr[firstEl[1]].forEach(secondEl => {
               if (secondEl && byCurr[secondEl[1]]) {
@@ -131,10 +130,12 @@ module.exports = {
   },
   formatOne: async ({ratesBuffer = [], chain = [], amount = 0}) => {
     const {byCurr} = await formatAndFilterRates({unformattedList: ratesBuffer})
-
-    const {profitArr, absCommis} = await formatAndFilterOne({unformattedList: ratesBuffer, chain, amount, dollToAll: byCurr[40]})
-    console.log(profitArr, '------profitArr')
-    return profitArr
+    const result = await formatAndFilterOne({unformattedList: ratesBuffer, chain, amount, allRates: byCurr})
+    const dolToInit = byCurr[40][result.profitArr[0][0]]
+    const profit = calcChain(result.profitArr, result.absCommis)
+    result.profitArr = [result.profitArr.concat([profit, dolToInit])]
+    // result.profitArr.forEach((el, i) => result.profitArr[i].concat([calcChain(result.profitArr, result.absCommis), dolToInit]))
+    return result
   },
   formatCurrencies: async (unformattedList) => {
     const result = []
@@ -251,3 +252,6 @@ function calcAbsCommission (rate, sum, absCommis) {
   })
   return sum
 }
+// function getAllToDoll (unformattedList) {
+
+// }
