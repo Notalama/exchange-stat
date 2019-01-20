@@ -3,8 +3,8 @@ export default {
         const res = receive > give ? sum * receive : sum / give
         return res.toFixed(4)
     },    
-    getAgeOfChain: function(rowId) {
-        const pos = this.rows.find(el => el.id === rowId)
+    getAgeOfChain: function(rowId, rows) {
+        const pos = rows.find(el => el.id === rowId)
         if (pos) return pos.age || 0
         else return 0
       },

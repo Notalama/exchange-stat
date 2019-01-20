@@ -94,7 +94,7 @@ export default {
               gain: helper.calcChainProfit(element, element[element.length - 2]),
               chain: helper.getChainCol(element, toDolIndex, i),
               score: element[element.length - 2] / 100,
-              age: this.rows.length ? helper.getAgeOfChain(helper.genId(element)) : 0,
+              age: this.rows.length ? helper.getAgeOfChain(helper.genId(element), this.rows) : 0,
               links: '<i class="fas fa-arrow-right" style="color: #039be5"></i>',
               id: helper.genId(element)
             }
