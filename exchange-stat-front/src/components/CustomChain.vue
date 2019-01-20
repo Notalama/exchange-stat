@@ -85,35 +85,30 @@ export default {
         console.log(chain)
         axios.post('http://localhost:9000/custom-chain', {chain: chain, amount: data.minBalance}).then(response => {
           console.log(response)
-          if (response.status === 200) {
-            
-        console.log(response)
+          this.currentDataArr = response.data
+          this.rows = response.data.map((element, i) => {
 
-        this.currentDataArr = response.data
-        this.rows = response.data.map((element, i) => {
-
-          if (this.notif && element) document.getElementById('aud').play()
-          const toDolIndex = element.length - 3
-          return {
-            gain: helper.calcChainProfit(element, element[element.length - 2]),
-            chain: helper.getChainCol(element, toDolIndex, i),
-            score: element[element.length - 2] / 100,
-            age: this.rows.length ? helper.getAgeOfChain(helper.genId(element)) : 0,
-            links: '<i class="fas fa-arrow-right" style="color: #039be5"></i>',
-            id: helper.genId(element)
+            if (this.notif && element) document.getElementById('aud').play()
+            const toDolIndex = element.length - 3
+            return {
+              gain: helper.calcChainProfit(element, element[element.length - 2]),
+              chain: helper.getChainCol(element, toDolIndex, i),
+              score: element[element.length - 2] / 100,
+              age: this.rows.length ? helper.getAgeOfChain(helper.genId(element)) : 0,
+              links: '<i class="fas fa-arrow-right" style="color: #039be5"></i>',
+              id: helper.genId(element)
+            }
+          })
+          
+          if (response.data.length) {
+            this.notif = false
+          } else {
+            this.rows = []
+            this.notif = true
           }
-        })
-        
-        if (response.data.length) {
-          this.notif = false
-        } else {
-          this.rows = []
-          this.notif = true
-        }
-        this.rowsCopy = this.rows
-          }else if(response.status === 400) {
-            alert('Неможливо знайти ланцюжок')
-          }
+          this.rowsCopy = this.rows
+        }, e => {
+          alert('Неможливо знайти ланцюжок')
         })
       }
     },
