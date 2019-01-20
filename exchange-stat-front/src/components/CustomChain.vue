@@ -131,9 +131,9 @@ export default {
       }
     },
   getCurrencies: function() {
-      axios.get('http://localhost:9000/currencies').then(response => {
+      axios.get('http://localhost:9000/currencies?showHidden=' + this.getHiddenCurrencies).then(response => {
         // eslint-disable-next-line
-        // console.log(response.data)
+        console.log(response.data)
         if (response.data && response.status === 200) this.currencies = response.data
       })
     },
@@ -214,6 +214,7 @@ export default {
         minBalance: null
       },
       error: false,
+      getHiddenCurrencies: false,
       currencies: [],
       showSettings: false,
       notif: false,

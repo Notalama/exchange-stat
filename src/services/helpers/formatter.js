@@ -84,15 +84,18 @@ module.exports = {
                     if (thirdEl && byCurr[thirdEl[1]]) {
                       byCurr[thirdEl[1]].forEach(fourthEl => {
                         if (fourthEl && fourthEl[1] === firstEl[0]) {
-                          let chain = [firstEl, secondEl, thirdEl, fourthEl]
-                          const profit = calcChain(chain, absCommis)
-                          if (profit > minProfit) {
-                            // *** Chain currencies to dollar compare ***
-                            const calcedAmount = calcAmountToDoll(chain, byCurr, minAmount)
-                            chain = calcedAmount.chain
-                            if (calcedAmount.exchHaveEnoughMoney) {
-                              const dolToInit = byCurr[40][firstEl[0]]
-                              profitArr.push(chain.concat([profit, dolToInit]))
+                          const hasUniqCurrs = +firstEl[0] + +secondEl[0] === +thirdEl[0] + +fourthEl[0]
+                          if (!hasUniqCurrs) {
+                            let chain = [firstEl, secondEl, thirdEl, fourthEl]
+                            const profit = calcChain(chain, absCommis)
+                            if (profit > minProfit) {
+                              // *** Chain currencies to dollar compare ***
+                              const calcedAmount = calcAmountToDoll(chain, byCurr, minAmount)
+                              chain = calcedAmount.chain
+                              if (calcedAmount.exchHaveEnoughMoney) {
+                                const dolToInit = byCurr[40][firstEl[0]]
+                                profitArr.push(chain.concat([profit, dolToInit]))
+                              }
                             }
                           }
                         }
@@ -134,7 +137,6 @@ module.exports = {
     const dolToInit = byCurr[40][result.profitArr[0][0]]
     const profit = calcChain(result.profitArr, result.absCommis)
     result.profitArr = [result.profitArr.concat([profit, dolToInit])]
-    // result.profitArr.forEach((el, i) => result.profitArr[i].concat([calcChain(result.profitArr, result.absCommis), dolToInit]))
     return result
   },
   formatCurrencies: async (unformattedList) => {
