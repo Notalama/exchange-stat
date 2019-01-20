@@ -57,8 +57,9 @@ module.exports = {
                 amount
               }).then(async (result) => {
                 let response
+                console.log(result, '60 ctrl')
                 if (typeof result !== 'string') response = await compileResponse(result)
-                res.status(200).json(response)
+                res.status(400).json(response)
                 zip.close()
               })
             })
