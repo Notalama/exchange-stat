@@ -27,7 +27,7 @@
       <div class="input-field col s4">
         <p class="s-label">Третій крок</p>
         <select class="browser-default" v-model="formData.thirdStep">
-          <option value="" disabled selected>Третій крок</option>
+          <option value="" >Третій крок</option>
           <option v-for="currency in currencies" :value="currency" :key="currency.currencyId">{{currency.currencyTitle}}</option>
         </select>
       </div>
@@ -40,7 +40,7 @@
       </div>
     </div>
     <div class="row">
-      <button type="submit" v-bind:disabled="!formData.secondStep.currencyId || !formData.thirdStep.currencyId || !formData.firstStep.currencyId || !formData.minBalance" 
+      <button type="submit" v-bind:disabled="!formData.secondStep.currencyId && !formData.thirdStep.currencyId || !formData.firstStep.currencyId || !formData.minBalance" 
       class="submit-btn btn waves-effect waves-light" >Submit
         <i class="fas fa-arrow-right"></i>
       </button>
@@ -78,12 +78,15 @@ export default {
           thirdStepId: this.formData.thirdStep.currencyId,
           minBalance: this.formData.minBalance
         }
-        axios.post('http://localhost:9000/custom-chain', {chain:[data.firstStepId, data.secondStepId, data.thirdStepId], amount: 140}).then(response => {
-          // eslint-disable-next-line
+        var chain = [data.firstStepId, data.secondStepId, data.thirdStepId]
+        if(data.thirdStepId === undefined){
+          chain.pop()
+        }
+        console.log(chain)
+        axios.post('http://localhost:9000/custom-chain', {chain: chain, amount: data.minBalance}).then(response => {
           console.log(response)
           if (response.status === 200) {
             
-        // eslint-disable-next-line 
         console.log(response)
 
         this.currentDataArr = response.data
@@ -91,11 +94,7 @@ export default {
 
           if (this.notif && element) document.getElementById('aud').play()
           const toDolIndex = element.length - 3
-          // const btnText = element[element.length - 1] ? '-' : '+'
-          // const btnClass = (element[element.length - 1] ? 'red' : 'blue')
-          // const maxChainGain = element
           return {
-            // pin: '<a class="btn-floating waves-effect waves-light ' + btnClass + ' btn-small pl-btn">' + btnText + '</a>',
             gain: helper.calcChainProfit(element, element[element.length - 2]),
             chain: helper.getChainCol(element, toDolIndex, i),
             score: element[element.length - 2] / 100,
@@ -104,7 +103,6 @@ export default {
             id: helper.genId(element)
           }
         })
-        // this.insertChainProfit()
         
         if (response.data.length) {
           this.notif = false
@@ -113,15 +111,14 @@ export default {
           this.notif = true
         }
         this.rowsCopy = this.rows
-            // this.$emit('hideform', false)
+          }else if(response.status === 400) {
+            alert('Неможливо знайти ланцюжок')
           }
         })
       }
     },
   getCurrencies: function() {
       axios.get('http://localhost:9000/currencies').then(response => {
-        // eslint-disable-next-line
-        // console.log(response.data)
         if (response.data && response.status === 200) this.currencies = response.data
       })
     }
