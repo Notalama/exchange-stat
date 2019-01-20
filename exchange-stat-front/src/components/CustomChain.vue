@@ -41,7 +41,7 @@
     </div>
     <div class="row">
       <button type="submit" v-bind:disabled="!formData.secondStep.currencyId || !formData.thirdStep.currencyId || !formData.firstStep.currencyId || !formData.minBalance" 
-      class="submit-btn btn waves-effect waves-light" v-on:click="loadItems()" >Submit
+      class="submit-btn btn waves-effect waves-light" >Submit
         <i class="fas fa-arrow-right"></i>
       </button>
     </div>
@@ -61,48 +61,6 @@
 <script>
 import helper from '../helper.js';
 import axios from 'axios'
-const test = [[{
-        "from": "174",
-        "fromTitle": "Augur (REP)",
-        "to": "99",
-        "toTitle": "Litecoin (LTC)",
-        "changer": "89",
-        "changerTitle": "Changer",
-        "give": "3.05991636",
-        "receive": "1",
-        "amount": {
-            "amount": "2054.48",
-            "dollarAmount": 65535.5288032
-        }
-    }, {
-        "from": "99",
-        "fromTitle": "Litecoin (LTC)",
-        "to": "6",
-        "toTitle": "Яндекс.Деньги",
-        "changer": "438",
-        "changerTitle": "WestChange",
-        "give": "1",
-        "receive": "2163.2661",
-        "amount": {
-            "amount": "17398.46",
-            "dollarAmount": 255.87064058943457
-        }
-    }, {
-        "from": "6",
-        "fromTitle": "Яндекс.Деньги",
-        "to": "174",
-        "toTitle": "Augur (REP)",
-        "changer": "473",
-        "changerTitle": "ImExchanger",
-        "give": 705.865103685,
-        "receive": "1",
-        "amount": {
-            "amount": "920.7",
-            "dollarAmount": 9851.707763964001
-        }
-    },
-    ["40", "174", "473", 11.03825469, "1", "920.7"], 0.1563933408430364, false
-]]
 export default {
   name: "CustomChain",
   methods: {
@@ -120,36 +78,24 @@ export default {
           thirdStepId: this.formData.thirdStep.currencyId,
           minBalance: this.formData.minBalance
         }
-        // axios.post('http://localhost:9000/custom-chain', data).then(response => {
-        //   // eslint-disable-next-line
-        //   console.log(response)
-        //   if (response.status === 200) {
+        axios.post('http://localhost:9000/custom-chain', {chain:[data.firstStepId, data.secondStepId, data.thirdStepId], amount: 140}).then(response => {
+          // eslint-disable-next-line
+          console.log(response)
+          if (response.status === 200) {
             
-        //     // this.$emit('hideform', false)
-        //   }
-        // })
-      }
-    },
-  getCurrencies: function() {
-      axios.get('http://localhost:9000/currencies').then(response => {
-        // eslint-disable-next-line
-        // console.log(response.data)
-        if (response.data && response.status === 200) this.currencies = response.data
-      })
-    },
-  loadItems: function() {
-    // axios.post('http://localhost:9000/custom-chain', {chain: ['88', '165', '93'], amount: 5})
-    //   .then(response => {
         // eslint-disable-next-line 
-        console.log(test)
-        this.currentDataArr = test
-        this.rows = test.map((element, i) => {
+        console.log(response)
+
+        this.currentDataArr = response.data
+        this.rows = response.data.map((element, i) => {
+
           if (this.notif && element) document.getElementById('aud').play()
           const toDolIndex = element.length - 3
           // const btnText = element[element.length - 1] ? '-' : '+'
           // const btnClass = (element[element.length - 1] ? 'red' : 'blue')
           // const maxChainGain = element
           return {
+            // pin: '<a class="btn-floating waves-effect waves-light ' + btnClass + ' btn-small pl-btn">' + btnText + '</a>',
             gain: helper.calcChainProfit(element, element[element.length - 2]),
             chain: helper.getChainCol(element, toDolIndex, i),
             score: element[element.length - 2] / 100,
@@ -159,41 +105,25 @@ export default {
           }
         })
         // this.insertChainProfit()
-        if (test.length) {
+        
+        if (response.data.length) {
           this.notif = false
         } else {
           this.rows = []
           this.notif = true
         }
         this.rowsCopy = this.rows
-    //   }, 
-    //   (e) => {
-    //     this.currentDataArr = test
-    //     this.rows = test.map((element, i) => {
-
-    //       if (this.notif && element) document.getElementById('aud').play()
-    //       const toDolIndex = element.length - 3
-    //       // const btnText = element[element.length - 1] ? '-' : '+'
-    //       // const btnClass = (element[element.length - 1] ? 'red' : 'blue')
-    //       // const maxChainGain = element
-    //       return {
-    //         gain: helper.calcChainProfit(element, element[element.length - 2]),
-    //         chain: helper.getChainCol(element, toDolIndex, i),
-    //         score: element[element.length - 2] / 100,
-    //         age: this.rows.length ? helper.getAgeOfChain(helper.genId(element)) : 0,
-    //         links: '<i class="fas fa-arrow-right" style="color: #039be5"></i>',
-    //         id: helper.genId(element)
-    //       }
-    //     })
-    //     // this.insertChainProfit()
-    //     if (test.length) {
-    //       this.notif = false
-    //     } else {
-    //       this.rows = []
-    //       this.notif = true
-    //     }
-    //     this.rowsCopy = this.rows
-    //   })
+            // this.$emit('hideform', false)
+          }
+        })
+      }
+    },
+  getCurrencies: function() {
+      axios.get('http://localhost:9000/currencies').then(response => {
+        // eslint-disable-next-line
+        // console.log(response.data)
+        if (response.data && response.status === 200) this.currencies = response.data
+      })
     }
   },
   data: function() {
