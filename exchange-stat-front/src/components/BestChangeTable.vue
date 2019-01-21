@@ -131,7 +131,6 @@ export default {
           this.chainSubscriptions.shift()
           this.chainSubscriptions.join()
         }
-        // eslint-disable-next-line
       } else {
         let getParams = this.chainSubscriptions ? 'n' : ''
         for (let i = 0; i < chainRates.length - 3; i++) {

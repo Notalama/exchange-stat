@@ -103,8 +103,10 @@ export default {
         if(data.thirdStepId === undefined){
           chain.pop()
         }
+        // eslint-disable-next-line
         console.log(chain)
         axios.post('http://localhost:9000/custom-chain', {chain: chain, amount: data.minBalance}).then(response => {
+          // eslint-disable-next-line
           console.log(response)
           this.currentDataArr = response.data
           this.rows = response.data.map((element, i) => {
@@ -128,12 +130,12 @@ export default {
             this.notif = true
           }
           this.rowsCopy = this.rows
-        }, e => {
+        }, () => {
           alert('Неможливо знайти ланцюжок')
         })
       }
     },
-  getCurrencies: function() {
+    getCurrencies: function() {
       axios.get('http://localhost:9000/currencies').then(response => {
         if (response.data && response.status === 200) this.currencies = response.data
       })
