@@ -54,6 +54,7 @@
       :sort-options="{
         enabled: false
       }"
+      @on-cell-click="pinToTop"
       />
   </div>
 </template>
@@ -63,7 +64,27 @@ import helper from '../helper.js';
 import axios from 'axios'
 export default {
   name: "CustomChain",
+  mounted: function() {
+    this.minBalance = 100
+    this.minProfit = 0.4
+    setInterval(() => {
+      this.timer++
+      this.rows.forEach(el => el.age++)
+    }, 997);
+    // this.loadItems()
+    this.reloadInterval()
+  },
   methods: {
+    pinToTop: function(params) {
+      const chainRates = this.currentDataArr[params.row.originalIndex]
+        const preLinkC = 'https://www.bestchange.ru/index.php?from='
+        const preLinkBC = 'https://www.bestchange.ru/click.php?id='
+        for (let i = 0; i < chainRates.length - 3; i++) {
+          const element = chainRates[i];
+          window.open(preLinkC + element.from + '&to=' + element.to)
+          window.open(preLinkBC + element.changer + '&from=' + element.from + '&to=' + element.to + '&url=1')
+        }
+      },
     sendForm: function(event) {
       event.preventDefault()
       if (!this.formData.firstStep.currencyId && !this.formData.secondStep.currencyId && !this.formData.thirdStep.currencyId) {
@@ -116,6 +137,12 @@ export default {
       axios.get('http://localhost:9000/currencies').then(response => {
         if (response.data && response.status === 200) this.currencies = response.data
       })
+    },
+    reloadInterval: function() {
+      // this.loadItems()
+      setTimeout(() => {
+        this.reloadInterval()
+      }, this.interval);
     }
   },
   data: function() {
@@ -143,6 +170,8 @@ export default {
       chainSubscriptions: '',
       maxChainProfits: [],
       currentDataArr: null,
+      timer: 0,
+      interval: 5000,
       columns: [
         {
           label: 'Max Profit',
