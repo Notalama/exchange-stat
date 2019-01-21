@@ -77,6 +77,7 @@ export default {
   methods: {
     pinToTop: function(params) {
       const chainRates = this.currentDataArr[params.row.originalIndex]
+      if (params.column.field === 'links') {
         const preLinkC = 'https://www.bestchange.ru/index.php?from='
         const preLinkBC = 'https://www.bestchange.ru/click.php?id='
         for (let i = 0; i < chainRates.length - 3; i++) {
@@ -84,7 +85,8 @@ export default {
           window.open(preLinkC + element.from + '&to=' + element.to)
           window.open(preLinkBC + element.changer + '&from=' + element.from + '&to=' + element.to + '&url=1')
         }
-      },
+      }
+    },
     sendForm: function(event) {
       event.preventDefault()
       if (!this.formData.firstStep.currencyId && !this.formData.secondStep.currencyId && !this.formData.thirdStep.currencyId) {

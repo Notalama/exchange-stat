@@ -1,34 +1,4 @@
-export default {   
-  buildChainSubscriptions: function(chainRates) {
-    if (chainRates[chainRates.length - 1]) {
-      let removeParams = ''
-      // this.chainSubscriptions ? 'n' : ''
-      for (let i = 0; i < chainRates.length - 3; i++) {
-        removeParams += (removeParams.length <= 1 ? '' : ';') + chainRates[i].from + ',' + chainRates[i].to + ',' + chainRates[i].changer
-      }
-      let removeIndex = this.chainSubscriptions.search(removeParams)
-      let removeCount = removeParams.length
-      if (this.chainSubscriptions[removeIndex - 1] === 'n') {
-        removeIndex -= 1
-        removeCount += 1
-      }
-      this.chainSubscriptions = this.chainSubscriptions.split('')
-      this.chainSubscriptions.splice(removeIndex, removeCount)
-      this.chainSubscriptions = this.chainSubscriptions.join('')
-      if (this.chainSubscriptions[0] === 'n') {
-        this.chainSubscriptions = this.chainSubscriptions.split('')
-        this.chainSubscriptions.shift()
-        this.chainSubscriptions.join()
-      }
-      // eslint-disable-next-line
-    } else {
-      let getParams = this.chainSubscriptions ? 'n' : ''
-      for (let i = 0; i < chainRates.length - 3; i++) {
-        getParams += (getParams.length <= 1 ? '' : ';') + chainRates[i].from + ',' + chainRates[i].to + ',' + chainRates[i].changer
-      }
-      if (this.chainSubscriptions.search(getParams) < 0) this.chainSubscriptions += getParams
-    }
-  }, 
+export default {
     calcRate: function(give, receive, sum) {
         const res = receive > give ? sum * receive : sum / give
         return res.toFixed(4)
