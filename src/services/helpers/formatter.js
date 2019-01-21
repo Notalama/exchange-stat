@@ -134,7 +134,7 @@ module.exports = {
   formatOne: async ({ratesBuffer = [], chain = [], amount = 0}) => {
     const {byCurr} = await formatAndFilterRates({unformattedList: ratesBuffer})
     const result = await formatAndFilterOne({unformattedList: ratesBuffer, chain, amount, allRates: byCurr})
-    const hasEmptyLinks = result.profitArr.length !== chain.length
+    const hasEmptyLinks = result.profitArr.some(el => el)
     const chainFirstEl = result.profitArr[0]
     if (hasEmptyLinks || !chainFirstEl) return 'Chain has been not built'
     const dolToInit = byCurr[40][chainFirstEl[0]]
