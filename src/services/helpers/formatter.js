@@ -160,8 +160,7 @@ module.exports = {
       allRates: byCurr
     })
     let {
-      profitArr,
-      otherRates
+      profitArr
     } = result
     let hasEmptyLinks = false
     for (let i = 0; i < profitArr.length; i++) {
@@ -171,32 +170,9 @@ module.exports = {
       }
     }
     if (hasEmptyLinks || (profitArr.length !== chain.length)) return 'Chain has been not built'
-    let compiledChains = []
-    console.log(otherRates, 'otherRates')
-    for (let i = 0; i < otherRates.length; i++) {
-      const rateArr = otherRates[i]
-      if (rateArr.length) {
-        for (let j = 0; j < rateArr.length; j++) {
-          const rate = rateArr[j]
-          if (compiledChains[j]) {
-            if (rate) {
-              compiledChains[j][i] = rate
-            } else {
-              compiledChains[j][i] = compiledChains[j][compiledChains.length - 1]
-            }
-          } else {
-            compiledChains[j] = []
-          }
-        }
-      } else {
-        compiledChains = []
-        break
-      }
-    }
     const chainFirstEl = profitArr[0]
     result.profitArr = []
-    const chainsArray = [profitArr, ...compiledChains]
-    console.log(chainsArray, '---chainsArray')
+    const chainsArray = [profitArr]
     const dolToInit = byCurr[40][chainFirstEl[0]]
     chainsArray.forEach(chain => {
       const profit = calcChain(chain, result.absCommis)

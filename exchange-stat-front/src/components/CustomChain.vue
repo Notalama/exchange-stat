@@ -110,14 +110,14 @@ export default {
         axios.post('http://localhost:9000/custom-chain', {chain: chain, amount: data.minBalance}).then(response => {
           // eslint-disable-next-line
           console.log(response)
-          this.currentDataArr = response.data
-          this.rows = response.data.map((element, i) => {
+          this.currentDataArr = response.data.chain
+          this.rows = response.data.chain.map((element, i) => {
 
             if (this.notif && element) document.getElementById('aud').play()
             const toDolIndex = element.length - 3
             return {
               gain: helper.calcChainProfit(element, element[element.length - 2]),
-              chain: helper.getChainCol(element, toDolIndex, i),
+              chain: helper.getChainCol(element, toDolIndex, response.data.otherRates),
               score: element[element.length - 2] / 100,
               age: this.rows.length ? helper.getAgeOfChain(helper.genId(element), this.rows) : 0,
               links: '<i class="fas fa-arrow-right" style="color: #039be5"></i>',
@@ -125,7 +125,7 @@ export default {
             }
           })
           
-          if (response.data.length) {
+          if (response.data.chain.length) {
             this.notif = false
           } else {
             this.rows = []
