@@ -1,5 +1,8 @@
 const hideParamsModel = require('./../../api/hide-params/model')
-const { formatAndFilterRates, formatAndFilterOne } = require('./format-and-filter')
+const {
+  formatAndFilterRates,
+  formatAndFilterOne
+} = require('./format-and-filter')
 const exchangersModel = require('./../../api/exchangers/model')
 const currenciesModel = require('./../../api/currencies/model')
 module.exports = {
@@ -20,7 +23,16 @@ module.exports = {
           })
         }
       }
-      let { byCurr, readySubs, absCommis } = await formatAndFilterRates({unformattedList, subscriptions, omitValues, minAmount})
+      let {
+        byCurr,
+        readySubs,
+        absCommis
+      } = await formatAndFilterRates({
+        unformattedList,
+        subscriptions,
+        omitValues,
+        minAmount
+      })
       // **** two steps ****
       byCurr.forEach((currArr, a) => {
         currArr.forEach((firstEl, ind) => {
@@ -131,15 +143,65 @@ module.exports = {
       console.error('formatter err caught ---', rejectedValue)
     }
   },
-  formatOne: async ({ratesBuffer = [], chain = [], amount = 0}) => {
-    const {byCurr} = await formatAndFilterRates({unformattedList: ratesBuffer})
-    const result = await formatAndFilterOne({unformattedList: ratesBuffer, chain, amount, allRates: byCurr})
-    const hasEmptyLinks = result.profitArr.some(el => el)
-    const chainFirstEl = result.profitArr[0]
-    if (hasEmptyLinks || !chainFirstEl) return 'Chain has been not built'
+  formatOne: async ({
+    ratesBuffer = [],
+    chain = [],
+    amount = 0
+  }) => {
+    const {
+      byCurr
+    } = await formatAndFilterRates({
+      unformattedList: ratesBuffer
+    })
+    const result = await formatAndFilterOne({
+      unformattedList: ratesBuffer,
+      chain,
+      amount,
+      allRates: byCurr
+    })
+    let {
+      profitArr,
+      otherRates
+    } = result
+    let hasEmptyLinks = false
+    for (let i = 0; i < profitArr.length; i++) {
+      if (!profitArr[i]) {
+        hasEmptyLinks = true
+        continue
+      }
+    }
+    if (hasEmptyLinks || (profitArr.length !== chain.length)) return 'Chain has been not built'
+    let compiledChains = []
+    console.log(otherRates, 'otherRates')
+    for (let i = 0; i < otherRates.length; i++) {
+      const rateArr = otherRates[i]
+      if (rateArr.length) {
+        for (let j = 0; j < rateArr.length; j++) {
+          const rate = rateArr[j]
+          if (compiledChains[j]) {
+            if (rate) {
+              compiledChains[j][i] = rate
+            } else {
+              compiledChains[j][i] = compiledChains[j][compiledChains.length - 1]
+            }
+          } else {
+            compiledChains[j] = []
+          }
+        }
+      } else {
+        compiledChains = []
+        break
+      }
+    }
+    const chainFirstEl = profitArr[0]
+    result.profitArr = []
+    const chainsArray = [profitArr, ...compiledChains]
+    console.log(chainsArray, '---chainsArray')
     const dolToInit = byCurr[40][chainFirstEl[0]]
-    const profit = calcChain(result.profitArr, result.absCommis)
-    result.profitArr = [result.profitArr.concat([profit, dolToInit])]
+    chainsArray.forEach(chain => {
+      const profit = calcChain(chain, result.absCommis)
+      result.profitArr.push(chain.concat([profit, dolToInit]))
+    })
     return result
   },
   formatCurrencies: async (unformattedList) => {
@@ -208,7 +270,10 @@ module.exports = {
           changerTitle: chan ? chan.exchangerTitle : '',
           give: el[3],
           receive: el[4],
-          amount: {amount: el[5], dollarAmount: el[6]}
+          amount: {
+            amount: el[5],
+            dollarAmount: el[6]
+          }
         })
       }
 
@@ -226,13 +291,17 @@ function calcAmountToDoll (chain, allRates, minAmount) {
     if (!rate[6]) rate[6] = dollToCurr ? +dollToCurr[4] > 1 ? +rate[5] * +dollToCurr[4] : +rate[5] / +dollToCurr[3] : +minAmount
     if (rate[6] <= +minAmount) exchHaveEnoughMoney = false
   })
-  return {chain, exchHaveEnoughMoney}
+  return {
+    chain,
+    exchHaveEnoughMoney
+  }
 }
 
 function calcSum (give, receive, sum, rate, absCommis) {
   const profit = receive > give ? sum * receive : sum / give
   return calcAbsCommission(rate, profit, absCommis)
 }
+
 function calcChain (chain, absCommis) {
   let chainSum = [+chain[0][3]]
   for (let i = 0; i < chain.length; i++) {
@@ -242,6 +311,7 @@ function calcChain (chain, absCommis) {
   const profit = ((chainSum[chainSum.length - 1] - chainSum[0]) * 100) / chainSum[0]
   return profit
 }
+
 function calcAbsCommission (rate, sum, absCommis) {
   absCommis.forEach(com => {
     const isCommissedCurr = (com.currency === rate[0] && com.inOut === 'IN') || (com.currency === rate[1] && com.inOut === 'OUT')
