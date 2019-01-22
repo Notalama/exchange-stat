@@ -86,7 +86,7 @@ export default {
       this.timer++
       this.rows.forEach(el => el.age++)
     }, 997);
-    // this.loadItems()
+    this.loadItems()
     this.reloadInterval()
   },
   methods: {
@@ -143,7 +143,7 @@ export default {
       if (interval >= 0 || this.interval >= this.minInterval) this.interval += interval
     },
     reloadInterval: function() {
-      // this.loadItems()
+      this.loadItems()
       setTimeout(() => {
         this.reloadInterval()
       }, this.interval);
@@ -213,50 +213,53 @@ export default {
     loadItems: function() {
       this.maxChainProfits = []
       if (this.links) {
-        this.minInterval = 14000
-        if (this.interval < 14000) this.interval = 14000
+        this.minInterval = 17000
+        if (this.interval < 17000) this.interval = 17000
       } else {
         this.minInterval = 5000
       }
-      let subcribeParam = this.chainSubscriptions ? '&chainSubscriptions=' + this.chainSubscriptions : ''
-      const ltThree = '&ltThreeLinks=' + this.links
-      axios
-      .get('http://localhost:9000/best-change?minBalance=' + this.minBalance + '&minProfit=' + this.minProfit + subcribeParam + ltThree)
-      .then(response => {
-        // eslint-disable-next-line 
-        console.log(response.data)
+      if (!this.wait) {
+        this.wait = true
+        let subcribeParam = this.chainSubscriptions ? '&chainSubscriptions=' + this.chainSubscriptions : ''
+        const ltThree = '&ltThreeLinks=' + this.links
+        axios
+        .get('http://localhost:9000/best-change?minBalance=' + this.minBalance + '&minProfit=' + this.minProfit + subcribeParam + ltThree)
+        .then(response => {
+          this.wait = false
+          // eslint-disable-next-line 
+          console.log(response.data)
+          this.currentDataArr = response.data
+          this.rows = response.data.sort((a, b) => a.length - b.length).map((element, i) => {
 
-        this.currentDataArr = response.data
-        this.rows = response.data.sort((a, b) => a.length - b.length).map((element, i) => {
-
-          if (this.notif && element) document.getElementById('aud').play()
-          const toDolIndex = element.length - 3
-          const btnText = element[element.length - 1] ? '-' : '+'
-          const btnClass = (element[element.length - 1] ? 'red' : 'blue')
-          // const maxChainGain = element
-          return {
-            pin: '<a class="btn-floating waves-effect waves-light ' + btnClass + ' btn-small pl-btn">' + btnText + '</a>',
-            gain: this.calcChainProfit(element, element[element.length - 2]),
-            chain: this.getChainCol(element, toDolIndex, i),
-            score: element[element.length - 2] / 100,
-            age: this.rows.length ? this.getAgeOfChain(this.genId(element)) : 0,
-            links: '<i class="fas fa-arrow-right" style="color: #039be5"></i>',
-            id: this.genId(element)
+            if (this.notif && element) document.getElementById('aud').play()
+            const toDolIndex = element.length - 3
+            const btnText = element[element.length - 1] ? '-' : '+'
+            const btnClass = (element[element.length - 1] ? 'red' : 'blue')
+            return {
+              pin: '<a class="btn-floating waves-effect waves-light ' + btnClass + ' btn-small pl-btn">' + btnText + '</a>',
+              gain: this.calcChainProfit(element, element[element.length - 2]),
+              chain: this.getChainCol(element, toDolIndex, i),
+              score: element[element.length - 2] / 100,
+              age: this.rows.length ? this.getAgeOfChain(this.genId(element)) : 0,
+              links: '<i class="fas fa-arrow-right" style="color: #039be5"></i>',
+              id: this.genId(element)
+            }
+          })
+          if (response.data.length) {
+            this.notif = false
+          } else {
+            this.rows = []
+            this.notif = true
           }
-        })
-        // this.insertChainProfit()
-        
-        if (response.data.length) {
-          this.notif = false
-        } else {
-          this.rows = []
-          this.notif = true
-        }
-        
-        this.timer = 0
-        this.rowsCopy = this.rows
-        this.searchTable()
-      });
+          
+          this.timer = 0
+          this.rowsCopy = this.rows
+          this.searchTable()
+        }, () => {
+          this.wait = false
+          alert('Something went wrong')
+        });
+      } else console.log('waiting response...')
     },
     go: function (event) {
       event.preventDefault()
@@ -271,6 +274,7 @@ export default {
   },
   data: function() {
     return {
+      wait: false,
       searchTerm: '',
       showSettings: false,
       notif: false,
