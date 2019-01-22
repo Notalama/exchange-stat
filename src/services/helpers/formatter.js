@@ -303,6 +303,3 @@ function calcAbsCommission (rate, sum, absCommis) {
   })
   return sum
 }
-// function getAllToDoll (unformattedList) {
-
-// }
