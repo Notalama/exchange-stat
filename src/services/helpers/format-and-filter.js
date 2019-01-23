@@ -149,8 +149,9 @@ module.exports = {
               rowArray = calcCommission(rowArray, commissions)
               const isProfitable = +rowArray[3] <= +profitArr[j][3] && +rowArray[4] >= +profitArr[j][4]
               if (isProfitable) {
+                otherRates[j].push(profitArr[j])
                 profitArr[j] = rowArray
-              } else if (otherRates[j].length < 5) {
+              } else {
                 otherRates[j].push(rowArray)
               }
             } else {

@@ -64,17 +64,19 @@ module.exports = {
                 // console.log(result, '60 ctrl')
                 if (typeof result !== 'string') {
                   response.chain = await compileResponse(result)
-                  response.otherRates = response.otherRates.map(rateArr => rateArr.map(rate => {
-                    return {
-                      give: rate[3],
-                      receive: rate[4],
-                      from: rate[0],
-                      to: rate[1],
-                      amount: rate[5],
-                      dollarAmount: rate[6],
-                      exch: exchangersBase.find(exch => rate[2] === exch.exchangerId) || ''
-                    }
-                  }).sort((a, b) => a.receive > 1 ? a.receive < b.receive : a.give > b.give))
+                  response.otherRates = response.otherRates.map(rateArr => {
+                    return rateArr.map(rate => {
+                      return {
+                        give: rate[3],
+                        receive: rate[4],
+                        from: rate[0],
+                        to: rate[1],
+                        amount: rate[5],
+                        dollarAmount: rate[6],
+                        exch: exchangersBase.find(exch => rate[2] === exch.exchangerId) || ''
+                      }
+                    }).sort((a, b) => a.receive > 1 ? b.receive - a.receive : a.give - b.give).slice(0, 5)
+                  })
                   res.status(200).json(response)
                   zip.close()
                 } else {
