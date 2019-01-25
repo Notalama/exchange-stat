@@ -1,19 +1,16 @@
 <template>
   <div id="app">
-    <Options v-on:links-to-count="changeLinksAmout"/>
-    <BestChangeTable v-bind:links="linksAmount"/>
+    <BestChangeTable v-bind:links="linksAmount" v-on:links-to-count="changeLinksAmout"/>
   </div>
 </template>
 
 <script>
 import BestChangeTable from './components/BestChangeTable.vue'
-import Options from './components/Options.vue'
 
 export default {
   name: 'app',
   components: {
-    BestChangeTable,
-    Options
+    BestChangeTable
   },
   mounted: function() {
     // eslint-disable-next-line
@@ -49,6 +46,5 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
