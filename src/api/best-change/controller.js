@@ -8,6 +8,7 @@ const {
   formatExchangers,
   compileResponse
 } = require('./../../services/helpers/formatter')
+const { getExmoORders } = require('./../../services/helpers/external-rates')
 const exchangersModel = require('./../exchangers/model')
 const currenciesModel = require('./../currencies/model')
 module.exports = {
@@ -50,13 +51,17 @@ module.exports = {
                 if (err) console.log('err', err)
               })
               // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
-              await formatRates(
-                ratesBuffer.split('\n'),
-                +minBalance,
-                +minProfit,
+
+              const exmoRates = await getExmoORders()
+              console.log(exmoRates.data, '56')
+              await formatRates({
+                unformattedList: ratesBuffer.split('\n'),
+                minAmount: +minBalance,
+                minProfit: +minProfit,
                 chainSubscriptions,
-                JSON.parse(ltThreeLinks)
-              ).then(async result => {
+                ltThreeLinks: JSON.parse(ltThreeLinks),
+                exmoRates: exmoRates.length ? exmoRates : []
+              }).then(async result => {
                 const response = await compileResponse(result)
                 res.status(200).json(response)
                 zip.close()

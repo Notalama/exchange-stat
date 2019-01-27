@@ -6,7 +6,7 @@ const {
 const exchangersModel = require('./../../api/exchangers/model')
 const currenciesModel = require('./../../api/currencies/model')
 module.exports = {
-  formatRates: async (unformattedList, minAmount, minProfit, chainSubscriptions, ltThreeLinks) => {
+  formatRates: async ({unformattedList, minAmount, minProfit, chainSubscriptions, ltThreeLinks, exmoRates}) => {
     try {
       const profitArr = []
       const omitValues = await hideParamsModel.find({}, (err, res) => {
@@ -23,6 +23,9 @@ module.exports = {
           })
         }
       }
+      const exmoRatesUnform = exmoRates.map(el => {
+        el.ask
+      })
       let {
         byCurr,
         readySubs,
