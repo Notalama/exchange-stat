@@ -36,9 +36,9 @@ module.exports = {
               const ratesBuffer = iconv.convert(rates).toString()
 
               // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
-              // const cy = zip.entryDataSync('bm_cy.dat')
-              // const cyBuffer = iconv.convert(cy).toString()
-              // const currencyTypes = formatCurrencies(cyBuffer.split('\n'))
+              const cy = zip.entryDataSync('bm_cy.dat')
+              const cyBuffer = iconv.convert(cy).toString()
+              const currencyTypes = formatCurrencies(cyBuffer.split('\n'))
               // currenciesModel.insertMany(currencyTypes, (err, val) => {
               //   if (err) console.log(err)
               //   else console.log(val[0], 'success fill curr')
@@ -53,7 +53,16 @@ module.exports = {
               // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
 
               const exmoRates = await getExmoORders()
-              console.log(exmoRates.data, '56')
+
+              const exmoRatesUnform = []
+              console.log(currencyTypes, '58')
+              // for (const key in exmoRates) {
+              //   if (exmoRates.hasOwnProperty(key)) {
+              //     const element = exmoRates[key]
+              //     element.ask.forEach(el => exmoRates.push([]))
+              //     exmoRatesUnform.push()
+              //   }
+              // }
               await formatRates({
                 unformattedList: ratesBuffer.split('\n'),
                 minAmount: +minBalance,

@@ -23,9 +23,6 @@ module.exports = {
           })
         }
       }
-      const exmoRatesUnform = exmoRates.map(el => {
-        el.ask
-      })
       let {
         byCurr,
         readySubs,
@@ -192,6 +189,7 @@ module.exports = {
       if (err) console.error(err, '----- err')
       else if (res === null) console.error('null triggered')
       else {
+        console.log(res)
         omitCurrencies = res[0].hiddenCurrencies
       }
     })

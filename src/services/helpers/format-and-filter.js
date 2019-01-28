@@ -4,7 +4,7 @@ const commissionModel = require('./../../api/commision/model')
 const tempHideModel = require('./../../api/temp-hide/model')
 const {filterOmitValues} = require('./filter-hidden')
 module.exports = {
-  formatAndFilterRates: async ({unformattedList = [], subscriptions = [], omitValues = null, minAmount = 0, bestRates = [], forDol = false}) => {
+  formatAndFilterRates: async ({unformattedList = [], subscriptions = [], omitValues = null, minAmount = 0}) => {
     const result = {
       byCurr: [],
       readySubs: [],
