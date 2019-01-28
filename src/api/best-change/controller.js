@@ -53,31 +53,27 @@ module.exports = {
               // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
 
               const {data: exmoRates} = await getExmoORders()
-
               const exmoRatesUnform = []
-              const currIdArr = []
-
-              console.log(currencyTypes, '60')
-
               for (const key in exmoRates) {
                 if (exmoRates.hasOwnProperty(key)) {
                   const element = exmoRates[key]
-                  element.ask.forEach(el => {
-                    const fromCurr = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(0, 3)))
-                    const toCurr = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(4, 7)))
-                    exmoRates.push([fromCurr.currencyId, toCurr.currencyId, '899', ])
-                    console.log(toCurr, 'row 69 \n')
-                  })
-                  // exmoRatesUnform.push()
+                  const frst = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(0, 3)) > 0 && /^[a-zA-Z]/.test(curr.currencyTitle))
+                  const scnd = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(key.length - 3, key.length)) > 0 && /^[a-zA-Z]/.test(curr.currencyTitle))
+                  console.log(frst, scnd, '63', key)
+                  if (frst && scnd) {
+                    element.ask.forEach(el => exmoRatesUnform.push(frst.currencyId + ';' + scnd.currencyId + ';' + '899' + ';' + 1 + ';' + el[0] + ';' + el[2]))
+                    element.bid.forEach(el => exmoRatesUnform.push(scnd.currencyId + ';' + frst.currencyId + ';' + '899' + ';' + el[0] + ';' + 1 + ';' + el[1]))
+                  }
                 }
               }
+              console.log(exmoRatesUnform, '70')
+              console.log(ratesBuffer.split('\n').slice(0, 5), '71')
               await formatRates({
-                unformattedList: ratesBuffer.split('\n'),
+                unformattedList: ratesBuffer.split('\n').concat(exmoRatesUnform),
                 minAmount: +minBalance,
                 minProfit: +minProfit,
                 chainSubscriptions,
-                ltThreeLinks: JSON.parse(ltThreeLinks),
-                exmoRates: exmoRates.length ? exmoRates : []
+                ltThreeLinks: JSON.parse(ltThreeLinks)
               }).then(async result => {
                 const response = await compileResponse(result)
                 res.status(200).json(response)
