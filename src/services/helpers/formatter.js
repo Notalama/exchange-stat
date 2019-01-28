@@ -190,7 +190,7 @@ module.exports = {
       else if (res === null) console.error('null triggered')
       else {
         console.log(res)
-        omitCurrencies = res[0].hiddenCurrencies
+        res[0] ? omitCurrencies = res[0].hiddenCurrencies : omitCurrencies = []
       }
     })
     for (let i = 0; i < unformattedList.length; i++) {

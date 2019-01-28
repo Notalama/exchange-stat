@@ -38,7 +38,7 @@ module.exports = {
               // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
               const cy = zip.entryDataSync('bm_cy.dat')
               const cyBuffer = iconv.convert(cy).toString()
-              const currencyTypes = formatCurrencies(cyBuffer.split('\n'))
+              const currencyTypes = await formatCurrencies(cyBuffer.split('\n'))
               // currenciesModel.insertMany(currencyTypes, (err, val) => {
               //   if (err) console.log(err)
               //   else console.log(val[0], 'success fill curr')
@@ -52,17 +52,25 @@ module.exports = {
               })
               // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
 
-              const exmoRates = await getExmoORders()
+              const {data: exmoRates} = await getExmoORders()
 
               const exmoRatesUnform = []
-              console.log(currencyTypes, '58')
-              // for (const key in exmoRates) {
-              //   if (exmoRates.hasOwnProperty(key)) {
-              //     const element = exmoRates[key]
-              //     element.ask.forEach(el => exmoRates.push([]))
-              //     exmoRatesUnform.push()
-              //   }
-              // }
+              const currIdArr = []
+
+              console.log(currencyTypes, '60')
+
+              for (const key in exmoRates) {
+                if (exmoRates.hasOwnProperty(key)) {
+                  const element = exmoRates[key]
+                  element.ask.forEach(el => {
+                    const fromCurr = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(0, 3)))
+                    const toCurr = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(4, 7)))
+                    exmoRates.push([fromCurr.currencyId, toCurr.currencyId, '899', ])
+                    console.log(toCurr, 'row 69 \n')
+                  })
+                  // exmoRatesUnform.push()
+                }
+              }
               await formatRates({
                 unformattedList: ratesBuffer.split('\n'),
                 minAmount: +minBalance,
