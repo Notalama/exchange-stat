@@ -50,18 +50,26 @@
             <label for="searchTerm">Search</label>
           </div>
         </div>
-        <div class="input-field col s2">
-          <p class="checkbox">
-            <label>
-              <input
-                id="indeterminate-checkbox"
-                type="checkbox"
-                v-model="searchType"
-                v-on:click="$emit('links-to-count', searchType)"
-              >
-              <span class="checkbox-span">Не показувати 4-крокові ланцюжки</span>
-            </label>
-        </p>
+        <div class="input-field col s1">
+          <label class="checkbox">
+            <input
+              id="indeterminate-checkbox"
+              type="checkbox"
+              v-model="showExmo"
+              v-on:click="showExmo = !showExmo">
+            <span class="checkbox-span">Exmo</span>
+          </label>
+          <label class="checkbox">
+            <input
+              id="indeterminate-checkbox"
+              type="checkbox"
+              v-model="links"
+              v-on:click="links = !links"
+            >
+            <span class="checkbox-span">4 кроки</span>
+          </label>
+        </div>
+        <div class="input-field col s3">
           <a
             class="waves-effect waves-light btn-flat modal-trigger settings-trigger"
             href="#modal1"
@@ -104,9 +112,6 @@ import SettingsForm from "./Settings-form.vue";
 import routes from "../routes";
 export default {
   name: "BestChangeTable",
-  props: {
-    links: Boolean
-  },
   components: {
     SettingsForm
   },
@@ -196,7 +201,7 @@ export default {
         this.interval += interval;
     },
     reloadInterval: function() {
-      // this.loadItems()
+      this.loadItems()
       setTimeout(() => {
         this.reloadInterval();
       }, this.interval);
@@ -347,15 +352,17 @@ export default {
         let subcribeParam = this.chainSubscriptions
           ? "&chainSubscriptions=" + this.chainSubscriptions
           : "";
-        const ltThree = "&ltThreeLinks=" + this.links;
         axios
           .get(
             "http://localhost:9000/best-change?minBalance=" +
               this.minBalance +
               "&minProfit=" +
               this.minProfit +
-              subcribeParam +
-              ltThree
+              '&showExmo=' +
+              this.showExmo +
+              "&ltThreeLinks=" +
+              this.links +
+              subcribeParam
           )
           .then(
             response => {
@@ -408,6 +415,7 @@ export default {
               alert("Something went wrong");
             }
           );
+          // eslint-disable-next-line
       } else console.log("waiting response...");
     },
     go: function(event) {
@@ -419,6 +427,7 @@ export default {
   },
   data: function() {
     return {
+      links: false,
       searchType: true,
       wait: false,
       searchTerm: "",
@@ -432,6 +441,7 @@ export default {
       minInterval: 5000,
       maxChainProfits: [],
       currentDataArr: null,
+      showExmo: false,
       columns: [
         {
           label: "Pin",
@@ -478,10 +488,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.settings {
-  margin-left: 5%;
-}
+<style scoped>Ґ
 .hideModal {
   display: none;
 }
@@ -534,10 +541,14 @@ a {
   padding: 0 18px;
 }
 .checkbox {
-  margin-top: 0;
-  margin-bottom: -4%;
+  position: relative;
+  padding: 15px;
 }
 .checkbox-span {
   color: #000;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 150px;
 }
 </style>

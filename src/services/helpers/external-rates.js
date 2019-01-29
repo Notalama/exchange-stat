@@ -11,7 +11,18 @@ module.exports = {
       const exmoOrders = await axios.get(`https://api.exmo.com/v1/order_book/?pair=${BTC + USD + RUB + EUR + ETH}&limit=5`)
       return exmoOrders
     } catch (err) {
-      console.error(err)
+      console.error(err, 'exmo orders error')
+      return err
+    }
+  },
+  getKunaOrders: async function () {
+    try {
+      // ,DOGE_BTC,DASH_BTC
+      const BTC = 'ethbtc'
+      const exmoOrders = await axios.get(`https://api.exmo.com/v1/order_book/?pair=${BTC}&limit=5`)
+      return exmoOrders
+    } catch (err) {
+      console.error(err, 'kuna orders error')
       return err
     }
   }

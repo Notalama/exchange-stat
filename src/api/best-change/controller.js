@@ -14,7 +14,7 @@ const currenciesModel = require('./../currencies/model')
 module.exports = {
   index: (req, res, next) => {
     try {
-      const { minBalance, minProfit, chainSubscriptions, ltThreeLinks } = req.query
+      const { minBalance, minProfit, chainSubscriptions, ltThreeLinks, showExmo } = req.query
       http.get('http://api.bestchange.ru/info.zip', (data) => {
         const {
           statusCode
@@ -51,24 +51,25 @@ module.exports = {
                 if (err) console.log('err', err)
               })
               // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
-
-              const {data: exmoRates} = await getExmoORders()
               const exmoRatesUnform = []
-              for (const key in exmoRates) {
-                if (exmoRates.hasOwnProperty(key)) {
-                  const element = exmoRates[key]
-                  const divIndex = key.search('_')
-                  const frst = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(0, divIndex)) > 0 && /^[a-zA-Z]/.test(curr.currencyTitle))
-                  const scnd = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(divIndex + 1, key.length)) > 0 && /^[a-zA-Z]/.test(curr.currencyTitle))
-                  console.log(frst, scnd, '63', key)
-                  if (frst && scnd) {
-                    element.ask.forEach(el => exmoRatesUnform.push(frst.currencyId + ';' + scnd.currencyId + ';' + '899' + ';' + 1 + ';' + el[0] + ';' + el[2]))
-                    element.bid.forEach(el => exmoRatesUnform.push(scnd.currencyId + ';' + frst.currencyId + ';' + '899' + ';' + el[0] + ';' + 1 + ';' + el[1]))
+              if (showExmo === 'true') {
+                const {data: exmoRates} = await getExmoORders()
+                for (const key in exmoRates) {
+                  if (exmoRates.hasOwnProperty(key)) {
+                    const element = exmoRates[key]
+                    const divIndex = key.search('_')
+                    const frst = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(0, divIndex)) > 0 && /^[a-zA-Z]/.test(curr.currencyTitle))
+                    const scnd = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(divIndex + 1, key.length)) > 0 && /^[a-zA-Z]/.test(curr.currencyTitle))
+                    console.log(frst, scnd, '63', key)
+                    if (frst && scnd) {
+                      element.ask.forEach(el => exmoRatesUnform.push(frst.currencyId + ';' + scnd.currencyId + ';' + '899' + ';' + 1 + ';' + el[0] + ';' + el[2]))
+                      element.bid.forEach(el => exmoRatesUnform.push(scnd.currencyId + ';' + frst.currencyId + ';' + '899' + ';' + el[0] + ';' + 1 + ';' + el[1]))
+                    }
                   }
                 }
+                console.log(exmoRatesUnform, '70')
+                console.log(ratesBuffer.split('\n').slice(0, 5), '71')
               }
-              console.log(exmoRatesUnform, '70')
-              console.log(ratesBuffer.split('\n').slice(0, 5), '71')
               await formatRates({
                 unformattedList: ratesBuffer.split('\n').concat(exmoRatesUnform),
                 minAmount: +minBalance,
