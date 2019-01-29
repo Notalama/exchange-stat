@@ -57,8 +57,9 @@ module.exports = {
               for (const key in exmoRates) {
                 if (exmoRates.hasOwnProperty(key)) {
                   const element = exmoRates[key]
-                  const frst = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(0, 3)) > 0 && /^[a-zA-Z]/.test(curr.currencyTitle))
-                  const scnd = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(key.length - 3, key.length)) > 0 && /^[a-zA-Z]/.test(curr.currencyTitle))
+                  const divIndex = key.search('_')
+                  const frst = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(0, divIndex)) > 0 && /^[a-zA-Z]/.test(curr.currencyTitle))
+                  const scnd = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(divIndex + 1, key.length)) > 0 && /^[a-zA-Z]/.test(curr.currencyTitle))
                   console.log(frst, scnd, '63', key)
                   if (frst && scnd) {
                     element.ask.forEach(el => exmoRatesUnform.push(frst.currencyId + ';' + scnd.currencyId + ';' + '899' + ';' + 1 + ';' + el[0] + ';' + el[2]))
