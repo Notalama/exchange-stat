@@ -196,7 +196,7 @@ export default {
         this.interval += interval;
     },
     reloadInterval: function() {
-      this.loadItems();
+      // this.loadItems()
       setTimeout(() => {
         this.reloadInterval();
       }, this.interval);

@@ -6,7 +6,7 @@ const {
 const exchangersModel = require('./../../api/exchangers/model')
 const currenciesModel = require('./../../api/currencies/model')
 module.exports = {
-  formatRates: async (unformattedList, minAmount, minProfit, chainSubscriptions, ltThreeLinks) => {
+  formatRates: async ({unformattedList, minAmount, minProfit, chainSubscriptions, ltThreeLinks}) => {
     try {
       const profitArr = []
       const omitValues = await hideParamsModel.find({}, (err, res) => {
@@ -189,7 +189,8 @@ module.exports = {
       if (err) console.error(err, '----- err')
       else if (res === null) console.error('null triggered')
       else {
-        omitCurrencies = res[0].hiddenCurrencies
+        console.log(res)
+        res[0] ? omitCurrencies = res[0].hiddenCurrencies : omitCurrencies = []
       }
     })
     for (let i = 0; i < unformattedList.length; i++) {
@@ -212,6 +213,11 @@ module.exports = {
         exchangerTitle: rowArray[1]
       })
     }
+    // custom exmo
+    result.push({
+      exchangerId: '899',
+      exchangerTitle: 'Exmo Trade'
+    })
     return result
   },
   compileResponse: async (result) => {

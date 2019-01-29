@@ -8,6 +8,7 @@ const {
   formatExchangers,
   compileResponse
 } = require('./../../services/helpers/formatter')
+const { getExmoORders } = require('./../../services/helpers/external-rates')
 const exchangersModel = require('./../exchangers/model')
 const currenciesModel = require('./../currencies/model')
 module.exports = {
@@ -35,9 +36,9 @@ module.exports = {
               const ratesBuffer = iconv.convert(rates).toString()
 
               // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
-              // const cy = zip.entryDataSync('bm_cy.dat')
-              // const cyBuffer = iconv.convert(cy).toString()
-              // const currencyTypes = formatCurrencies(cyBuffer.split('\n'))
+              const cy = zip.entryDataSync('bm_cy.dat')
+              const cyBuffer = iconv.convert(cy).toString()
+              const currencyTypes = await formatCurrencies(cyBuffer.split('\n'))
               // currenciesModel.insertMany(currencyTypes, (err, val) => {
               //   if (err) console.log(err)
               //   else console.log(val[0], 'success fill curr')
@@ -50,13 +51,31 @@ module.exports = {
                 if (err) console.log('err', err)
               })
               // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
-              await formatRates(
-                ratesBuffer.split('\n'),
-                +minBalance,
-                +minProfit,
+
+              const {data: exmoRates} = await getExmoORders()
+              const exmoRatesUnform = []
+              for (const key in exmoRates) {
+                if (exmoRates.hasOwnProperty(key)) {
+                  const element = exmoRates[key]
+                  const divIndex = key.search('_')
+                  const frst = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(0, divIndex)) > 0 && /^[a-zA-Z]/.test(curr.currencyTitle))
+                  const scnd = currencyTypes.find(curr => curr.currencyTitle.search(key.substring(divIndex + 1, key.length)) > 0 && /^[a-zA-Z]/.test(curr.currencyTitle))
+                  console.log(frst, scnd, '63', key)
+                  if (frst && scnd) {
+                    element.ask.forEach(el => exmoRatesUnform.push(frst.currencyId + ';' + scnd.currencyId + ';' + '899' + ';' + 1 + ';' + el[0] + ';' + el[2]))
+                    element.bid.forEach(el => exmoRatesUnform.push(scnd.currencyId + ';' + frst.currencyId + ';' + '899' + ';' + el[0] + ';' + 1 + ';' + el[1]))
+                  }
+                }
+              }
+              console.log(exmoRatesUnform, '70')
+              console.log(ratesBuffer.split('\n').slice(0, 5), '71')
+              await formatRates({
+                unformattedList: ratesBuffer.split('\n').concat(exmoRatesUnform),
+                minAmount: +minBalance,
+                minProfit: +minProfit,
                 chainSubscriptions,
-                JSON.parse(ltThreeLinks)
-              ).then(async result => {
+                ltThreeLinks: JSON.parse(ltThreeLinks)
+              }).then(async result => {
                 const response = await compileResponse(result)
                 res.status(200).json(response)
                 zip.close()
