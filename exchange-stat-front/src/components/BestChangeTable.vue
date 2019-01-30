@@ -86,7 +86,9 @@
         </div>
       </div>
     </div>
-    <div class="container"></div>
+    <div class="container">
+      <button v-on:click="loadItems">Load table</button>
+    </div>
     <vue-good-table
       mode="remote"
       class="bc-table"
@@ -201,7 +203,7 @@ export default {
         this.interval += interval;
     },
     reloadInterval: function() {
-      this.loadItems()
+      // this.loadItems()
       setTimeout(() => {
         this.reloadInterval();
       }, this.interval);
