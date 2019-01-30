@@ -63,8 +63,8 @@ module.exports = {
                     const frst = currencies.find(curr => curr.title === key.substring(0, divIndex))
                     const scnd = currencies.find(curr => curr.title === key.substring(divIndex + 1, key.length))
                     if (frst && scnd) {
-                      element.ask.forEach(el => exmoRatesUnform.push(scnd.id + ';' + frst.id + ';' + '899' + ';' + el[0] + ';' + 1 + ';' + el[2]))
-                      element.bid.forEach(el => exmoRatesUnform.push(frst.id + ';' + scnd.id + ';' + '899' + ';' + 1 + ';' + el[0] + ';' + el[1]))
+                      element.ask.forEach(el => exmoRatesUnform.push(scnd.id + ';' + frst.id + ';' + '899' + ';' + el[0] + ';' + '1' + ';' + el[2]))
+                      element.bid.forEach(el => exmoRatesUnform.push(frst.id + ';' + scnd.id + ';' + '899' + ';' + '1' + ';' + el[0] + ';' + el[1]))
                     }
                   }
                 }
