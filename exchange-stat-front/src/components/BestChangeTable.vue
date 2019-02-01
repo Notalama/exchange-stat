@@ -258,7 +258,7 @@ export default {
       for (let i = 0; i < row.length - 3; i++) {
         const rate = row[i];
         const preLinkC = rate.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id='
-        const preLinkBC = rate.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/index.php?id='
+        const preLinkBC = 'https://www.bestchange.ru/index.php?id='
         let exmoPair = '';
         if (rate.changer === '899') {
           exmoPair = (rate.toTitle[rate.toTitle.length - 1] === ')' ? 
@@ -268,7 +268,7 @@ export default {
           rate.fromTitle.substring(rate.fromTitle.search('\\(') + 1, rate.fromTitle.length - 1) :
           rate.fromTitle.substring(rate.fromTitle.length - 3, rate.fromTitle.length))
         }
-        const arrowLinkParams = rate.changer === '899' ? exmoPair + '">' : rate.changer + "&from=" + rate.from + "&to=" + rate.to + '&url=1">'
+        const arrowLinkParams = "&from=" + rate.from + "&to=" + rate.to + '&url=1">'
         const changerLinkParams = rate.changer === '899' ? exmoPair + '">' : rate.changer + "&from=" + rate.from + "&to=" + rate.to + '&url=1">'
         const exch = ' <a target="_blank" href="' + preLinkBC + arrowLinkParams +
           '<i class="fas fa-arrow-right"></i></a> - ' +

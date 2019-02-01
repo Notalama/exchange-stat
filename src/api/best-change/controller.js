@@ -66,9 +66,8 @@ module.exports = {
                       element.ask.forEach(el => exmoRatesUnform.push(scnd.id + ';' + frst.id + ';' + '899' + ';' + el[0] + ';' + '1' + ';' + el[2]))
                       element.bid.forEach(el => exmoRatesUnform.push(frst.id + ';' + scnd.id + ';' + '899' + ';' + '1' + ';' + el[0] + ';' + el[1]))
                     }
-                    
                   }
-                  console.log(exmoRatesUnform)
+                  // console.log(exmoRatesUnform)
                 }
               }
               await formatRates({

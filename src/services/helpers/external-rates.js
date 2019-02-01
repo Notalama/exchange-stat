@@ -15,6 +15,7 @@ module.exports = {
       const ETH = 'ETH_UAH,ETH_LTC,XRP_ETH,BTG_ETH,XMR_ETH,BCH_ETH,WAVES_ETH,OMG_ETH,ADA_ETH,ZRX_ETH,ETH_USDT,'
       const USDT = 'BCH_USDT,USDT_USD,DASH_USDT,XRP_USDT,'
       const exmoOrders = await axios.get(`https://api.exmo.com/v1/order_book/?pair=${BTC + USD + RUB + EUR + ETH + USDT}&limit=5`)
+      // console.log(exmoOrders.RUB, '18')
       return exmoOrders
     } catch (err) {
       console.error(err, 'exmo orders error')
