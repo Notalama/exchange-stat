@@ -139,10 +139,13 @@ export default {
         this.buildChainSubscriptions(chainRates);
         // this.loadItems()
       } else if (params.column.field === "links") {
-        const preLinkC = "https://www.bestchange.ru/index.php?from=";
-        const preLinkBC = "https://www.bestchange.ru/click.php?id=";
+        console.log(params, chainRates)
+        // rate.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id='
+        
         for (let i = 0; i < chainRates.length - 3; i++) {
           const element = chainRates[i];
+          let preLinkC = element.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id='
+          const preLinkBC = 'https://www.bestchange.ru/click.php?id='
           window.open(preLinkC + element.from + "&to=" + element.to);
           window.open(
             preLinkBC +
@@ -237,6 +240,7 @@ export default {
       return ((minAmount / 100) * profit).toFixed(2) + " $";
     },
     getChainCol: function(row, toDolIndex) {
+      // eslint-disable-next-line
       if (row.some(el => el.from === '899')) console.log(row)
       let sum = row[toDolIndex]
         ? this.calcRate(+row[toDolIndex][3], +row[toDolIndex][4], 1000)
