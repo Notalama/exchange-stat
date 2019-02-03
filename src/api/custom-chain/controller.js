@@ -24,11 +24,11 @@ module.exports = {
           res.status(400).send('info.zip not found', data)
           throw console.error(data)
         } else {
-          const zipWriteBuffer = fs.createWriteStream('info.zip')
+          const zipWriteBuffer = fs.createWriteStream('info/info.zip')
           data.pipe(zipWriteBuffer)
           zipWriteBuffer.on('finish', () => {
             const zip = new StreamZip({
-              file: 'info.zip',
+              file: 'info/info.zip',
               storeEntries: true
             })
             zip.on('ready', async () => {

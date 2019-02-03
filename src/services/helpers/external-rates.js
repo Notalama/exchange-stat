@@ -5,7 +5,7 @@ module.exports = {
       // ,DOGE_BTC,DASH_BTC
       const BTC = 'BTC_USD,BTC_EUR,BTC_RUB,LTC_BTC,XRP_BTC,ETH_BTC,ETC_BTC,ZEC_BTC,' +
       'DASH_BTC,DOGE_BTC,BTC_USDT,XMR_BTC,EOS_BTC,BTG_BTC,BCH_BTC,EOS_BTC,WAVES_BTC,' +
-      'XLM_BTC,OMG_BTC,TRX_BTC,ADA_BTC,NEO_BTC,ZRX_BTC,XEM_BTC,BTC_USDT,'
+      'XLM_BTC,OMG_BTC,TRX_BTC,ADA_BTC,NEO_BTC,ZRX_BTC,XEM_BTC,BTC_USDT,LSK_BTC,'
       const USD = 'ETH_USD,ETC_USD,LTC_USD,ZEC_USD,XRP_USD,USD_RUB,DOGE_USD,DASH_USD,' +
       'BTG_USD,XMR_USD,BCH_USD,EOS_USD,WAVES_USD,XLM_USD,OMG_USD,TRX_USD,ADA_USD,NEO_USD,' +
       'ZRX_USD,LSK_USD,XEM_USD,'
@@ -15,7 +15,10 @@ module.exports = {
       const ETH = 'ETH_UAH,ETH_LTC,XRP_ETH,BTG_ETH,XMR_ETH,BCH_ETH,WAVES_ETH,OMG_ETH,ADA_ETH,ZRX_ETH,ETH_USDT,'
       const USDT = 'BCH_USDT,USDT_USD,DASH_USDT,XRP_USDT,'
       const exmoOrders = await axios.get(`https://api.exmo.com/v1/order_book/?pair=${BTC + USD + RUB + EUR + ETH + USDT}&limit=5`)
-      // console.log(exmoOrders.RUB, '18')
+      console.log(exmoOrders.data['LSK_BTC'].ask, '18')
+      console.log(exmoOrders.data['LSK_BTC'].bid, '19')
+      console.log(exmoOrders.data['BTC_USD'].ask, '20')
+      console.log(exmoOrders.data['BTC_USD'].bid, '21')
       return exmoOrders
     } catch (err) {
       console.error(err, 'exmo orders error')
