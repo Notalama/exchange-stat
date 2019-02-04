@@ -133,28 +133,29 @@ export default {
         return el.chain.search(this.searchTerm) >= 0;
       });
     },
+    buildExmoLink: function(element) {
+      return (element.toTitle[element.toTitle.length - 1] === ')' ? 
+        element.toTitle.substring(element.toTitle.search('\\(') + 1, element.toTitle.length - 1) :
+        element.toTitle.substring(element.toTitle.length - 3, element.toTitle.length)) + '_' +
+      (element.fromTitle[element.fromTitle.length - 1] === ')' ? 
+        element.fromTitle.substring(element.fromTitle.search('\\(') + 1, element.fromTitle.length - 1) :
+        element.fromTitle.substring(element.fromTitle.length - 3, element.fromTitle.length))
+    },
     pinToTop: function(params) {
       const chainRates = this.currentDataArr[params.row.originalIndex];
       if (params.column.field === "pin") {
         this.buildChainSubscriptions(chainRates);
         // this.loadItems()
       } else if (params.column.field === "links") {
-        console.log(params, chainRates)
-        // rate.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id='
-        
         for (let i = 0; i < chainRates.length - 3; i++) {
           const element = chainRates[i];
           let preLinkC = element.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id='
-          const preLinkBC = 'https://www.bestchange.ru/click.php?id='
-          window.open(preLinkC + element.from + "&to=" + element.to);
-          window.open(
-            preLinkBC +
-              element.changer +
-              "&from=" +
-              element.from +
-              "&to=" +
-              element.to +
-              "&url=1"
+          const preLinkBC = 'https://www.bestchange.ru/index.php?'
+          const exmoPair = element.changer === '899' ? this.buildExmoLink(element) : null
+          window.open(preLinkC +
+            (element.changer === '899' ? exmoPair : element.changer + '&from' + element.from + '&to=' + element.to));
+          window.open(preLinkBC +
+              (element.changer === '899' ? '' : 'id=' + element.changer) + "&from=" + element.from + "&to=" + element.to + "&url=1"
           );
         }
       }
@@ -264,15 +265,8 @@ export default {
         const rate = row[i];
         const preLinkC = rate.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id='
         const preLinkBC = 'https://www.bestchange.ru/index.php?id='
-        let exmoPair = '';
-        if (rate.changer === '899') {
-          exmoPair = (rate.toTitle[rate.toTitle.length - 1] === ')' ? 
-          rate.toTitle.substring(rate.toTitle.search('\\(') + 1, rate.toTitle.length - 1) :
-          rate.toTitle.substring(rate.toTitle.length - 3, rate.toTitle.length)) + '_' +
-          (rate.fromTitle[rate.fromTitle.length - 1] === ')' ? 
-          rate.fromTitle.substring(rate.fromTitle.search('\\(') + 1, rate.fromTitle.length - 1) :
-          rate.fromTitle.substring(rate.fromTitle.length - 3, rate.fromTitle.length))
-        }
+        const exmoPair = rate.changer === '899' ? this.buildExmoLink(rate) : ''
+
         const arrowLinkParams = "&from=" + rate.from + "&to=" + rate.to + '&url=1">'
         const changerLinkParams = rate.changer === '899' ? exmoPair + '">' : rate.changer + "&from=" + rate.from + "&to=" + rate.to + '&url=1">'
         const exch = ' <a target="_blank" href="' + preLinkBC + arrowLinkParams +
