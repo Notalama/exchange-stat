@@ -242,7 +242,7 @@ export default {
     },
     getChainCol: function(row, toDolIndex) {
       // eslint-disable-next-line
-      if (row.some(el => el.from === '899')) console.log(row)
+      // if (row.some(el => el.changer === '899')) console.log(row)
       let sum = row[toDolIndex]
         ? this.calcRate(+row[toDolIndex][3], +row[toDolIndex][4], 1000)
         : 1;

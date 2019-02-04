@@ -12,7 +12,7 @@ module.exports = {
     id: '186',
     title: 'BTC'
   }, {
-    id: '130',
+    id: '99',
     title: 'LTC'
   }, {
     id: '115',
