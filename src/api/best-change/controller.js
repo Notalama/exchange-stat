@@ -22,7 +22,7 @@ module.exports = {
         } = data
         if (statusCode !== 200) {
           res.status(400).send('info.zip not found', data)
-          console.error(data)
+          console.log(data, 'api bestchange failed')
         } else {
           const zipWriteBuffer = fs.createWriteStream('info/info.zip')
           data.pipe(zipWriteBuffer)

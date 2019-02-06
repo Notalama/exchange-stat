@@ -66,10 +66,6 @@ module.exports = {
                     let chain = [firstEl, secondEl, thirdEl]
                     const profit = calcChain([firstEl, secondEl, thirdEl], absCommis)
                     if (profit > minProfit) {
-                      chain.forEach(el => {
-                        // if (el[0] === '139') console.log(el, '====70====')
-                        // if (el[0] === '180') console.log(el, '====71====')
-                      })
                       // *** Chain currencies to dollar compare ***
                       const calcedAmount = calcAmountToDoll(chain, byCurr, minAmount)
                       chain = calcedAmount.chain

@@ -149,14 +149,11 @@ export default {
       } else if (params.column.field === "links") {
         for (let i = 0; i < chainRates.length - 3; i++) {
           const element = chainRates[i];
-          let preLinkC = element.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id='
+          const preLinkC = element.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id='
           const preLinkBC = 'https://www.bestchange.ru/index.php?'
-          const exmoPair = element.changer === '899' ? this.buildExmoLink(element) : null
-          window.open(preLinkC +
-            (element.changer === '899' ? exmoPair : element.changer + '&from' + element.from + '&to=' + element.to));
-          window.open(preLinkBC +
-              (element.changer === '899' ? '' : 'id=' + element.changer) + "&from=" + element.from + "&to=" + element.to + "&url=1"
-          );
+          const exmoPair = element.changer === '899' ? this.buildExmoLink(element) : ''
+          window.open(preLinkBC + 'from=' + element.from + '&to=' + element.to + '&url=1');
+          window.open(preLinkC + (element.changer === '899' ? exmoPair : element.changer + '&from=' + element.from + '&to=' + element.to + '&url=1'));
         }
       }
     },
@@ -207,7 +204,7 @@ export default {
         this.interval += interval;
     },
     reloadInterval: function() {
-      this.loadItems()
+      // this.loadItems()
       setTimeout(() => {
         this.reloadInterval();
       }, this.interval);
@@ -264,7 +261,7 @@ export default {
       for (let i = 0; i < row.length - 3; i++) {
         const rate = row[i];
         const preLinkC = rate.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id='
-        const preLinkBC = 'https://www.bestchange.ru/index.php?id='
+        const preLinkBC = 'https://www.bestchange.ru/index.php?'
         const exmoPair = rate.changer === '899' ? this.buildExmoLink(rate) : ''
 
         const arrowLinkParams = "&from=" + rate.from + "&to=" + rate.to + '&url=1">'
