@@ -4,7 +4,7 @@ const commissionModel = require('./../../api/commision/model')
 const tempHideModel = require('./../../api/temp-hide/model')
 const {filterOmitValues} = require('./filter-hidden')
 module.exports = {
-  formatAndFilterRates: async ({unformattedList = [], subscriptions = [], omitValues = null, minAmount = 0}) => {
+  formatAndFilterRates: async ({unformattedList = [], subscriptions = [], omitValues = null, minAmount = 0, exmoRates = []}) => {
     const result = {
       byCurr: [],
       readySubs: [],
@@ -33,72 +33,83 @@ module.exports = {
       else if (res === null) console.error('null bonuses found')
     })
     result.absCommis = commissions.filter(el => el.commissionA[0])
-    for (let i = 0; i < unformattedList.length; i++) {
-      let rowArray = unformattedList[i].split(';')
-      rowArray.splice(6, rowArray.length)
-      const toRemove = filterOmitValues({
-        rowArray,
-        hiddenCurrencies: omitValues[0].hiddenCurrencies,
-        hiddenExchangers: omitValues[0].hiddenExchangers,
-        tempHiddens
-      })
-      if (toRemove) continue
-      if (subscriptions) {
-        // *** pin to top the subscriptions
-        const rowId = rowArray[0] + rowArray[1] + rowArray[2]
-        subscriptions.forEach((chain, index) => {
-          for (let j = 0; j < chain.length; j++) {
-            const rateSub = chain[j]
-            const subId = rateSub[0] + rateSub[1] + rateSub[2]
-            if (subId === rowId) {
-              if (!result.readySubs[index]) result.readySubs[index] = []
-              result.readySubs[index][j] = calcCommission(rowArray, commissions).slice(0, 6)
-              continue
-            }
-          }
+    const byCurrExmo = module.exports.structRates(exmoRates)
+    console.log(byCurrExmo, '37')
+    try {
+      for (let i = 0; i < unformattedList.length; i++) {
+        let rowArray = unformattedList[i].split(';')
+        rowArray.splice(6, rowArray.length)
+        const toRemove = filterOmitValues({
+          rowArray,
+          hiddenCurrencies: omitValues[0].hiddenCurrencies,
+          hiddenExchangers: omitValues[0].hiddenExchangers,
+          tempHiddens
         })
-      }
-      let id = rowArray[0]
-      if (result.byCurr[id] !== undefined) {
-        for (let j = 0; j < result.byCurr[id].length; j++) {
-          if (result.byCurr[id][j]) {
-            const el = result.byCurr[id][j]
-            if (rowArray[1] === el[1]) {
-              const bonus = bonuses.find(bon => bon.changer === rowArray[2])
-              if (bonus) rowArray = calcBonus(rowArray, bonus)
-              rowArray = calcCommission(rowArray, commissions)
-              const isProfitable = +rowArray[3] <= +el[3] && +rowArray[4] >= +el[4]
-              if (isProfitable) {
-                result.byCurr[id][rowArray[1]] = rowArray
+        if (toRemove) continue
+        if (subscriptions) {
+          // *** pin to top the subscriptions
+          const rowId = rowArray[0] + rowArray[1] + rowArray[2]
+          subscriptions.forEach((chain, index) => {
+            for (let j = 0; j < chain.length; j++) {
+              const rateSub = chain[j]
+              const subId = rateSub[0] + rateSub[1] + rateSub[2]
+              if (subId === rowId) {
+                if (!result.readySubs[index]) result.readySubs[index] = []
+                result.readySubs[index][j] = calcCommission(rowArray, commissions).slice(0, 6)
+                continue
               }
-              break
-            } else if (j === result.byCurr[id].length - 1) {
-              const bonus = bonuses.find(bon => bon.changer === rowArray[2])
-              if (bonus) rowArray = calcBonus(rowArray, bonus)
-              rowArray = calcCommission(rowArray, commissions)
-              result.byCurr[id][rowArray[1]] = rowArray
-              break
-            }
-          }
-        }
-      } else {
-        result.byCurr[id] = []
-        const bonus = bonuses.find(bon => bon.changer === rowArray[2])
-        if (bonus) rowArray = calcBonus(rowArray, bonus)
-        rowArray = calcCommission(rowArray, commissions)
-        // to filter by dollar amount of changer
-        if (rowArray[1] === '40') {
-          result.byCurr.forEach(currArr => {
-            let rateAmount
-            if (currArr[rowArray[1]]) {
-              rateAmount = calcDollAmount(currArr[rowArray[1]][5], rowArray, minAmount)
-              if (rateAmount < +minAmount) currArr[rowArray[1]] = undefined
-              else currArr[rowArray[1]][6] = rateAmount
             }
           })
         }
-        result.byCurr[id][rowArray[1]] = rowArray
+        let id = rowArray[0]
+        if (result.byCurr[id] !== undefined) {
+          for (let j = 0; j < result.byCurr[id].length; j++) {
+            if (result.byCurr[id][j]) {
+              const el = result.byCurr[id][j]
+              if (rowArray[1] === el[1]) {
+                const bonus = bonuses.find(bon => bon.changer === rowArray[2])
+                if (bonus) rowArray = calcBonus(rowArray, bonus)
+                rowArray = calcCommission(rowArray, commissions)
+                const isProfitable = +rowArray[3] <= +el[3] && +rowArray[4] >= +el[4]
+                if (isProfitable) {
+                  result.byCurr[id][rowArray[1]] = rowArray
+                }
+                break
+              } else if (j === result.byCurr[id].length - 1) {
+                const bonus = bonuses.find(bon => bon.changer === rowArray[2])
+                if (bonus) rowArray = calcBonus(rowArray, bonus)
+                rowArray = calcCommission(rowArray, commissions)
+                result.byCurr[id][rowArray[1]] = rowArray
+                break
+              }
+            }
+          }
+        } else {
+          result.byCurr[id] = []
+          const bonus = bonuses.find(bon => bon.changer === rowArray[2])
+          if (bonus) rowArray = calcBonus(rowArray, bonus)
+          rowArray = calcCommission(rowArray, commissions)
+          // to filter by dollar amount of changer
+          if (rowArray[1] === '40') {
+            result.byCurr.forEach(currArr => {
+              let rateAmount
+              if (currArr[rowArray[1]]) {
+                rateAmount = calcDollAmount(currArr[rowArray[1]][5], rowArray, minAmount)
+                if (rateAmount < +minAmount) {
+                  // if exmo, get average value
+                  // if (rowArray[2] === '899') {
+
+                  // } else
+                  currArr[rowArray[1]] = undefined
+                } else currArr[rowArray[1]][6] = rateAmount
+              }
+            })
+          }
+          result.byCurr[id][rowArray[1]] = rowArray
+        }
       }
+    } catch (e) {
+      console.log(e, 'Format and filter err')
     }
     return result
   },
@@ -163,6 +174,20 @@ module.exports = {
       }
     }
     return {profitArr, absCommis, otherRates}
+  },
+  structRates: function (unformattedList) {
+    const structuredRates = []
+    unformattedList.forEach(rate => {
+      rate = rate.split(';')
+      console.log(rate, '182')
+      const rateId = rate[0] + rate[1]
+      if (structuredRates[rateId]) structuredRates[rateId].push(rate)
+      else {
+        structuredRates[rateId] = []
+        structuredRates[rateId].push(rate)
+      }
+    })
+    return structuredRates
   }
 }
 

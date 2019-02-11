@@ -84,7 +84,8 @@ module.exports = {
                 minAmount: +minBalance,
                 minProfit: +minProfit,
                 chainSubscriptions,
-                ltThreeLinks: JSON.parse(ltThreeLinks)
+                ltThreeLinks: JSON.parse(ltThreeLinks),
+                exmoRates: exmoRatesUnform
               }).then(async result => {
                 const response = await compileResponse(result)
                 res.status(200).json(response)
