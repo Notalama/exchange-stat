@@ -3,11 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "start": "cd ../ && node server.js",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "postinstall": "ng build --output-path dist"
   },
   "dependencies": {
+    "@vue/cli-plugin-babel": "^3.2.0",
+    "@vue/cli-plugin-eslint": "^3.2.0",
+    "@vue/cli-service": "^3.2.0",
+    "vue-template-compiler": "^2.5.17",
     "@fortawesome/fontawesome-free": "^5.6.3",
     "axios": "^0.18.0",
     "font-awesome": "^4.7.0",
@@ -18,13 +24,9 @@
     "vue-router": "^3.0.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.2.0",
-    "@vue/cli-plugin-eslint": "^3.2.0",
-    "@vue/cli-service": "^3.2.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.8.0",
-    "eslint-plugin-vue": "^5.0.0-0",
-    "vue-template-compiler": "^2.5.17"
+    "eslint-plugin-vue": "^5.0.0-0"
   },
   "eslintConfig": {
     "root": true,
