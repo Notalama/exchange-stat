@@ -6,7 +6,7 @@ const bodyParser = require('body-parser')
 const queryman = require('querymen')
 const bodymen = require('bodymen')
 const { env } = require('../../config')
-
+const path = require('path')
 module.exports = (apiRoot, routes) => {
   const app = express()
 
@@ -16,7 +16,8 @@ module.exports = (apiRoot, routes) => {
     app.use(compression())
     app.use(morgan('dev'))
   }
-
+  // const distDir = path.join(__dirname, '../exchange-stat-front/dist/')
+  app.use(express.static(path.join(__dirname, '../../../exchange-stat-front/dist/')))
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json())
   app.use(apiRoot, routes)
