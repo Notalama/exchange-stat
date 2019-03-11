@@ -537,7 +537,6 @@ a {
 }
 .checkbox-span {
   color: #000;
-  overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   width: 150px;

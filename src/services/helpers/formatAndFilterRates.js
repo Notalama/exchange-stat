@@ -7,7 +7,7 @@ const calcBonus = require('./calcBonus')
 const calcCommission = require('./calcCommission')
 const calcDollAmount = require('./calcDollAmount')
 
-export default async function formatAndFilterRates ({
+module.exports = async function formatAndFilterRates ({
   unformattedList = [],
   subscriptions = [],
   omitValues = null,
@@ -46,8 +46,8 @@ export default async function formatAndFilterRates ({
     else if (res === null) console.error('null bonuses found')
   })
   result.absCommis = commissions.filter(el => el.commissionA[0])
-  const byCurrExmo = module.exports.structRates(exmoRates)
-  console.log(byCurrExmo, '37')
+  // const byCurrExmo = module.exports.structRates(exmoRates)
+  // console.log(byCurrExmo, '37')
   try {
     for (let i = 0; i < unformattedList.length; i++) {
       let rowArray = unformattedList[i].split(';')

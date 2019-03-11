@@ -1,4 +1,4 @@
-export default function calcCommission (rate, commissions) {
+module.exports = function calcCommission (rate, commissions) {
   commissions.forEach(com => {
     const isCommissedCurr = (com.currency === rate[0] && com.inOut === 'IN') || (com.currency === rate[1] && com.inOut === 'OUT')
     if (isCommissedCurr) {

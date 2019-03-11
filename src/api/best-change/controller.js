@@ -2,16 +2,16 @@ const http = require('http')
 const fs = require('fs')
 const StreamZip = require('node-stream-zip')
 const Iconv = require('iconv').Iconv
-const {
-  formatRates,
-  formatCurrencies,
-  formatExchangers,
-  compileResponse
-} = require('./../../services/helpers/formatter')
-const { getExmoORders } = require('./../../services/helpers/external-rates')
 const { currencies } = require('./exmo-currencies')
 const exchangersModel = require('./../exchangers/model')
 const currenciesModel = require('./../currencies/model')
+const {
+  formatRates,
+  formatExchangers,
+  compileResponse,
+  formatCurrencies,
+  getExmoOrders
+} = require('./../../services/helpers')
 module.exports = {
   index: (req, res, next) => {
     try {
@@ -55,7 +55,7 @@ module.exports = {
 
               const exmoRatesUnform = []
               if (showExmo === 'true') {
-                const {data: exmoRates} = await getExmoORders()
+                const {data: exmoRates} = await getExmoOrders()
                 for (const key in exmoRates) {
                   if (exmoRates.hasOwnProperty(key)) {
                     const element = exmoRates[key]
@@ -79,6 +79,7 @@ module.exports = {
                   }
                 }
               }
+              console.log(+minBalance, +minProfit, ' minb and minprof')
               await formatRates({
                 unformattedList: ratesBuffer.split('\n').concat(exmoRatesUnform),
                 minAmount: +minBalance,

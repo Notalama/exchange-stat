@@ -1,4 +1,4 @@
-export default function calcBonus (rate, bonus) {
+module.exports = function calcBonus (rate, bonus) {
   const forAll = !bonus.from && !bonus.to
   const forOneCurr = !bonus.from && bonus.to && rate[1] === bonus.to
   const forPair = bonus.from && bonus.to && rate[1] === bonus.to && bonus.from === rate[0]

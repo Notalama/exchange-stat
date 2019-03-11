@@ -1,3 +1,4 @@
+import './polyfills.ts';
 import Vue from 'vue';
 Vue.config.productionTip = false
 import VueGoodTablePlugin from 'vue-good-table';

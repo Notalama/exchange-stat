@@ -1,6 +1,6 @@
 const axios = require('axios')
 module.exports = {
-  getExmoORders: async function () {
+  getExmoOrders: async function () {
     try {
       // ,DOGE_BTC,DASH_BTC
       const BTC = 'BTC_USD,BTC_EUR,BTC_RUB,LTC_BTC,XRP_BTC,ETH_BTC,ETC_BTC,ZEC_BTC,' +
