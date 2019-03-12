@@ -82,5 +82,10 @@
     "vue": "^2.5.17",
     "vue-good-table": "^2.16.0",
     "vue-router": "^3.0.2"
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
   }
 }
