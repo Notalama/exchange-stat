@@ -1,11 +1,11 @@
 import Vue from 'vue';
 Vue.config.productionTip = false
 import VueGoodTablePlugin from 'vue-good-table';
-import M from './assets/styles/materialize.min.js';
-import './assets/styles/materialize.min.css';
+import M from 'assets/styles/materialize.min.js';
+import 'assets/styles/materialize.min.css';
 // import the styles 
 import 'vue-good-table/dist/vue-good-table.css'
-import './assets/styles/all.min.css';
+import 'assets/styles/all.min.css';
 import NotFound from './components/NotFound';
 import routes from './routes';
 
