@@ -6,6 +6,10 @@
 
 <script>
 import BestChangeTable from './components/BestChangeTable.vue'
+import './assets/styles/materialize.min.css';
+import './assets/styles/all.min.css';
+// import M from './assets/styles/materialize.min.js';
+// console.log(M)
 
 export default {
   name: 'app',
@@ -14,7 +18,7 @@ export default {
   },
   mounted: function() {
     // eslint-disable-next-line
-    M.AutoInit()
+    // M.AutoInit()
   },
   methods: {
     changeLinksAmout: function(amount) {
