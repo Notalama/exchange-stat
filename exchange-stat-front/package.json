@@ -7,7 +7,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "postinstall": "ng build --output-path dist"
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@vue/cli-plugin-babel": "^3.2.0",

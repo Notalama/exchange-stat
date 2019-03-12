@@ -12,7 +12,8 @@
     "prod": "node src/app.js",
     "lint": "eslint src",
     "docs": "apidoc -i src -o docs && apidoc-markdown -p docs -o DOCS.md",
-    "postdocs": "opn docs/index.html"
+    "postdocs": "opn docs/index.html",
+    "postinstall": "cd exchange-stat-front && npm run build"
   },
   "jest": {
     "testEnvironment": "node",

@@ -16,7 +16,7 @@ module.exports = (apiRoot, routes) => {
     app.use(compression())
     app.use(morgan('dev'))
   }
-  const distDir = '../../../exchange-stat-front/dist/'
+  const distDir = '../../../exchange-stat-front/dist'
   app.use(express.static(path.join(__dirname, distDir)))
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json())
