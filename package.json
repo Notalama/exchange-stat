@@ -15,6 +15,9 @@
     "postdocs": "opn docs/index.html",
     "postinstall": "cd exchange-stat-front && npm run build"
   },
+  "engines": {
+    "npm": "6.x"
+  },
   "jest": {
     "testEnvironment": "node",
     "setupTestFrameworkScriptFile": "<rootDir>/test/setup.js"
