@@ -18,6 +18,7 @@ module.exports = (apiRoot, routes) => {
   }
   const distDir = '../../../exchange-stat-front/dist'
   app.use(express.static(path.join(__dirname, distDir)))
+  app.set('views', path.join(__dirname, distDir))
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json())
   app.use(apiRoot, routes)
