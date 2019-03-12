@@ -90,7 +90,7 @@ export default {
           changerId: this.formData.changer.exchangerId,
           hidePeriod: (this.formData.days || 0) * 86400000 + (this.formData.hours || 0) * 3600000 + (this.formData.minutes || 0) * 60000
         }
-        axios.post('http://localhost:9000/temp-hide', params).then(response => {
+        axios.post('https://exchange-stat.herokuapp.com/temp-hide', params).then(response => {
           // eslint-disable-next-line
           console.log(response)
           if (response.status === 200) {
@@ -124,14 +124,14 @@ export default {
       this.isDisabled()
     },
     getCurrencies: function () {
-      axios.get('http://localhost:9000/currencies').then(response => {
+      axios.get('https://exchange-stat.herokuapp.com/currencies').then(response => {
         // eslint-disable-next-line
         // console.log(response.data)
         if (response.data && response.status === 200) this.currencies = response.data
       })
     },
     getExchangers: function () {
-      axios.get('http://localhost:9000/exchangers').then(response => {
+      axios.get('https://exchange-stat.herokuapp.com/exchangers').then(response => {
         // eslint-disable-next-line
         // console.log(response.data)
         if (response.data && response.status === 200) this.exchangers = response.data

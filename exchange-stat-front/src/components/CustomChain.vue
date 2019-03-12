@@ -107,7 +107,7 @@ export default {
         }
         // eslint-disable-next-line
         console.log(chain)
-        axios.post('http://localhost:9000/custom-chain', {chain: chain, amount: data.minBalance}).then(response => {
+        axios.post('https://exchange-stat.herokuapp.com/custom-chain', {chain: chain, amount: data.minBalance}).then(response => {
           // eslint-disable-next-line
           console.log(response)
           this.currentDataArr = response.data.chain
@@ -138,7 +138,7 @@ export default {
       }
     },
     getCurrencies: function() {
-      axios.get('http://localhost:9000/currencies').then(response => {
+      axios.get('https://exchange-stat.herokuapp.com/currencies').then(response => {
         if (response.data && response.status === 200) this.currencies = response.data
       })
     },

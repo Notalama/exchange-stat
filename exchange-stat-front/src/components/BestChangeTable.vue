@@ -345,7 +345,7 @@ export default {
           : '';
         axios
           .get(
-            'http://localhost:9000/best-change?minBalance=' +
+            'https://exchange-stat.herokuapp.com/best-change?minBalance=' +
               this.minBalance +
               '&minProfit=' +
               this.minProfit +
