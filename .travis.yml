@@ -1,7 +1,5 @@
 language: node_js
 node_js:
-- v4
-- v5
 - v6
 addons:
   apt:
@@ -16,3 +14,8 @@ env:
   global:
   - CXX=g++-4.8
   - MASTER_KEY=masterKey
+deploy:
+  provider: heroku
+  api_key: 795125dd-22d1-4843-86db-e4c187a724a2
+  app:
+    dev: exchange-stat
