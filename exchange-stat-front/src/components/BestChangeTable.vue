@@ -314,8 +314,7 @@ export default {
           : calcFourth;
       const endChain =
         '<span style="color: green"><i class="fas fa-arrow-right"></i> ' +
-        exitSum +
-        ' ' +
+        exitSum + ' ' +
         row[0].fromTitle +
         '</span>';
       return (
