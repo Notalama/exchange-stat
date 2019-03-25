@@ -4,18 +4,17 @@ const StreamZip = require('node-stream-zip')
 const Iconv = require('iconv').Iconv
 const { currencies } = require('./exmo-currencies')
 const exchangersModel = require('./../exchangers/model')
-const currenciesModel = require('./../currencies/model')
 const {
   formatRates,
   formatExchangers,
   compileResponse,
-  formatCurrencies,
-  getExmoOrders
+  getExmoOrders,
+  buildStringRates
 } = require('./../../services/helpers')
 module.exports = {
   index: (req, res, next) => {
     try {
-      const { minBalance, minProfit, chainSubscriptions, ltThreeLinks, showExmo } = req.query
+      const { minBalance, minProfit, chainSubscriptions, ltThreeLinks, showExmo, exmoOrdersCount } = req.query
       http.get('http://api.bestchange.ru/info.zip', (data) => {
         const {
           statusCode
@@ -55,31 +54,57 @@ module.exports = {
 
               const exmoRatesUnform = []
               if (showExmo === 'true') {
-                const {data: exmoRates} = await getExmoOrders()
+                const {data: exmoRates} = await getExmoOrders({exmoOrdersCount})
                 for (const key in exmoRates) {
                   if (exmoRates.hasOwnProperty(key)) {
                     const element = exmoRates[key]
                     const divIndex = key.search('_')
                     const frst = currencies.find(curr => curr.title === key.substring(0, divIndex))
                     const scnd = currencies.find(curr => curr.title === key.substring(divIndex + 1, key.length))
-                    if (frst && scnd) {
+                    if (frst && scnd && exmoOrdersCount) {
+                      let giveAccum = 0
+                      let receiveAccum = 0
+                      let balanceAccum = 0
+                      element.ask.forEach(el => {
+                        giveAccum += (+el[0] < 1) ? 1 : +el[0]
+                        receiveAccum += (+el[0] < 1) ? (1 / +el[0]) : 1
+                        balanceAccum += +el[1]
+                      })
+                      giveAccum = (giveAccum / element.ask.length).toFixed(6)
+                      receiveAccum = (receiveAccum / element.ask.length).toFixed(6)
+                      let rateAsk = `${scnd.id};${frst.id};899;${giveAccum};${receiveAccum};${balanceAccum}`
+                      exmoRatesUnform.push(rateAsk)
+
+                      let giveAcc = 0
+                      let receiveAcc = 0
+                      let balanceAcc = 0
+                      element.bid.forEach(el => {
+                        giveAcc += (+el[0] < 1) ? (1 / +el[0]) : 1
+                        receiveAcc += (+el[0] < 1) ? 1 : +el[0]
+                        balanceAcc += +el[2]
+                      })
+                      giveAcc = (giveAcc / element.bid.length).toFixed(6)
+                      receiveAcc = (receiveAcc / element.bid.length).toFixed(6)
+                      let rateBid = `${frst.id};${scnd.id};899;${giveAcc};${receiveAcc};${balanceAcc}`
+                      exmoRatesUnform.push(rateBid)
+                    } else if (frst && scnd && !exmoOrdersCount) {
                       element.ask.forEach(el => {
                         const give = +el[0] < 1 ? '1' : +el[0]
                         const receive = +el[0] < 1 ? (1 / +el[0]) : '1'
-                        const rate = scnd.id + ';' + frst.id + ';899;' + give + ';' + receive + ';' + el[2]
+                        const rate = `${scnd.id};${frst.id};899;${give};${receive};${el[1]}`
                         exmoRatesUnform.push(rate)
                       })
                       element.bid.forEach(el => {
                         const give = +el[0] < 1 ? 1 / +el[0] : '1'
                         const receive = +el[0] < 1 ? '1' : +el[0]
-                        const rate = frst.id + ';' + scnd.id + ';899;' + give + ';' + receive + ';' + el[1]
+                        const rate = `${frst.id};${scnd.id};899;${give};${receive};${el[2]}`
                         exmoRatesUnform.push(rate)
                       })
                     }
                   }
                 }
               }
-              console.log(+minBalance, +minProfit, ' minb and minprof')
+              // console.log(`${+minBalance}  ${+minProfit} s-- minb and minprof`)
               await formatRates({
                 unformattedList: ratesBuffer.split('\n').concat(exmoRatesUnform),
                 minAmount: +minBalance,

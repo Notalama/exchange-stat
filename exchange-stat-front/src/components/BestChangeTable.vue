@@ -16,16 +16,21 @@
     </audio>
     <div class='settings'>
       <div class='row'>
-        <div class="col s3">
-          <h5>{{ 'Last update timer: ' + timer + ' sec' }}</h5>
-          <p>Current interval is: {{interval / 1000}} s</p>
+        <div class="col s2">
+          <h5>{{ 'Оновлено: ' + timer + 'с тому' }}</h5>
+          <p>Поточний інтервал: {{interval / 1000}} s</p>
         </div>
         <div class="col s1">
           <button class="waves-effect waves-light btn inc" v-on:click="updateInterval(1000)">+</button>
           <button class="minus waves-effect waves-light btn inc" v-on:click="updateInterval(-1000)">-</button>
         </div>
-        <div class="settings-input col s4">
-          <div class="input-field col s4">
+        
+        <div class="settings-input col s5">
+          <div class="input-field col s3">
+            <input v-model="exmoOrdersCount" type="number" id="exmoOrdersCount">
+            <label for="exmoOrdersCount">Ордери ..</label>
+          </div>
+          <div class="input-field col s3">
             <input
               v-model="minBalance"
               id="first_name"
@@ -35,7 +40,7 @@
             >
             <label for="first_name">Min Balance $</label>
           </div>
-          <div class="input-field col s4">
+          <div class="input-field col s3">
             <input
               v-model="minProfit"
               id="last_name"
@@ -45,7 +50,7 @@
             >
             <label for="last_name">Min Profit %</label>
           </div>
-          <div class="input-field col s4">
+          <div class="input-field col s3">
             <input v-model="searchTerm" type="text" id="searchTerm">
             <label for="searchTerm">Search</label>
           </div>
@@ -204,7 +209,7 @@ export default {
         this.interval += interval;
     },
     reloadInterval: function() {
-      // this.loadItems()
+      this.loadItems()
       setTimeout(() => {
         this.reloadInterval();
       }, this.interval);
@@ -345,15 +350,8 @@ export default {
           : '';
         axios
           .get(
-            'http://localhost:9000/best-change?minBalance=' +
-              this.minBalance +
-              '&minProfit=' +
-              this.minProfit +
-              '&showExmo=' +
-              this.showExmo +
-              '&ltThreeLinks=' +
-              this.links +
-              subcribeParam
+            `http://localhost:9000/best-change?minBalance=${this.minBalance}&minProfit=${this.minProfit}&showExmo=${this.showExmo}&ltThreeLinks=${this.links}` +
+              subcribeParam + '&exmoOrdersCount=' + this.exmoOrdersCount
           )
           .then(
             response => {
@@ -433,6 +431,7 @@ export default {
       maxChainProfits: [],
       currentDataArr: null,
       showExmo: false,
+      exmoOrdersCount: null,
       columns: [
         {
           label: 'Pin',
@@ -540,5 +539,8 @@ a {
   white-space: nowrap;
   text-overflow: ellipsis;
   width: 150px;
+}
+h5 {
+  font-size: 17px;
 }
 </style>

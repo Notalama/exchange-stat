@@ -111,7 +111,7 @@ export default {
           // eslint-disable-next-line
           console.log(response)
           this.currentDataArr = response.data.chain
-          this.rows = response.data.chain.map((element, i) => {
+          this.rows = response.data.chain.map((element) => {
 
             if (this.notif && element) document.getElementById('aud').play()
             const toDolIndex = element.length - 3
