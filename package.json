@@ -4,7 +4,7 @@
   "main": "src",
   "private": true,
   "scripts": {
-    "start": "nodemon src/app.js",
+    "start": "concurrently \"node src/app.js\" \"cd exchange-stat-front/ && npm run serve\"",
     "test": "jest",
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",
@@ -51,6 +51,7 @@
     "body-parser": "^1.18.2",
     "bodymen": "^1.0.3",
     "compression": "^1.7.1",
+    "concurrently": "^4.0.1",
     "cors": "^2.8.4",
     "express": "^4.16.2",
     "iconv": "^2.3.1",

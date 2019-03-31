@@ -3,15 +3,13 @@ const fs = require('fs')
 const StreamZip = require('node-stream-zip')
 const Iconv = require('iconv').Iconv
 const {
-  formatCurrencies,
+  // formatCurrencies,
   formatExchangers,
-  getChangerTitles,
-  compileResponse,
-  formatOne
+  compileResponse
 } = require('./../../services/helpers/formatter')
-
+const formatOne = require('../../services/helpers/formatOne')
 const exchangersModel = require('./../exchangers/model')
-const currenciesModel = require('./../currencies/model')
+// const currenciesModel = require('./../currencies/model')
 module.exports = {
   buildChain: (req, res, next) => {
     try {
