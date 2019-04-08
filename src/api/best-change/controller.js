@@ -8,8 +8,7 @@ const {
   formatRates,
   formatExchangers,
   compileResponse,
-  getExmoOrders,
-  buildStringRates
+  getExmoOrders
 } = require('./../../services/helpers')
 module.exports = {
   index: (req, res, next) => {

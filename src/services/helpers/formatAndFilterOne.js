@@ -42,37 +42,36 @@ module.exports = async function formatAndFilterOne ({
     rowArray.splice(6, rowArray.length)
     const toRemove = filterOmitValues({
       rowArray,
-      // hiddenCurrencies: omitValues[0].hiddenCurrencies,
       hiddenExchangers: omitValues[0].hiddenExchangers,
       tempHiddens
     })
     if (toRemove) continue
     for (let j = 0; j < chain.length; j++) {
       const currIdTo = (j + 1) < (chain.length) ? j + 1 : 0
-      if (chain[j] === rowArray[0] && chain[currIdTo] === rowArray[1]) {
-        if (allRates[rowArray[1]]) {
-          const dollToCurr = allRates[rowArray[1]][40]
-          if (!rowArray[6]) rowArray[6] = dollToCurr ? +dollToCurr[4] > 1 ? +rowArray[5] * +dollToCurr[4] : +rowArray[5] / +dollToCurr[3] : +amount
-          if (+rowArray[6] <= +amount) continue
-          if (profitArr[j] !== undefined) {
-            const bonus = bonuses.find(bon => bon.changer === rowArray[2])
-            if (bonus) rowArray = calcBonus(rowArray, bonus)
-            rowArray = calcCommission(rowArray, commissions)
-            const isProfitable = +rowArray[3] <= +profitArr[j][3] && +rowArray[4] >= +profitArr[j][4]
-            if (isProfitable) {
-              otherRates[j].push(profitArr[j])
-              profitArr[j] = rowArray
-            } else {
-              otherRates[j].push(rowArray)
-            }
-          } else {
-            otherRates[j] = []
+      if (chain[j] === rowArray[0] && chain[currIdTo] === rowArray[1] && allRates[rowArray[1]]) {
+        const dollToCurr = allRates[rowArray[1]][40]
+        // add dollAmount if not set and filter low
+        if (!rowArray[6]) rowArray[6] = dollToCurr ? +dollToCurr[4] > 1 ? +rowArray[5] * +dollToCurr[4] : +rowArray[5] / +dollToCurr[3] : +amount
+        if (+rowArray[6] <= +amount) continue
+        if (profitArr[j] !== undefined) {
+          const bonus = bonuses.find(bon => bon.changer === rowArray[2])
+          if (bonus) rowArray = calcBonus(rowArray, bonus)
+          rowArray = calcCommission(rowArray, commissions)
+          const isProfitable = +rowArray[3] <= +profitArr[j][3] && +rowArray[4] >= +profitArr[j][4]
+          if (isProfitable) {
+            otherRates[j].push(profitArr[j])
             profitArr[j] = rowArray
+          } else {
+            otherRates[j].push(rowArray)
           }
+        } else {
+          otherRates[j] = []
+          profitArr[j] = rowArray
         }
       }
     }
   }
+  console.log(profitArr, '\n744444444')
   return {
     profitArr,
     absCommis,

@@ -31,7 +31,7 @@ export default {
           const rate = row[i];
           let items = '<li>'
           // other rates template fill
-          otherRates[i].forEach(oRate => items += this.getChangerLink({rate: oRate, preLinkC, preLinkBC}) + '</li><li>')
+          if (otherRates.length > 0) otherRates[i].forEach(oRate => items += this.getChangerLink({rate: oRate, preLinkC, preLinkBC}) + '</li><li>')
 
           const others = '<ul class="others-list">' + items + '</ul>'
           const exch = ' <a target="_blank" href="'

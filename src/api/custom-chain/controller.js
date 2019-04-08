@@ -8,12 +8,19 @@ const {
   compileResponse
 } = require('./../../services/helpers/formatter')
 const formatOne = require('../../services/helpers/formatOne')
+const {
+  findGoldMiddle
+} = require('../../services/helpers/bestMidCurrency')
 const exchangersModel = require('./../exchangers/model')
 // const currenciesModel = require('./../currencies/model')
 module.exports = {
   buildChain: (req, res, next) => {
     try {
-      const {chain, amount} = req.body
+      const {
+        chain,
+        amount,
+        isGoldMiddle
+      } = req.body
       http.get('http://api.bestchange.ru/info.zip', (data) => {
         const {
           statusCode
@@ -49,39 +56,37 @@ module.exports = {
                 if (err) console.log('err', err)
               })
               // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
-
-              await formatOne({
-                ratesBuffer: ratesBuffer.split('\n'),
-                chain,
-                amount
-              }).then(async (result) => {
-                const response = {
-                  otherRates: result.otherRates,
-                  chain: null
-                }
-                // console.log(result, '60 ctrl')
-                if (typeof result !== 'string') {
-                  response.chain = await compileResponse(result)
-                  response.otherRates = response.otherRates.map(rateArr => {
-                    return rateArr.map(rate => {
-                      return {
-                        give: rate[3],
-                        receive: rate[4],
-                        from: rate[0],
-                        to: rate[1],
-                        amount: rate[5],
-                        dollarAmount: rate[6],
-                        exch: exchangersBase.find(exch => rate[2] === exch.exchangerId) || ''
-                      }
-                    }).sort((a, b) => a.receive > 1 ? b.receive - a.receive : a.give - b.give).slice(0, 5)
-                  })
-                  res.status(200).json(response)
-                  zip.close()
-                } else {
-                  res.status(400).json(response)
-                  zip.close()
-                }
-              })
+              if (isGoldMiddle) {
+                await findGoldMiddle({
+                  unformattedList: ratesBuffer.split('\n'),
+                  minAmount: amount,
+                  idIn: chain[0],
+                  idOut: chain[2]
+                }).then(async bestSecondStep => {
+                  if (bestSecondStep) {
+                    // second step currency id
+                    chain[1] = bestSecondStep[1][0]
+                    await formatOne({
+                      ratesBuffer: ratesBuffer.split('\n'),
+                      chain,
+                      amount
+                    }).then(async (resp) => {
+                      await SendRes(resp, exchangersBase, res, zip)
+                    })
+                  } else {
+                    res.status(400).json('Ланцюжок не знайдено')
+                    zip.close()
+                  }
+                })
+              } else {
+                await formatOne({
+                  ratesBuffer: ratesBuffer.split('\n'),
+                  chain,
+                  amount
+                }).then(async (resp) => {
+                  await SendRes(resp, exchangersBase, res, zip)
+                })
+              }
             })
           })
         }
@@ -89,5 +94,33 @@ module.exports = {
     } catch (e) {
       console.error(e, 'bestChange controller error')
     }
+  }
+}
+
+async function SendRes (result, exchangersBase, res, zip) {
+  const response = {
+    otherRates: result.otherRates || [],
+    chain: null
+  }
+  if (typeof result !== 'string') {
+    response.chain = await compileResponse(result)
+    response.otherRates = response.otherRates.map(rateArr => {
+      return rateArr.map(rate => {
+        return {
+          give: rate[3],
+          receive: rate[4],
+          from: rate[0],
+          to: rate[1],
+          amount: rate[5],
+          dollarAmount: rate[6],
+          exch: exchangersBase.find(exch => rate[2] === exch.exchangerId) || ''
+        }
+      }).sort((a, b) => a.receive > 1 ? b.receive - a.receive : a.give - b.give).slice(0, 5)
+    })
+    res.status(200).json(response)
+    zip.close()
+  } else {
+    res.status(400).json(response)
+    zip.close()
   }
 }

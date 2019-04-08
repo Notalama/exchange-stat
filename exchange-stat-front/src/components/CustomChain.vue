@@ -1,5 +1,12 @@
 <template>
 <div>
+  <div class="loader loader10" v-show="loader">
+    <svg width="190px" height="40px" viewBox="0 0 38 8" fill="#4FB95C">
+      <circle cx="4" cy="4" r="4"/>
+      <circle cx="19" cy="4" r="4"/>
+      <circle cx="34" cy="4" r="4"/>
+    </svg>
+  </div>
   <form
     @submit="sendForm"
     method="post">
@@ -18,7 +25,7 @@
       <div class="input-field col s4">
         <p class="s-label">Другий крок</p>
         <select class="browser-default" v-model="formData.secondStep">
-          <option value="" disabled selected>Другий крок</option>
+          <option value="" selected>Другий крок</option>
           <option v-for="currency in currencies" :value="currency" :key="currency.currencyId">{{currency.currencyTitle}}</option>
         </select>
       </div>
@@ -89,6 +96,7 @@ export default {
     },
     sendForm: function(event) {
       event.preventDefault()
+      this.loader = true
       if (!this.formData.firstStep.currencyId && !this.formData.secondStep.currencyId && !this.formData.thirdStep.currencyId) {
         this.error = true
       } else {
@@ -107,9 +115,9 @@ export default {
         }
         // eslint-disable-next-line
         console.log(chain)
-        axios.post('http://localhost:9000/custom-chain', {chain: chain, amount: data.minBalance}).then(response => {
+        axios.post('http://localhost:9000/custom-chain', {chain: chain, amount: data.minBalance, isGoldMiddle: !chain[1]}).then(response => {
           // eslint-disable-next-line
-          console.log(response)
+          console.log(response.data)
           this.currentDataArr = response.data.chain
           this.rows = response.data.chain.map((element) => {
 
@@ -132,7 +140,9 @@ export default {
             this.notif = true
           }
           this.rowsCopy = this.rows
+          this.loader = false
         }, () => {
+          this.loader = false
           alert('Неможливо знайти ланцюжок')
         })
       }
@@ -166,6 +176,7 @@ export default {
         },
         minBalance: null
       },
+      loader: false,
       error: false,
       getHiddenCurrencies: false,
       currencies: [],
@@ -227,4 +238,52 @@ h2 {
   margin: 0 auto;
   display: block;
 }
+.loader {
+  width: 100vw;
+  height: 100vw;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  padding-top: 19%;
+}
+
+.loader10 svg {
+  overflow: visible;
+  transform-origin: center center;
+  animation: 1.5s linear loader10svg infinite;
+}
+
+.loader10 svg circle:nth-of-type(2),
+.loader10 svg circle:nth-of-type(3) {
+  transform-origin: 26.5px center;
+  animation: 1.5s linear loader10dot infinite;
+}
+/*LOADER 10*/
+@keyframes loader10svg {
+  0%,
+  25% {
+    transform: rotate(0deg);
+  }
+  45%,
+  100% {
+    transform: rotate(-180deg);
+  }
+}
+@keyframes loader10dot {
+  0% {
+    transform: rotate(0deg);
+  }
+  20%,
+  50% {
+    transform: rotate(180deg);
+  }
+  70%,
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 </style>
