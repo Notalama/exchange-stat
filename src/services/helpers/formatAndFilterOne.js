@@ -71,7 +71,6 @@ module.exports = async function formatAndFilterOne ({
       }
     }
   }
-  console.log(profitArr, '\n744444444')
   return {
     profitArr,
     absCommis,
