@@ -97,7 +97,7 @@ export default {
             this.resetForm()
             // this.$emit('hideform', false)
           }
-        })
+        });
       }
     },
     resetForm: function () {

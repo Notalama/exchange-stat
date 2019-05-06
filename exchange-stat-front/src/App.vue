@@ -47,4 +47,14 @@ body {
   text-align: center;
   color: #2c3e50;
 }
+.edit-chain {
+  color: red;
+  cursor: pointer;
+}
+.edit-chain .fa-bolt {
+  z-index: -1;
+}
+.chain-option select {
+  display: unset;
+}
 </style>

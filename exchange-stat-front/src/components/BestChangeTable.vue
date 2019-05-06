@@ -123,7 +123,7 @@ export default {
     SettingsForm
   },
   mounted: function() {
-    this.minBalance = 100;
+    this.minBalance = 10;
     this.minProfit = 0.4;
     setInterval(() => {
       this.timer++;
@@ -133,6 +133,9 @@ export default {
     this.reloadInterval();
   },
   methods: {
+    test: function (a) {
+      console.log(a, ' test')
+    },
     searchTable: function() {
       this.rows = this.rowsCopy.filter(el => {
         return el.chain.search(this.searchTerm) >= 0;
@@ -150,16 +153,28 @@ export default {
       const chainRates = this.currentDataArr[params.row.originalIndex];
       if (params.column.field === "pin") {
         this.buildChainSubscriptions(chainRates);
-        // this.loadItems()
       } else if (params.column.field === "links") {
         for (let i = 0; i < chainRates.length - 3; i++) {
           const element = chainRates[i];
-          const preLinkC = element.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id='
-          const preLinkBC = 'https://www.bestchange.ru/index.php?'
-          const exmoPair = element.changer === '899' ? this.buildExmoLink(element) : ''
+          const preLinkC = element.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id=';
+          const preLinkBC = 'https://www.bestchange.ru/index.php?';
+          const exmoPair = element.changer === '899' ? this.buildExmoLink(element) : '';
           window.open(preLinkBC + 'from=' + element.from + '&to=' + element.to + '&url=1');
           window.open(preLinkC + (element.changer === '899' ? exmoPair : element.changer + '&from=' + element.from + '&to=' + element.to + '&url=1'));
         }
+      } else if (params && params.column.field === 'options' && params.event.target.innerText === '=>') {
+        console.log(params);
+        const value = params.event.target.parentNode.firstChild.firstChild.value; // select value
+        console.log(value)
+        // axios.post('http://localhost:9000/temp-hide', params).then(response => {
+        //   // eslint-disable-next-line
+        //   console.log(response)
+        //   if (response.status === 200) {
+        //     this.resetForm()
+        //     // this.$emit('hideform', false)
+        //   }
+        // });
+
       }
     },
     buildChainSubscriptions: function(chainRates) {
@@ -244,10 +259,7 @@ export default {
     },
     getChainCol: function(row, toDolIndex) {
       // eslint-disable-next-line
-      // if (row.some(el => el.changer === '899')) console.log(row)
-      let sum = row[toDolIndex]
-        ? this.calcRate(+row[toDolIndex][3], +row[toDolIndex][4], 1000)
-        : 1;
+      let sum = row[toDolIndex] ? this.calcRate(+row[toDolIndex][3], +row[toDolIndex][4], 1000) : 1;
       const calcFirst = this.calcRate(+row[0].give, +row[0].receive, +sum);
       const calcSecond = this.calcRate(
         +row[1].give,
@@ -271,18 +283,9 @@ export default {
 
         const arrowLinkParams = "&from=" + rate.from + "&to=" + rate.to + '&url=1">'
         const changerLinkParams = rate.changer === '899' ? exmoPair + '">' : rate.changer + "&from=" + rate.from + "&to=" + rate.to + '&url=1">'
-        const exch = ' <a target="_blank" href="' + preLinkBC + arrowLinkParams +
-          '<i class="fas fa-arrow-right"></i></a> - ' +
-          '<a target="_blank" href="' + preLinkC + changerLinkParams + rate.changerTitle + '</a> ' +
-          '(' +
-          rate.give +
-          ':' +
-          rate.receive +
-          '; ' +
-          rate.amount.amount +
-          ', ' +
-          rate.amount.dollarAmount.toFixed(4) +
-          '$) <br>';
+        const exch = `<a target="_blank" href="${preLinkBC + arrowLinkParams}<i class="fas fa-arrow-right"></i></a> - 
+          <a target="_blank" href="${preLinkC + changerLinkParams + rate.changerTitle}</a>
+          (${rate.give} : ${rate.receive};${rate.amount.amount}, ${rate.amount.dollarAmount.toFixed(4)} $) <br>`
         compiledChain.push(exch);
       }
       const currOne = sum + ' ' + row[0].fromTitle;
@@ -293,36 +296,12 @@ export default {
         ' ' +
         row[1].fromTitle;
       const exchTwo = compiledChain[1];
-      const currThree =
-        toDolIndex >= 3
-          ? '<i class="fas fa-arrow-right"></i> ' +
-            calcSecond +
-            ' ' +
-            row[2].fromTitle
-          : '';
+      const currThree = toDolIndex >= 3 ? `<i class="fas fa-arrow-right"></i>${calcSecond} ${row[2].fromTitle}` : '';
       const exchThree = toDolIndex >= 3 ? compiledChain[2] : '';
-
-      const currFour =
-        toDolIndex === 4
-          ? '<i class="fas fa-arrow-right"></i> ' +
-            calcSecond +
-            ' ' +
-            row[3].fromTitle
-          : '';
+      const currFour = toDolIndex === 4 ? `<i class="fas fa-arrow-right"></i> ${calcSecond} ${row[3].fromTitle}` : '';
       const exchFour = toDolIndex === 4 ? compiledChain[3] : '';
-
-      const exitSum =
-        toDolIndex === 2
-          ? calcSecond
-          : toDolIndex === 3
-          ? calcThird
-          : calcFourth;
-      const endChain =
-        '<span style="color: green"><i class="fas fa-arrow-right"></i> ' +
-        exitSum +
-        ' ' +
-        row[0].fromTitle +
-        '</span>';
+      const exitSum = toDolIndex === 2 ? calcSecond : toDolIndex === 3 ? calcThird : calcFourth;
+      const endChain = `<span style="color: green"><i class="fas fa-arrow-right"></i>${exitSum} ${row[0].fromTitle}</span>`;
       return (
         currOne +
         exchOne +
@@ -362,11 +341,29 @@ export default {
               this.rows = response.data
                 .sort((a, b) => a.length - b.length)
                 .map((element, i) => {
-                  if (this.notif && element)
-                    document.getElementById('aud').play();
+                  if (this.notif && element) document.getElementById('aud').play();
                   const toDolIndex = element.length - 3;
                   const btnText = element[element.length - 1] ? '-' : '+';
                   const btnClass = element[element.length - 1] ? 'red' : 'blue';
+                  // const [elOne, elTwo, elThree
+                  const chainDropDown = `<select>
+                      <option value="null">Обрати опцію</option>
+                      <option value="{changerId: ${element[0].changer}}">${element[0].changerTitle}</option>
+                      <option value="{changerId: ${element[1].changer}}">${element[1].changerTitle}</option>
+                      <option value="{changerId: ${element[2].changer || ''}}">${element[2].changerTitle || ''}</option>
+                      <option value="{changerId: ${element[3].changer || ''}}">${element[3].changerTitle || ''}</option>
+                      <option value="null">-=-=-=-=-=-</option>
+                      <option value="{changerId: ${element[0].changer}, inCurrencyId: ${element[0].from}}">Вхід: ${element[0].changerTitle + '' + element[0].fromTitle}</option>
+                      <option value="{changerId: ${element[1].changer}, inCurrencyId: ${element[1].from}}">Вхід: ${element[1].changerTitle + '' + element[1].fromTitle}</option>
+                      <option value="{changerId: ${element[2]}, inCurrencyId: ${element[2].from || ''}}">${element[2].changerTitle ? 'Вхід:' : '' } ${element[2].changerTitle || ''} ${element[2].fromTitle || ''}</option>
+                      <option value="{changerId: ${element[2]}, inCurrencyId: ${element[3].from || ''}}">${element[3].changerTitle ? 'Вхід:' : '' } ${element[3].changerTitle || ''} ${element[3].fromTitle || ''}</option>
+                      <option value="null">-=-=-=-=-=-</option>
+                      <option value="{changerId: ${element[0].changer}, outCurrencyId: ${element[0].to}}">Вихід: ${element[0].changerTitle + '' + element[0].toTitle}</option>
+                      <option value="{changerId: ${element[1].changer}, outCurrencyId: ${element[1].to}}">Вихід: ${element[1].changerTitle + '' + element[1].toTitle}</option>
+                      <option value="{changerId: ${element[2]}, outCurrencyId: ${element[2].to}}">${element[2].changerTitle ? 'Вихід:' : '' } ${element[2].changerTitle || ''} ${element[2].toTitle || ''}</option>
+                      <option value="{changerId: ${element[2]}, outCurrencyId: ${element[3].to}}">${element[3].changerTitle ? 'Вихід:' : '' } ${element[3].changerTitle || ''} ${element[3].toTitle || ''}</option>
+                    </select>`;
+                  const sendOptionBtn = `<button type="button">=></button>`;
                   return {
                     pin:
                       '<a class="btn-floating waves-effect waves-light ' +
@@ -383,6 +380,7 @@ export default {
                     age: this.rows.length
                       ? this.getAgeOfChain(this.genId(element))
                       : 0,
+                    options: `<div class="chain-option">${chainDropDown}</div></br>${sendOptionBtn}`,
                     links:
                       '<i class="fas fa-arrow-right" style="color: #039be5"></i>',
                     id: this.genId(element)
@@ -465,6 +463,11 @@ export default {
           globalSearchDisabled: true
         },
         {
+          label: 'Опції',
+          field: 'options',
+          html: true
+        },
+        {
           label: '',
           field: 'links',
           html: true
@@ -477,8 +480,7 @@ export default {
 };
 </script>
 
-<!-- Add 'scoped' attribute to limit CSS to this component only -->
-<style scoped>Ґ
+<style scoped>
 .hideModal {
   display: none;
 }
