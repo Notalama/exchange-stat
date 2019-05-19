@@ -162,18 +162,18 @@ export default {
           window.open(preLinkBC + 'from=' + element.from + '&to=' + element.to + '&url=1');
           window.open(preLinkC + (element.changer === '899' ? exmoPair : element.changer + '&from=' + element.from + '&to=' + element.to + '&url=1'));
         }
-      } else if (params && params.column.field === 'options' && params.event.target.innerText === '=>') {
-        console.log(params);
-        const value = params.event.target.parentNode.firstChild.firstChild.value; // select value
-        console.log(value)
-        // axios.post('http://localhost:9000/temp-hide', params).then(response => {
-        //   // eslint-disable-next-line
-        //   console.log(response)
-        //   if (response.status === 200) {
-        //     this.resetForm()
-        //     // this.$emit('hideform', false)
-        //   }
-        // });
+      } else if (params && params.column.field === 'options' && params.event.target.innerText === 'ПРИХОВАТИ') {
+        const value = JSON.parse(params.event.target.parentNode.firstChild.firstChild.value.split(`'`).join(`"`));
+        value['hidePeriod'] = 999 * 86400000;
+        axios.post('http://localhost:9000/temp-hide', value).then(response => {
+          if (response.status === 200) {
+            // eslint-disable-next-line
+            console.log(response, 'success');
+          } else {
+             // eslint-disable-next-line
+            console.log(response, 'Smth went wrong');
+          }
+        });
 
       }
     },
@@ -336,7 +336,7 @@ export default {
             response => {
               this.wait = false;
               // eslint-disable-next-line
-              console.log(response.data);
+              // console.log(response.data);
               this.currentDataArr = response.data;
               this.rows = response.data
                 .sort((a, b) => a.length - b.length)
@@ -345,25 +345,25 @@ export default {
                   const toDolIndex = element.length - 3;
                   const btnText = element[element.length - 1] ? '-' : '+';
                   const btnClass = element[element.length - 1] ? 'red' : 'blue';
-                  // const [elOne, elTwo, elThree
-                  const chainDropDown = `<select>
-                      <option value="null">Обрати опцію</option>
-                      <option value="{changerId: ${element[0].changer}}">${element[0].changerTitle}</option>
-                      <option value="{changerId: ${element[1].changer}}">${element[1].changerTitle}</option>
-                      <option value="{changerId: ${element[2].changer || ''}}">${element[2].changerTitle || ''}</option>
-                      <option value="{changerId: ${element[3].changer || ''}}">${element[3].changerTitle || ''}</option>
-                      <option value="null">-=-=-=-=-=-</option>
-                      <option value="{changerId: ${element[0].changer}, inCurrencyId: ${element[0].from}}">Вхід: ${element[0].changerTitle + '' + element[0].fromTitle}</option>
-                      <option value="{changerId: ${element[1].changer}, inCurrencyId: ${element[1].from}}">Вхід: ${element[1].changerTitle + '' + element[1].fromTitle}</option>
-                      <option value="{changerId: ${element[2]}, inCurrencyId: ${element[2].from || ''}}">${element[2].changerTitle ? 'Вхід:' : '' } ${element[2].changerTitle || ''} ${element[2].fromTitle || ''}</option>
-                      <option value="{changerId: ${element[2]}, inCurrencyId: ${element[3].from || ''}}">${element[3].changerTitle ? 'Вхід:' : '' } ${element[3].changerTitle || ''} ${element[3].fromTitle || ''}</option>
-                      <option value="null">-=-=-=-=-=-</option>
-                      <option value="{changerId: ${element[0].changer}, outCurrencyId: ${element[0].to}}">Вихід: ${element[0].changerTitle + '' + element[0].toTitle}</option>
-                      <option value="{changerId: ${element[1].changer}, outCurrencyId: ${element[1].to}}">Вихід: ${element[1].changerTitle + '' + element[1].toTitle}</option>
-                      <option value="{changerId: ${element[2]}, outCurrencyId: ${element[2].to}}">${element[2].changerTitle ? 'Вихід:' : '' } ${element[2].changerTitle || ''} ${element[2].toTitle || ''}</option>
-                      <option value="{changerId: ${element[2]}, outCurrencyId: ${element[3].to}}">${element[3].changerTitle ? 'Вихід:' : '' } ${element[3].changerTitle || ''} ${element[3].toTitle || ''}</option>
+                  let chainDropDown = `<select>
+                      <option value="">Обрати опцію</option>
+                      <option value="{'changerId': ${element[0].changer}}">${element[0].changerTitle}</option>
+                      <option value="{'changerId': ${element[1].changer}}">${element[1].changerTitle}</option>
+                      ` + (!!element[2] ? `<option value="{'changerId': ${element[2].changer || ''}}">${element[2].changerTitle || ''}</option>` : `<option value=""></option>`) + `
+                      ` + (!!element[2] && !!element[3] ? `<option value="{'changerId': ${element[3].changer || ''}}">${element[3].changerTitle || ''}</option>` : `<option value=""></option>`) + `
+                      <option value="">-=-=-=-=-=-</option>
+                      <option value="{'changerId': ${element[0].changer}, 'inCurrencyId': ${element[0].from}}">Вхід: ${element[0].changerTitle + '' + element[0].fromTitle}</option>
+                      <option value="{'changerId': ${element[1].changer}, 'inCurrencyId': ${element[1].from}}">Вхід: ${element[1].changerTitle + '' + element[1].fromTitle}</option>
+                      ` + (!!element[2] ? `<option value="{'changerId': ${element[2]}, 'inCurrencyId': ${element[2].from || ''}}">${element[2].changerTitle ? 'Вхід:' : '' } ${element[2].changerTitle || ''} ${element[2].fromTitle || ''}</option>` : `<option value=""></option>`) + `
+                      ` + (!!element[2] && !!element[3] ? `<option value="{'changerId': ${element[2]}, 'inCurrencyId': ${element[3].from || ''}}">${element[3].changerTitle ? 'Вхід:' : '' } ${element[3].changerTitle || ''} ${element[3].fromTitle || ''}</option>` : `<option value=""></option>`) + `
+                      <option value="">-=-=-=-=-=-</option>
+                      <option value="{'changerId': ${element[0].changer}, 'outCurrencyId': ${element[0].to}}">Вихід: ${element[0].changerTitle + '' + element[0].toTitle}</option>
+                      <option value="{'changerId': ${element[1].changer}, 'outCurrencyId': ${element[1].to}}">Вихід: ${element[1].changerTitle + '' + element[1].toTitle}</option>
+                      ` + (!!element[2] ? `<option value="{'changerId': ${element[2]}, 'outCurrencyId': ${element[2].to}}">${element[2].changerTitle ? 'Вихід:' : '' } ${element[2].changerTitle || ''} ${element[2].toTitle || ''}</option>` : `<option value=""></option>`) + `
+                      ` + (!!element[2] && !!element[3] ? `<option value="{'changerId': ${element[2]}, 'outCurrencyId': ${element[3].to}}">${element[3].changerTitle ? 'Вихід:' : '' } ${element[3].changerTitle || ''} ${element[3].toTitle || ''}</option>` : `<option value=""></option>`) + `
                     </select>`;
-                  const sendOptionBtn = `<button type="button">=></button>`;
+                  
+                  const sendOptionBtn = `<button type="button" class="waves-effect waves-light btn">Приховати</button>`;
                   return {
                     pin:
                       '<a class="btn-floating waves-effect waves-light ' +
