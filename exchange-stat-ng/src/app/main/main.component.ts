@@ -20,9 +20,9 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     this._store.getChains();
     this._store.chains.subscribe(res => {
-      this.chains = res;
+      // this.chains = res;
       console.log(res);
-      // this.buildTable(res);
+      this.buildTable(res);
       
     }, err => {
       console.log(err);
@@ -42,7 +42,8 @@ export class MainComponent implements OnInit {
     this.chains = data.sort((a, b) => a.length - b.length).map((chainData, i) => {
       const [dollarRate, profit, isSubs] = chainData.splice(chainData.length - 3, 3);
       return {
-        gain: this._chainService.calcChainProfit(chainData, profit)
+        gain: this._chainService.calcChainProfit(chainData, profit),
+        chain: {chainData, dollarRate}
       }
     });
   }

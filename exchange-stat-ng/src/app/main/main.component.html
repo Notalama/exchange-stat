@@ -15,8 +15,23 @@
       <td>
         <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
       </td>
-      <td *ngFor="let col of columns">
-        {{rowData[col.field]}}
+      <td>
+        {{rowData.gain}}
+      </td>
+      <td>
+        <app-chain-col [chain]="rowData?.chain.chainData" [dollarRate]="rowData?.chain.dollarRate"></app-chain-col>
+      </td>
+      <td>
+        {{rowData.score}}
+      </td>
+      <td>
+        {{rowData.age}}
+      </td>
+      <td>
+        {{rowData.options}}
+      </td>
+      <td>
+        {{rowData.links}}
       </td>
     </tr>
   </ng-template>

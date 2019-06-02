@@ -1,3 +1,4 @@
+import { ChainColComponent } from './main/chain-col/chain-col.component';
 import { MainComponent } from './main/main.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AuthGuardService } from './auth-guard.service';
@@ -14,7 +15,8 @@ import {CheckboxModule} from 'primeng/checkbox';
 @NgModule({
   declarations: [
     AppComponent,
-    MainComponent
+    MainComponent,
+    ChainColComponent
   ],
   imports: [
     BrowserModule,
