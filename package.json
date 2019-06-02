@@ -4,7 +4,7 @@
   "main": "src",
   "private": true,
   "scripts": {
-    "start": "concurrently \"nodemon src/app.js\" \"cd exchange-stat-front/ && npm run serve\"",
+    "start": "concurrently \"nodemon src/app.js\" \"cd exchange-stat-ng/ && npm start\"",
     "test": "jest",
     "coverage": "npm test -- --coverage",
     "postcoverage": "opn coverage/lcov-report/index.html",

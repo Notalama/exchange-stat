@@ -4,7 +4,7 @@
     <div id='modal1' class='modal'>
       <div class='modal-content'>
         <h4>Заховати тимчасово</h4>
-        <SettingsForm/>
+        <SettingsForm v-bind:is="currentView" v-bind:chainToRemove="chainToRemove"/>
       </div>
       <div class='modal-footer'>
         <a href='#!' class='modal-close waves-effect waves-green btn-flat'>Заховати форму</a>
@@ -78,7 +78,6 @@
           <a
             class="waves-effect waves-light btn-flat modal-trigger settings-trigger"
             href="#modal1"
-            v-on:click="showSettings = true"
           >Settings</a>
           <a
             class="waves-effect waves-light btn-flat custom-chain-link"
@@ -163,17 +162,20 @@ export default {
           window.open(preLinkC + (element.changer === '899' ? exmoPair : element.changer + '&from=' + element.from + '&to=' + element.to + '&url=1'));
         }
       } else if (params && params.column.field === 'options' && params.event.target.innerText === 'ПРИХОВАТИ') {
-        const value = JSON.parse(params.event.target.parentNode.firstChild.firstChild.value.split(`'`).join(`"`));
+        const value = JSON.parse(params.event.target.parentNode.parentNode.firstChild.firstChild.value.split(`'`).join(`"`));
         value['hidePeriod'] = 999 * 86400000;
-        axios.post('http://localhost:9000/temp-hide', value).then(response => {
-          if (response.status === 200) {
-            // eslint-disable-next-line
-            console.log(response, 'success');
-          } else {
-             // eslint-disable-next-line
-            console.log(response, 'Smth went wrong');
-          }
-        });
+        this.chainToRemove = value;
+        console.log(value);
+        // this.go();
+        // axios.post('http://localhost:9000/temp-hide', value).then(response => {
+        //   if (response.status === 200) {
+        //     // eslint-disable-next-line
+        //     console.log(response, 'success');
+        //   } else {
+        //      // eslint-disable-next-line
+        //     console.log(response, 'Smth went wrong');
+        //   }
+        // });
 
       }
     },
@@ -362,8 +364,7 @@ export default {
                       ` + (!!element[2] ? `<option value="{'changerId': ${element[2]}, 'outCurrencyId': ${element[2].to}}">${element[2].changerTitle ? 'Вихід:' : '' } ${element[2].changerTitle || ''} ${element[2].toTitle || ''}</option>` : `<option value=""></option>`) + `
                       ` + (!!element[2] && !!element[3] ? `<option value="{'changerId': ${element[2]}, 'outCurrencyId': ${element[3].to}}">${element[3].changerTitle ? 'Вихід:' : '' } ${element[3].changerTitle || ''} ${element[3].toTitle || ''}</option>` : `<option value=""></option>`) + `
                     </select>`;
-                  
-                  const sendOptionBtn = `<button type="button" class="waves-effect waves-light btn">Приховати</button>`;
+                  const sendOptionBtn = `<a href="#modal1" class="modal-trigger settings-trigger"><button type="button" class="waves-effect waves-light btn">Приховати</button></a>`;
                   return {
                     pin:
                       '<a class="btn-floating waves-effect waves-light ' +
@@ -406,8 +407,14 @@ export default {
       } else console.log('waiting response...');
     },
     go: function(event) {
-      event.preventDefault();
-      const route = event.target.pathname;
+      let route;
+      if (typeof event == 'string') {
+        route = event
+        console.log(event)
+      } else {
+        event.preventDefault();
+        route = event.target.pathname;
+      }
       this.$root.currentRoute = route;
       window.history.pushState(null, routes[route], route);
     }
@@ -418,7 +425,6 @@ export default {
       searchType: true,
       wait: false,
       searchTerm: '',
-      showSettings: false,
       notif: false,
       chainSubscriptions: '',
       minBalance: null,
@@ -430,6 +436,7 @@ export default {
       currentDataArr: null,
       showExmo: false,
       exmoOrdersCount: null,
+      chainToRemove: null,
       columns: [
         {
           label: 'Pin',

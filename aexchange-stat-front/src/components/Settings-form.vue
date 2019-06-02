@@ -75,6 +75,9 @@
 import axios from 'axios'
 export default {
   name: "SettingsForm",
+  props: {
+    chainToRemove: Object
+  },
   methods: {
     checkForm: function(event) {
       event.preventDefault()
@@ -168,7 +171,14 @@ export default {
   created: function() {
     this.getCurrencies()
     this.getExchangers()
-    this.formData.hours = 1
+    this.formData.hours = 1;
+    console.log(this.chainToRemove)
+  },
+  beforeUpdate: function() {
+    console.log(this.chainToRemove)
+  },
+  updated: function() {
+    console.log(this.chainToRemove)
   }
 };
 </script>
