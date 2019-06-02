@@ -347,24 +347,24 @@ export default {
                   const toDolIndex = element.length - 3;
                   const btnText = element[element.length - 1] ? '-' : '+';
                   const btnClass = element[element.length - 1] ? 'red' : 'blue';
-                  let chainDropDown = `<select>
-                      <option value="">Обрати опцію</option>
-                      <option value="{'changerId': ${element[0].changer}}">${element[0].changerTitle}</option>
-                      <option value="{'changerId': ${element[1].changer}}">${element[1].changerTitle}</option>
-                      ` + (!!element[2] ? `<option value="{'changerId': ${element[2].changer || ''}}">${element[2].changerTitle || ''}</option>` : `<option value=""></option>`) + `
-                      ` + (!!element[2] && !!element[3] ? `<option value="{'changerId': ${element[3].changer || ''}}">${element[3].changerTitle || ''}</option>` : `<option value=""></option>`) + `
-                      <option value="">-=-=-=-=-=-</option>
-                      <option value="{'changerId': ${element[0].changer}, 'inCurrencyId': ${element[0].from}}">Вхід: ${element[0].changerTitle + '' + element[0].fromTitle}</option>
-                      <option value="{'changerId': ${element[1].changer}, 'inCurrencyId': ${element[1].from}}">Вхід: ${element[1].changerTitle + '' + element[1].fromTitle}</option>
-                      ` + (!!element[2] ? `<option value="{'changerId': ${element[2]}, 'inCurrencyId': ${element[2].from || ''}}">${element[2].changerTitle ? 'Вхід:' : '' } ${element[2].changerTitle || ''} ${element[2].fromTitle || ''}</option>` : `<option value=""></option>`) + `
-                      ` + (!!element[2] && !!element[3] ? `<option value="{'changerId': ${element[2]}, 'inCurrencyId': ${element[3].from || ''}}">${element[3].changerTitle ? 'Вхід:' : '' } ${element[3].changerTitle || ''} ${element[3].fromTitle || ''}</option>` : `<option value=""></option>`) + `
-                      <option value="">-=-=-=-=-=-</option>
-                      <option value="{'changerId': ${element[0].changer}, 'outCurrencyId': ${element[0].to}}">Вихід: ${element[0].changerTitle + '' + element[0].toTitle}</option>
-                      <option value="{'changerId': ${element[1].changer}, 'outCurrencyId': ${element[1].to}}">Вихід: ${element[1].changerTitle + '' + element[1].toTitle}</option>
-                      ` + (!!element[2] ? `<option value="{'changerId': ${element[2]}, 'outCurrencyId': ${element[2].to}}">${element[2].changerTitle ? 'Вихід:' : '' } ${element[2].changerTitle || ''} ${element[2].toTitle || ''}</option>` : `<option value=""></option>`) + `
-                      ` + (!!element[2] && !!element[3] ? `<option value="{'changerId': ${element[2]}, 'outCurrencyId': ${element[3].to}}">${element[3].changerTitle ? 'Вихід:' : '' } ${element[3].changerTitle || ''} ${element[3].toTitle || ''}</option>` : `<option value=""></option>`) + `
-                    </select>`;
-                  const sendOptionBtn = `<a href="#modal1" class="modal-trigger settings-trigger"><button type="button" class="waves-effect waves-light btn">Приховати</button></a>`;
+                  // let chainDropDown = `<select>
+                  //     <option value="">Обрати опцію</option>
+                  //     <option value="{'changerId': ${element[0].changer}}">${element[0].changerTitle}</option>
+                  //     <option value="{'changerId': ${element[1].changer}}">${element[1].changerTitle}</option>
+                  //     ` + (!!element[2] ? `<option value="{'changerId': ${element[2].changer || ''}}">${element[2].changerTitle || ''}</option>` : `<option value=""></option>`) + `
+                  //     ` + (!!element[2] && !!element[3] ? `<option value="{'changerId': ${element[3].changer || ''}}">${element[3].changerTitle || ''}</option>` : `<option value=""></option>`) + `
+                  //     <option value="">-=-=-=-=-=-</option>
+                  //     <option value="{'changerId': ${element[0].changer}, 'inCurrencyId': ${element[0].from}}">Вхід: ${element[0].changerTitle + '' + element[0].fromTitle}</option>
+                  //     <option value="{'changerId': ${element[1].changer}, 'inCurrencyId': ${element[1].from}}">Вхід: ${element[1].changerTitle + '' + element[1].fromTitle}</option>
+                  //     ` + (!!element[2] ? `<option value="{'changerId': ${element[2]}, 'inCurrencyId': ${element[2].from || ''}}">${element[2].changerTitle ? 'Вхід:' : '' } ${element[2].changerTitle || ''} ${element[2].fromTitle || ''}</option>` : `<option value=""></option>`) + `
+                  //     ` + (!!element[2] && !!element[3] ? `<option value="{'changerId': ${element[2]}, 'inCurrencyId': ${element[3].from || ''}}">${element[3].changerTitle ? 'Вхід:' : '' } ${element[3].changerTitle || ''} ${element[3].fromTitle || ''}</option>` : `<option value=""></option>`) + `
+                  //     <option value="">-=-=-=-=-=-</option>
+                  //     <option value="{'changerId': ${element[0].changer}, 'outCurrencyId': ${element[0].to}}">Вихід: ${element[0].changerTitle + '' + element[0].toTitle}</option>
+                  //     <option value="{'changerId': ${element[1].changer}, 'outCurrencyId': ${element[1].to}}">Вихід: ${element[1].changerTitle + '' + element[1].toTitle}</option>
+                  //     ` + (!!element[2] ? `<option value="{'changerId': ${element[2]}, 'outCurrencyId': ${element[2].to}}">${element[2].changerTitle ? 'Вихід:' : '' } ${element[2].changerTitle || ''} ${element[2].toTitle || ''}</option>` : `<option value=""></option>`) + `
+                  //     ` + (!!element[2] && !!element[3] ? `<option value="{'changerId': ${element[2]}, 'outCurrencyId': ${element[3].to}}">${element[3].changerTitle ? 'Вихід:' : '' } ${element[3].changerTitle || ''} ${element[3].toTitle || ''}</option>` : `<option value=""></option>`) + `
+                  //   </select>`;
+                  // const sendOptionBtn = `<a href="#modal1" class="modal-trigger settings-trigger"><button type="button" class="waves-effect waves-light btn">Приховати</button></a>`;
                   return {
                     pin:
                       '<a class="btn-floating waves-effect waves-light ' +

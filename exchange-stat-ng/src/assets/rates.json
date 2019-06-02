@@ -1,0 +1,789 @@
+[
+    [
+        {
+            "from": "119",
+            "fromTitle": "WEX EUR",
+            "to": "40",
+            "toTitle": "Perfect Money USD",
+            "changer": "472",
+            "changerTitle": "Changer4u",
+            "give": 1,
+            "receive": 0,
+            "amount": {
+                "amount": 3.72,
+                "dollarAmount": 0.00040434782608695654
+            }
+        },
+        {
+            "from": "40",
+            "fromTitle": "Perfect Money USD",
+            "to": "172",
+            "toTitle": "Bitcoin ABC (BAB)",
+            "changer": "387",
+            "changerTitle": "365Cash",
+            "give": 442.6946744267199,
+            "receive": 1,
+            "amount": {
+                "amount": 1.84,
+                "dollarAmount": 794.8158379672
+            }
+        },
+        {
+            "from": "172",
+            "fromTitle": "Bitcoin ABC (BAB)",
+            "to": "119",
+            "toTitle": "WEX EUR",
+            "changer": "417",
+            "changerTitle": "24PayBank",
+            "give": 1,
+            "receive": 29047.7070164,
+            "amount": {
+                "amount": 3656852,
+                "dollarAmount": 3656852
+            }
+        },
+        [
+            "40",
+            "119",
+            "417",
+            "1",
+            64.919414586,
+            "3656852",
+            3656852
+        ],
+        6461.566852823825,
+        false
+    ],
+    [
+        {
+            "from": "119",
+            "fromTitle": "WEX EUR",
+            "to": "40",
+            "toTitle": "Perfect Money USD",
+            "changer": "472",
+            "changerTitle": "Changer4u",
+            "give": 1,
+            "receive": 0,
+            "amount": {
+                "amount": 3.72,
+                "dollarAmount": 0.00040434782608695654
+            }
+        },
+        {
+            "from": "40",
+            "fromTitle": "Perfect Money USD",
+            "to": "88",
+            "toTitle": "Advanced Cash USD",
+            "changer": "337",
+            "changerTitle": "1WM",
+            "give": 1,
+            "receive": 1.0019769399999998,
+            "amount": {
+                "amount": 4727.55,
+                "dollarAmount": 4704.029850746269
+            }
+        },
+        {
+            "from": "88",
+            "fromTitle": "Advanced Cash USD",
+            "to": "119",
+            "toTitle": "WEX EUR",
+            "changer": "417",
+            "changerTitle": "24PayBank",
+            "give": 1,
+            "receive": 65.2590964,
+            "amount": {
+                "amount": 3656852,
+                "dollarAmount": 3656852
+            }
+        },
+        [
+            "40",
+            "119",
+            "417",
+            "1",
+            64.919414586,
+            "3656852",
+            3656852
+        ],
+        6438.810971803701,
+        false
+    ],
+    [
+        {
+            "from": "140",
+            "fromTitle": "Dash (DASH)",
+            "to": "119",
+            "toTitle": "WEX EUR",
+            "changer": "417",
+            "changerTitle": "24PayBank",
+            "give": 1,
+            "receive": 11048.3030436,
+            "amount": {
+                "amount": 3656852,
+                "dollarAmount": 3656852
+            }
+        },
+        {
+            "from": "119",
+            "fromTitle": "WEX EUR",
+            "to": "40",
+            "toTitle": "Perfect Money USD",
+            "changer": "472",
+            "changerTitle": "Changer4u",
+            "give": 1,
+            "receive": 0,
+            "amount": {
+                "amount": 3.72,
+                "dollarAmount": 0.00040434782608695654
+            }
+        },
+        {
+            "from": "40",
+            "fromTitle": "Perfect Money USD",
+            "to": "140",
+            "toTitle": "Dash (DASH)",
+            "changer": "387",
+            "changerTitle": "365Cash",
+            "give": 169.04109017946163,
+            "receive": 1,
+            "amount": {
+                "amount": 2.08,
+                "dollarAmount": 341.46321663168004
+            }
+        },
+        [
+            "40",
+            "140",
+            "387",
+            169.04109017946163,
+            "1",
+            "2.08",
+            341.46321663168004
+        ],
+        6435.868309811907,
+        false
+    ],
+    [
+        {
+            "from": "162",
+            "fromTitle": "Zcash (ZEC)",
+            "to": "119",
+            "toTitle": "WEX EUR",
+            "changer": "417",
+            "changerTitle": "24PayBank",
+            "give": 1,
+            "receive": 5842.5727824000005,
+            "amount": {
+                "amount": 3656852,
+                "dollarAmount": 3656852
+            }
+        },
+        {
+            "from": "119",
+            "fromTitle": "WEX EUR",
+            "to": "40",
+            "toTitle": "Perfect Money USD",
+            "changer": "472",
+            "changerTitle": "Changer4u",
+            "give": 1,
+            "receive": 0,
+            "amount": {
+                "amount": 3.72,
+                "dollarAmount": 0.00040434782608695654
+            }
+        },
+        {
+            "from": "40",
+            "fromTitle": "Perfect Money USD",
+            "to": "162",
+            "toTitle": "Zcash (ZEC)",
+            "changer": "626",
+            "changerTitle": "Best-Obmen",
+            "give": 89.505702,
+            "receive": 1,
+            "amount": {
+                "amount": 243.62,
+                "dollarAmount": 21192.870187426593
+            }
+        },
+        [
+            "40",
+            "162",
+            "626",
+            89.505702,
+            "1",
+            "243.62",
+            21192.870187426593
+        ],
+        6427.598411998378,
+        false
+    ],
+    [
+        {
+            "from": "40",
+            "fromTitle": "Perfect Money USD",
+            "to": "139",
+            "toTitle": "Ethereum (ETH)",
+            "changer": "387",
+            "changerTitle": "365Cash",
+            "give": 271.2526963609173,
+            "receive": 1,
+            "amount": {
+                "amount": 83.62,
+                "dollarAmount": 22205.6954419273
+            }
+        },
+        {
+            "from": "139",
+            "fromTitle": "Ethereum (ETH)",
+            "to": "119",
+            "toTitle": "WEX EUR",
+            "changer": "417",
+            "changerTitle": "24PayBank",
+            "give": 1,
+            "receive": 17673.4082852,
+            "amount": {
+                "amount": 3656852,
+                "dollarAmount": 3656852
+            }
+        },
+        {
+            "from": "119",
+            "fromTitle": "WEX EUR",
+            "to": "40",
+            "toTitle": "Perfect Money USD",
+            "changer": "472",
+            "changerTitle": "Changer4u",
+            "give": 1,
+            "receive": 0,
+            "amount": {
+                "amount": 3.72,
+                "dollarAmount": 0.00040434782608695654
+            }
+        },
+        null,
+        6415.477457847835,
+        false
+    ],
+    [
+        {
+            "from": "119",
+            "fromTitle": "WEX EUR",
+            "to": "40",
+            "toTitle": "Perfect Money USD",
+            "changer": "472",
+            "changerTitle": "Changer4u",
+            "give": 1,
+            "receive": 0,
+            "amount": {
+                "amount": 3.72,
+                "dollarAmount": 0.00040434782608695654
+            }
+        },
+        {
+            "from": "40",
+            "fromTitle": "Perfect Money USD",
+            "to": "99",
+            "toTitle": "Litecoin (LTC)",
+            "changer": "387",
+            "changerTitle": "365Cash",
+            "give": 115.21126615154537,
+            "receive": 1,
+            "amount": {
+                "amount": 168.12,
+                "dollarAmount": 19000.223865603
+            }
+        },
+        {
+            "from": "99",
+            "fromTitle": "Litecoin (LTC)",
+            "to": "119",
+            "toTitle": "WEX EUR",
+            "changer": "417",
+            "changerTitle": "24PayBank",
+            "give": 1,
+            "receive": 7493.7271868,
+            "amount": {
+                "amount": 3656852,
+                "dollarAmount": 3656852
+            }
+        },
+        [
+            "40",
+            "119",
+            "417",
+            "1",
+            64.919414586,
+            "3656852",
+            3656852
+        ],
+        6404.335415377677,
+        false
+    ],
+    [
+        {
+            "from": "119",
+            "fromTitle": "WEX EUR",
+            "to": "40",
+            "toTitle": "Perfect Money USD",
+            "changer": "472",
+            "changerTitle": "Changer4u",
+            "give": 1,
+            "receive": 0,
+            "amount": {
+                "amount": 3.72,
+                "dollarAmount": 0.00040434782608695654
+            }
+        },
+        {
+            "from": "40",
+            "fromTitle": "Perfect Money USD",
+            "to": "119",
+            "toTitle": "WEX EUR",
+            "changer": "417",
+            "changerTitle": "24PayBank",
+            "give": 1,
+            "receive": 64.919414586,
+            "amount": {
+                "amount": 3656852,
+                "dollarAmount": 3656852
+            }
+        },
+        [
+            "40",
+            "119",
+            "417",
+            "1",
+            64.919414586,
+            "3656852",
+            3656852
+        ],
+        6391.9414586,
+        false
+    ],
+    [
+        {
+            "from": "24",
+            "fromTitle": "TrueUSD (TUSD)",
+            "to": "119",
+            "toTitle": "WEX EUR",
+            "changer": "417",
+            "changerTitle": "24PayBank",
+            "give": 1,
+            "receive": 66.1624956,
+            "amount": {
+                "amount": 3656852,
+                "dollarAmount": 3656852
+            }
+        },
+        {
+            "from": "119",
+            "fromTitle": "WEX EUR",
+            "to": "40",
+            "toTitle": "Perfect Money USD",
+            "changer": "472",
+            "changerTitle": "Changer4u",
+            "give": 1,
+            "receive": 0,
+            "amount": {
+                "amount": 3.72,
+                "dollarAmount": 0.00040434782608695654
+            }
+        },
+        {
+            "from": "40",
+            "fromTitle": "Perfect Money USD",
+            "to": "24",
+            "toTitle": "TrueUSD (TUSD)",
+            "changer": "626",
+            "changerTitle": "Best-Obmen",
+            "give": 1.022688,
+            "receive": 1,
+            "amount": {
+                "amount": 9006.71,
+                "dollarAmount": 8916.642900891662
+            }
+        },
+        [
+            "40",
+            "24",
+            "626",
+            1.022688,
+            "1",
+            "9006.71",
+            8916.642900891662
+        ],
+        6369.470219656435,
+        false
+    ],
+    [
+        {
+            "from": "119",
+            "fromTitle": "WEX EUR",
+            "to": "40",
+            "toTitle": "Perfect Money USD",
+            "changer": "472",
+            "changerTitle": "Changer4u",
+            "give": 1,
+            "receive": 0,
+            "amount": {
+                "amount": 3.72,
+                "dollarAmount": 0.00040434782608695654
+            }
+        },
+        {
+            "from": "40",
+            "fromTitle": "Perfect Money USD",
+            "to": "160",
+            "toTitle": "Ether Classic (ETC)",
+            "changer": "764",
+            "changerTitle": "NiceChange",
+            "give": 9.582474000000001,
+            "receive": 1,
+            "amount": {
+                "amount": 2004.44,
+                "dollarAmount": 18637.04659608
+            }
+        },
+        {
+            "from": "160",
+            "fromTitle": "Ether Classic (ETC)",
+            "to": "119",
+            "toTitle": "WEX EUR",
+            "changer": "417",
+            "changerTitle": "24PayBank",
+            "give": 1,
+            "receive": 619.0009392000001,
+            "amount": {
+                "amount": 3656852,
+                "dollarAmount": 3656852
+            }
+        },
+        [
+            "40",
+            "119",
+            "417",
+            "1",
+            64.919414586,
+            "3656852",
+            3656852
+        ],
+        6359.7194753672175,
+        false
+    ],
+    [
+        {
+            "from": "40",
+            "fromTitle": "Perfect Money USD",
+            "to": "161",
+            "toTitle": "Ripple (XRP)",
+            "changer": "546",
+            "changerTitle": "NetEx24",
+            "give": 1,
+            "receive": 2.2346705,
+            "amount": {
+                "amount": 24415.94,
+                "dollarAmount": 10607.751266723351
+            }
+        },
+        {
+            "from": "161",
+            "fromTitle": "Ripple (XRP)",
+            "to": "119",
+            "toTitle": "WEX EUR",
+            "changer": "417",
+            "changerTitle": "24PayBank",
+            "give": 1,
+            "receive": 28.8928108,
+            "amount": {
+                "amount": 3656852,
+                "dollarAmount": 3656852
+            }
+        },
+        {
+            "from": "119",
+            "fromTitle": "WEX EUR",
+            "to": "40",
+            "toTitle": "Perfect Money USD",
+            "changer": "472",
+            "changerTitle": "Changer4u",
+            "give": 1,
+            "receive": 0,
+            "amount": {
+                "amount": 3.72,
+                "dollarAmount": 0.00040434782608695654
+            }
+        },
+        null,
+        6356.59119568414,
+        false
+    ],
+    [
+        {
+            "from": "23",
+            "fromTitle": "USD Coin (USDC)",
+            "to": "119",
+            "toTitle": "WEX EUR",
+            "changer": "417",
+            "changerTitle": "24PayBank",
+            "give": 1,
+            "receive": 65.8983432,
+            "amount": {
+                "amount": 3656852,
+                "dollarAmount": 3656852
+            }
+        },
+        {
+            "from": "119",
+            "fromTitle": "WEX EUR",
+            "to": "40",
+            "toTitle": "Perfect Money USD",
+            "changer": "472",
+            "changerTitle": "Changer4u",
+            "give": 1,
+            "receive": 0,
+            "amount": {
+                "amount": 3.72,
+                "dollarAmount": 0.00040434782608695654
+            }
+        },
+        {
+            "from": "40",
+            "fromTitle": "Perfect Money USD",
+            "to": "23",
+            "toTitle": "USD Coin (USDC)",
+            "changer": "626",
+            "changerTitle": "Best-Obmen",
+            "give": 1.022889,
+            "receive": 1,
+            "amount": {
+                "amount": 7410.07,
+                "dollarAmount": 7229.336585365854
+            }
+        },
+        [
+            "40",
+            "23",
+            "626",
+            1.022889,
+            "1",
+            "7410.07",
+            7229.336585365854
+        ],
+        6342.374803131132,
+        false
+    ],
+    [
+        {
+            "from": "149",
+            "fromTitle": "Monero (XMR)",
+            "to": "119",
+            "toTitle": "WEX EUR",
+            "changer": "417",
+            "changerTitle": "24PayBank",
+            "give": 1,
+            "receive": 6188.4941552,
+            "amount": {
+                "amount": 3656852,
+                "dollarAmount": 3656852
+            }
+        },
+        {
+            "from": "119",
+            "fromTitle": "WEX EUR",
+            "to": "40",
+            "toTitle": "Perfect Money USD",
+            "changer": "472",
+            "changerTitle": "Changer4u",
+            "give": 1,
+            "receive": 0,
+            "amount": {
+                "amount": 3.72,
+                "dollarAmount": 0.00040434782608695654
+            }
+        },
+        {
+            "from": "40",
+            "fromTitle": "Perfect Money USD",
+            "to": "149",
+            "toTitle": "Monero (XMR)",
+            "changer": "761",
+            "changerTitle": "FlashObmen",
+            "give": 96.612459,
+            "receive": 1,
+            "amount": {
+                "amount": 8.15,
+                "dollarAmount": 763.1025930000001
+            }
+        },
+        [
+            "40",
+            "149",
+            "761",
+            96.612459,
+            "1",
+            "8.15",
+            763.1025930000001
+        ],
+        6305.482501175134,
+        false
+    ],
+    [
+        {
+            "from": "119",
+            "fromTitle": "WEX EUR",
+            "to": "40",
+            "toTitle": "Perfect Money USD",
+            "changer": "472",
+            "changerTitle": "Changer4u",
+            "give": 1,
+            "receive": 0,
+            "amount": {
+                "amount": 3.72,
+                "dollarAmount": 0.00040434782608695654
+            }
+        },
+        {
+            "from": "40",
+            "fromTitle": "Perfect Money USD",
+            "to": "115",
+            "toTitle": "Dogecoin (DOGE)",
+            "changer": "438",
+            "changerTitle": "WestChange",
+            "give": 1,
+            "receive": 288.43445517725,
+            "amount": {
+                "amount": 131870.59,
+                "dollarAmount": 428.71438536279993
+            }
+        },
+        {
+            "from": "115",
+            "fromTitle": "Dogecoin (DOGE)",
+            "to": "119",
+            "toTitle": "WEX EUR",
+            "changer": "417",
+            "changerTitle": "24PayBank",
+            "give": 4.51902390438247,
+            "receive": 1,
+            "amount": {
+                "amount": 3656852,
+                "dollarAmount": 3656852
+            }
+        },
+        [
+            "40",
+            "119",
+            "417",
+            "1",
+            64.919414586,
+            "3656852",
+            3656852
+        ],
+        6282.671596349189,
+        false
+    ],
+    [
+        {
+            "from": "40",
+            "fromTitle": "Perfect Money USD",
+            "to": "156",
+            "toTitle": "PM e-Voucher USD",
+            "changer": "89",
+            "changerTitle": "Changer",
+            "give": 1.024176558379944,
+            "receive": 1,
+            "amount": {
+                "amount": 9999,
+                "dollarAmount": 9762.965104197025
+            }
+        },
+        {
+            "from": "156",
+            "fromTitle": "PM e-Voucher USD",
+            "to": "119",
+            "toTitle": "WEX EUR",
+            "changer": "417",
+            "changerTitle": "24PayBank",
+            "give": 1,
+            "receive": 64.932800918,
+            "amount": {
+                "amount": 3656852,
+                "dollarAmount": 3656852
+            }
+        },
+        {
+            "from": "119",
+            "fromTitle": "WEX EUR",
+            "to": "40",
+            "toTitle": "Perfect Money USD",
+            "changer": "472",
+            "changerTitle": "Changer4u",
+            "give": 1,
+            "receive": 0,
+            "amount": {
+                "amount": 3.72,
+                "dollarAmount": 0.00040434782608695654
+            }
+        },
+        null,
+        6240.000694871552,
+        false
+    ],
+    [
+        {
+            "from": "119",
+            "fromTitle": "WEX EUR",
+            "to": "40",
+            "toTitle": "Perfect Money USD",
+            "changer": "472",
+            "changerTitle": "Changer4u",
+            "give": 1,
+            "receive": 0,
+            "amount": {
+                "amount": 3.72,
+                "dollarAmount": 0.00040434782608695654
+            }
+        },
+        {
+            "from": "40",
+            "fromTitle": "Perfect Money USD",
+            "to": "186",
+            "toTitle": "Exmo BTC",
+            "changer": "622",
+            "changerTitle": "ProstoCash",
+            "give": 8949.580444134634,
+            "receive": 1,
+            "amount": {
+                "amount": 175.28,
+                "dollarAmount": 1451799.5236180802
+            }
+        },
+        {
+            "from": "186",
+            "fromTitle": "Exmo BTC",
+            "to": "119",
+            "toTitle": "WEX EUR",
+            "changer": "417",
+            "changerTitle": "24PayBank",
+            "give": 1,
+            "receive": 565890.9090544,
+            "amount": {
+                "amount": 3656852,
+                "dollarAmount": 3656852
+            }
+        },
+        [
+            "40",
+            "119",
+            "417",
+            "1",
+            64.919414586,
+            "3656852",
+            3656852
+        ],
+        6223.099865818548,
+        false
+    ]
+]

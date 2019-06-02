@@ -1,3 +1,4 @@
+import { ChainService } from './../chain.service';
 import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
@@ -10,11 +11,15 @@ export class ChainColComponent implements OnInit {
   @Input() chain: any[];
   @Input() dollarRate: any[];
 
-  constructor() {
+  sum: number | string;
+  exchOne: string;
+  constructor(private _chService: ChainService) {
   }
 
   ngOnInit() {
     console.log(this.chain)
+    this.sum = this.dollarRate ? this._chService.calcRate(+this.dollarRate[3], +this.dollarRate[4], 1000) : 1;
+
   }
 
 }
