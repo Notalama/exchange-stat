@@ -5,7 +5,7 @@
       <th style="width: 3em">
         <p-tableCheckbox></p-tableCheckbox>
       </th>
-      <th *ngFor="let col of columns" [style.width.%]="col.field === 'chain' ? '50' : ''">
+      <th *ngFor="let col of columns" [style.width.px]="col.field === 'chain' ? '800' : ''">
         {{col.header}}
       </th>
     </tr>

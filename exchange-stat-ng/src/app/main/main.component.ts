@@ -1,7 +1,5 @@
 import { ChainService } from './chain.service';
-import { CarService } from './../car.service';
 import { Component, OnInit } from '@angular/core';
-import { Car } from '../car';
 import { StoreService } from '../store.service';
 
 @Component({
@@ -10,7 +8,6 @@ import { StoreService } from '../store.service';
   styleUrls: ['./main.component.sass']
 })
 export class MainComponent implements OnInit {
-  cars: Car[];
   cols: any[];
   chains: any[];
   subscribed: any[];
@@ -20,8 +17,6 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     this._store.getChains();
     this._store.chains.subscribe(res => {
-      // this.chains = res;
-      console.log(res);
       this.buildTable(res);
       
     }, err => {
@@ -43,7 +38,8 @@ export class MainComponent implements OnInit {
       const [dollarRate, profit, isSubs] = chainData.splice(chainData.length - 3, 3);
       return {
         gain: this._chainService.calcChainProfit(chainData, profit),
-        chain: {chainData, dollarRate}
+        chain: {chainData, dollarRate},
+        score: profit / 100
       }
     });
   }

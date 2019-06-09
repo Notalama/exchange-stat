@@ -1,1 +1,7 @@
-<p>{{sum || ''}} {{chain[0]?.fromTitle}}</p>
+<p *ngFor="let rate of chain; let i = index">
+    <app-chain-rate [rate]="rate" [firstItem]="i + 1 === chain?.length ? chain[0] : null"></app-chain-rate>
+    <br/>
+    <b *ngIf="(i + 1 === chain?.length)">
+        <span style="color: green"><i class="fas fa-arrow-right"></i>{{chain[chain.length - 1]?.calcSum}} {{chain[0].fromTitle}}</span>
+    </b>
+</p>

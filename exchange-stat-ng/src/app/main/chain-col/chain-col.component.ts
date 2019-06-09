@@ -11,15 +11,24 @@ export class ChainColComponent implements OnInit {
   @Input() chain: any[];
   @Input() dollarRate: any[];
 
-  sum: number | string;
-  exchOne: string;
+  // sum: number | string;
+  // exchOne: string;
   constructor(private _chService: ChainService) {
   }
 
   ngOnInit() {
-    console.log(this.chain)
-    this.sum = this.dollarRate ? this._chService.calcRate(+this.dollarRate[3], +this.dollarRate[4], 1000) : 1;
-
+    let rateSum = 1000;
+    // console.log(this.chain);
+    this.chain = this.chain.map((rate, i) => {
+      
+      rateSum = this.calcRate(rate.give, rate.receive, rateSum);
+      const result = { ...rate, calcSum: rateSum };
+      return result;
+    })
   }
 
+  calcRate(give: number, receive: number, sum) {
+    const res = receive > give ? sum * receive : sum / give;
+    return res;
+  }
 }

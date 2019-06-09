@@ -1,0 +1,6 @@
+{{rate?.calcSum + ' ' + rate?.fromTitle}} 
+<a target="_blank" href="https://www.bestchange.ru/index.php?from={{rate.from}}&to{{rate.to}}&url=1">
+  <i class="pi pi-arrow-right"></i>
+</a> - <a target="_blank" [href]="rate.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' + (rate | buildExmoLink) :
+  'https://www.bestchange.ru/click.php?id=' + rate.changer + '&from=' + rate.from + '&to=' + rate.to + '&url=1'">{{rate.changerTitle}}</a> 
+  ({{rate?.give}} : {{rate?.receive}}; {{rate?.amount.amount}}, {{rate.amount.dollarAmount.toFixed(4)}})
