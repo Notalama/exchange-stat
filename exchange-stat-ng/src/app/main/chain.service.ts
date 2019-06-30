@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Rate } from './models/rate';
 
 @Injectable({
   providedIn: 'root'
@@ -61,5 +62,20 @@ export class ChainService {
       (el.fromTitle[el.fromTitle.length - 1] === ')' ?
         el.fromTitle.substring(el.fromTitle.search('\\(') + 1, el.fromTitle.length - 1) :
         el.fromTitle.substring(el.fromTitle.length - 3, el.fromTitle.length))
+  }
+
+  generateId(chain): string {
+    return chain.reduce((rateAcc, rateCur) => {
+      let accSum = '';
+      if (rateAcc.from) accSum = rateAcc.from + rateAcc.to + rateAcc.changer;
+      const currSum = accSum + rateCur.from + rateCur.to + rateCur.changer;
+      return accSum + currSum;
+    });
+  }
+
+  getAgeOfChain(chainId: string, currentDataArr: Rate[]): number {
+    const pos = currentDataArr.find(el => el.id === chainId);
+      if (pos) return pos.age || 0;
+      else return 0;
   }
 }

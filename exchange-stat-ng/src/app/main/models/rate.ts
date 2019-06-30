@@ -1,4 +1,5 @@
 export interface Rate {
+    id?: string;
     amount: {
         amount: number;
         dollarAmount: number;
@@ -12,4 +13,5 @@ export interface Rate {
     give: number;
     receive: number;
     calcSum?: number;
+    age?: number;
 }
