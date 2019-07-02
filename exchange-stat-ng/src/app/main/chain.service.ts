@@ -10,12 +10,13 @@ export class ChainService {
 
   calcChainProfit(chainData: any[], profit: number) {
     const rateAmounts = [];
+    // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < chainData.length; i++) {
       const rate = chainData[i];
       rateAmounts.push(+rate.amount.dollarAmount);
     }
     const minAmount = Math.min(...rateAmounts);
-    return ((minAmount / 100) * profit).toFixed(2) + " $";
+    return ((minAmount / 100) * profit).toFixed(2) + ' $';
   }
 
   getChainCol(chain: any[], dollarRate: any[]) {
@@ -32,14 +33,14 @@ export class ChainService {
       const exmoPair = rate.changer === '899' ? this.buildExmoLink(rate) : '';
       const arrowLinkParams = `&from=${rate.from}&to=${rate.to}&url=1">'`;
       const changerLinkParams = rate.changer === '899' ? `${exmoPair}">` : `${rate.changer}&from=${rate.from}&to=${rate.to}&url=1">'`;
-      const exch = `<a target="_blank" href="${preLinkBC + arrowLinkParams}<i class="fas fa-arrow-right"></i></a> - 
+      const exch = `<a target="_blank" href="${preLinkBC + arrowLinkParams}<i class="fas fa-arrow-right"></i></a> -
           <a target="_blank" href="${preLinkC + changerLinkParams + rate.changerTitle}</a>
-          (${rate.give} : ${rate.receive};${rate.amount.amount}, ${rate.amount.dollarAmount.toFixed(4)} $) <br>`
-        compiledChain.push(exch);
+          (${rate.give} : ${rate.receive};${rate.amount.amount}, ${rate.amount.dollarAmount.toFixed(4)} $) <br>`;
+      compiledChain.push(exch);
     });
     const currOne = sum + ' ' + chain[0].fromTitle;
     const exchOne = compiledChain[0];
-    const currTwo =`<i class="fas fa-arrow-right"></i>${calcFirst}  ${chain[1].fromTitle}`;
+    const currTwo = `<i class="fas fa-arrow-right"></i>${calcFirst}  ${chain[1].fromTitle}`;
     const exchTwo = compiledChain[1];
     const currThree = rates >= 3 ? `<i class="fas fa-arrow-right"></i>${calcSecond} ${chain[2].fromTitle}` : '';
     const exchThree = rates >= 3 ? compiledChain[2] : '';
@@ -61,13 +62,13 @@ export class ChainService {
       el.toTitle.substring(el.toTitle.length - 3, el.toTitle.length)) + '_' +
       (el.fromTitle[el.fromTitle.length - 1] === ')' ?
         el.fromTitle.substring(el.fromTitle.search('\\(') + 1, el.fromTitle.length - 1) :
-        el.fromTitle.substring(el.fromTitle.length - 3, el.fromTitle.length))
+        el.fromTitle.substring(el.fromTitle.length - 3, el.fromTitle.length));
   }
 
   generateId(chain): string {
     return chain.reduce((rateAcc, rateCur) => {
       let accSum = '';
-      if (rateAcc.from) accSum = rateAcc.from + rateAcc.to + rateAcc.changer;
+      if (rateAcc.from) { accSum = rateAcc.from + rateAcc.to + rateAcc.changer; }
       const currSum = accSum + rateCur.from + rateCur.to + rateCur.changer;
       return accSum + currSum;
     });
@@ -75,7 +76,7 @@ export class ChainService {
 
   getAgeOfChain(chainId: string, currentDataArr: Rate[]): number {
     const pos = currentDataArr.find(el => el.id === chainId);
-      if (pos) return pos.age || 0;
-      else return 0;
+    if (pos) { return pos.age || 0;
+     } else { return 0; }
   }
 }

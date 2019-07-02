@@ -1,13 +1,14 @@
-<h3>Checkbox Selection</h3>
-<p-table [columns]="cols" [value]="chains" [(selection)]="subscribed" rowIndex dataKey="{{rowIndex}}">
+<h3>Пройшло {{this.timer}} секунд</h3>
+<button type="button" class="btn btn-primary" (click)="reload()">Refresh</button>
+<p-table [columns]="cols" [value]="chains" [(selection)]="subscribed" rowIndex dataKey="{{rowIndex}}" [autoLayout]="true">  
   <ng-template pTemplate="header" let-columns>
     <tr>
       <th style="width: 3em">
         <p-tableCheckbox></p-tableCheckbox>
-      </th>
-      <th *ngFor="let col of columns" [style.width.px]="col.field === 'chain' ? '800' : ''">
+      <th *ngFor="let col of columns" [style.width.px]="col.field === 'chain' ? '800' : ''"  [pSortableColumn]="col.field">
         {{col.header}}
-      </th>
+        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+    </th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-rowData let-columns="columns">
@@ -32,6 +33,9 @@
       </td>
       <td>
         {{rowData.links}}
+      </td>
+      <td>
+        {{rowData.id}}
       </td>
     </tr>
   </ng-template>

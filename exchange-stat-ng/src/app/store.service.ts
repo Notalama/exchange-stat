@@ -8,16 +8,16 @@ import { Subject } from 'rxjs';
 export class StoreService {
 
   chains: Subject<any[]>;
-  // url = `http://localhost:9000/best-change?minBalance=0&minProfit=-1&showExmo=false&ltThreeLinks=false`;
-  url = 'assets/rates.json';
+  url = `http://localhost:9000/best-change?minBalance=0&minProfit=-1&showExmo=false&ltThreeLinks=false`;
+  // url = 'assets/rates.json';
   constructor(private http: HttpClient) {
     this.chains = new Subject();
   }
 
   getChains() {
-    
+
     return this.http.get(this.url).toPromise().then((res: any[]) => {
-      console.log(res)
+      console.log(res);
       this.chains.next(res);
       setTimeout(() => {
         this.getChains();
@@ -30,7 +30,7 @@ export class StoreService {
     }).finally(() => {
       console.log('fina;');
     });
-    
+
   }
-  
+
 }

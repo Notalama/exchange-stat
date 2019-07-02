@@ -9,12 +9,13 @@ import { StoreService } from '../store.service';
 })
 export class MainComponent implements OnInit {
   cols: any[];
-  chains: any[];
+  chains =  [];
   subscribed: any[];
   currentDataArr: any[];
   interval: number;
-  minInterval: number = 5;
-  timer: number = 0;
+  minInterval = 5;
+  timer = 0;
+  // tslint:disable-next-line:variable-name
   constructor(private _chainService: ChainService, private _store: StoreService) { }
 
   ngOnInit() {
@@ -28,7 +29,7 @@ export class MainComponent implements OnInit {
     this._store.getChains();
     this._store.chains.subscribe(res => {
       this.buildTable(res);
-      
+
     }, err => {
       console.log(err);
     });
@@ -37,8 +38,9 @@ export class MainComponent implements OnInit {
       { field: 'chain', header: 'Ланцюжки' },
       { field: 'score', header: '%' },
       { field: 'age', header: 'Час с' },
-      // { field: 'options', header: 'Опції' },
+      { field: 'options', header: 'Опції' },
       { field: 'links', header: 'Посилання' },
+      { field: 'id', header: 'ID' },
     ];
   }
 
@@ -53,13 +55,18 @@ export class MainComponent implements OnInit {
         score: (profit / 100).toFixed(2),
         age: this.currentDataArr.length ?
           this._chainService.getAgeOfChain(generatedId, this.currentDataArr) : 0,
-        links: generatedId,
+        options: ' ',
+        links:  '',
         id: generatedId
-      }
+      };
     });
   }
+  reload() {
+    this._store.getChains();
+    this.timer = 0;
+  }
   updateInterval(interval = 0) {
-    if (interval >= 0 || this.interval >= this.minInterval) this.interval += interval;
+    if (interval >= 0 || this.interval >= this.minInterval) { this.interval += interval; }
   }
   reloadInterval() {
     // this.loadItems();
@@ -67,9 +74,10 @@ export class MainComponent implements OnInit {
       this.reloadInterval();
     }, this.interval);
   }
+  // tslint:disable-next-line:use-lifecycle-interface
   ngOnDestroy(): void {
-    //Called once, before the instance is destroyed.
-    //Add 'implements OnDestroy' to the class.
+    // Called once, before the instance is destroyed.
+    // Add 'implements OnDestroy' to the class.
     this._store.chains.unsubscribe();
   }
 }
