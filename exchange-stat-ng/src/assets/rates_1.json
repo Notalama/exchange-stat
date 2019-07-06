@@ -1,0 +1,218 @@
+[
+    [
+        {
+            "from": "88",
+            "fromTitle": "Advanced Cash USD",
+            "to": "162",
+            "toTitle": "Zcash (ZEC)",
+            "changer": "883",
+            "changerTitle": "101Крипта",
+            "give": 101.93968997,
+            "receive": 1,
+            "amount": {
+                "amount": 289,
+                "dollarAmount": 30258.51675
+            }
+        },
+        {
+            "from": "162",
+            "fromTitle": "Zcash (ZEC)",
+            "to": "93",
+            "toTitle": "Bitcoin (BTC)",
+            "changer": "326",
+            "changerTitle": "Матби",
+            "give": 111.50768022557,
+            "receive": 1,
+            "amount": {
+                "amount": 18.8,
+                "dollarAmount": 218187.03573200002
+            }
+        },
+        {
+            "from": "93",
+            "fromTitle": "Bitcoin (BTC)",
+            "to": "88",
+            "toTitle": "Advanced Cash USD",
+            "changer": "644",
+            "changerTitle": "UniEx",
+            "give": 1,
+            "receive": 11469.1193,
+            "amount": {
+                "amount": 140.09,
+                "dollarAmount": 141.5907114831828
+            }
+        },
+        [
+            "40",
+            "88",
+            "584",
+            1.02488272905,
+            "1",
+            "74660.12"
+        ],
+        0.8978659682723421,
+        false
+    ],
+    [
+        {
+            "from": "88",
+            "fromTitle": "Advanced Cash USD",
+            "to": "162",
+            "toTitle": "Zcash (ZEC)",
+            "changer": "883",
+            "changerTitle": "101Крипта",
+            "give": 101.93968997,
+            "receive": 1,
+            "amount": {
+                "amount": 289,
+                "dollarAmount": 30258.51675
+            }
+        },
+        {
+            "from": "162",
+            "fromTitle": "Zcash (ZEC)",
+            "to": "99",
+            "toTitle": "Litecoin (LTC)",
+            "changer": "858",
+            "changerTitle": "FixedFloat",
+            "give": 1.16322858,
+            "receive": 1,
+            "amount": {
+                "amount": 8.74,
+                "dollarAmount": 1056.2217731562
+            }
+        },
+        {
+            "from": "99",
+            "fromTitle": "Litecoin (LTC)",
+            "to": "88",
+            "toTitle": "Advanced Cash USD",
+            "changer": "789",
+            "changerTitle": "MChanger",
+            "give": 1,
+            "receive": 119.345,
+            "amount": {
+                "amount": 91.46,
+                "dollarAmount": 92.43976352524732
+            }
+        },
+        [
+            "40",
+            "88",
+            "584",
+            1.02488272905,
+            "1",
+            "74660.12"
+        ],
+        0.6458463572594875,
+        false
+    ],
+    [
+        {
+            "from": "88",
+            "fromTitle": "Advanced Cash USD",
+            "to": "162",
+            "toTitle": "Zcash (ZEC)",
+            "changer": "883",
+            "changerTitle": "101Крипта",
+            "give": 101.93968997,
+            "receive": 1,
+            "amount": {
+                "amount": 289,
+                "dollarAmount": 30258.51675
+            }
+        },
+        {
+            "from": "162",
+            "fromTitle": "Zcash (ZEC)",
+            "to": "140",
+            "toTitle": "Dash (DASH)",
+            "changer": "858",
+            "changerTitle": "FixedFloat",
+            "give": 1.52377996,
+            "receive": 1,
+            "amount": {
+                "amount": 25.65,
+                "dollarAmount": 4059.9409949999995
+            }
+        },
+        {
+            "from": "140",
+            "fromTitle": "Dash (DASH)",
+            "to": "88",
+            "toTitle": "Advanced Cash USD",
+            "changer": "664",
+            "changerTitle": "TierraPay",
+            "give": 1,
+            "receive": 156.15,
+            "amount": {
+                "amount": 10331.36,
+                "dollarAmount": 10442.034499171214
+            }
+        },
+        [
+            "40",
+            "88",
+            "584",
+            1.02488272905,
+            "1",
+            "74660.12"
+        ],
+        0.525541799773572,
+        false
+    ],
+    [
+        {
+            "from": "99",
+            "fromTitle": "Litecoin (LTC)",
+            "to": "162",
+            "toTitle": "Zcash (ZEC)",
+            "changer": "239",
+            "changerTitle": "E-Scrooge",
+            "give": 1,
+            "receive": 1.16079305,
+            "amount": {
+                "amount": 55,
+                "dollarAmount": 5758.54125
+            }
+        },
+        {
+            "from": "162",
+            "fromTitle": "Zcash (ZEC)",
+            "to": "160",
+            "toTitle": "Ether Classic (ETC)",
+            "changer": "89",
+            "changerTitle": "Changer",
+            "give": 1,
+            "receive": 13.201322600000001,
+            "amount": {
+                "amount": 27.09,
+                "dollarAmount": 215.89009785
+            }
+        },
+        {
+            "from": "160",
+            "fromTitle": "Ether Classic (ETC)",
+            "to": "99",
+            "toTitle": "Litecoin (LTC)",
+            "changer": "858",
+            "changerTitle": "FixedFloat",
+            "give": 15.25377854,
+            "receive": 1,
+            "amount": {
+                "amount": 8.74,
+                "dollarAmount": 1056.2217731562
+            }
+        },
+        [
+            "40",
+            "99",
+            "588",
+            123.24748300202678,
+            "1",
+            "29.66"
+        ],
+        0.46037763498258943,
+        false
+    ]
+]

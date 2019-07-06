@@ -1,5 +1,5 @@
 import { ChainService } from './chain.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { StoreService } from '../store.service';
 
 @Component({
@@ -10,16 +10,17 @@ import { StoreService } from '../store.service';
 export class MainComponent implements OnInit {
   cols: any[];
   chains =  [];
-  subscribed: any[];
+  subscribed = [];
   currentDataArr: any[];
   interval: number;
   minInterval = 5;
   timer = 0;
   // tslint:disable-next-line:variable-name
   constructor(private _chainService: ChainService, private _store: StoreService) { }
-
+   
+  @ViewChild('a', null) el: ElementRef;
   ngOnInit() {
-
+    console.log(document.getElementById('a'))
     setInterval(() => {
       this.timer++;
       this.chains.forEach(el => el.age++);
@@ -28,33 +29,39 @@ export class MainComponent implements OnInit {
     this.reloadInterval();
     this._store.getChains();
     this._store.chains.subscribe(res => {
+      console.log(res);
       this.buildTable(res);
 
     }, err => {
       console.log(err);
     });
     this.cols = [
+      // { field: 'pin', header: 'Pin' },
       { field: 'gain', header: 'Max Profit' },
       { field: 'chain', header: 'Ланцюжки' },
       { field: 'score', header: '%' },
       { field: 'age', header: 'Час с' },
       { field: 'options', header: 'Опції' },
-      { field: 'links', header: 'Посилання' },
-      { field: 'id', header: 'ID' },
+      { field: 'links', header: 'Посилання' }
     ];
   }
-
+  ngAfterViewInit()
+  {
+     this.el.nativeElement.focus();
+     console.log(this.el)
+  }
   buildTable(data: any[]) {
-    this.currentDataArr = data;
+
     this.chains = data.sort((a, b) => a.length - b.length).map((chainData, i) => {
+      console.log(chainData);
       const [dollarRate, profit, isSubs] = chainData.splice(chainData.length - 3, 3);
       const generatedId = this._chainService.generateId(chainData);
       return {
         gain: this._chainService.calcChainProfit(chainData, profit),
         chain: {chainData, dollarRate},
-        score: (profit / 100).toFixed(2),
-        age: this.currentDataArr.length ?
-          this._chainService.getAgeOfChain(generatedId, this.currentDataArr) : 0,
+        score: `${profit.toFixed(2)} %`,
+        age: this.chains.length ?
+          this._chainService.getAgeOfChain(generatedId, this.chains) : 0,
         options: ' ',
         links:  '',
         id: generatedId
@@ -73,6 +80,10 @@ export class MainComponent implements OnInit {
     setTimeout(() => {
       this.reloadInterval();
     }, this.interval);
+  }
+
+  pin(e) {
+    console.log(e);
   }
   // tslint:disable-next-line:use-lifecycle-interface
   ngOnDestroy(): void {

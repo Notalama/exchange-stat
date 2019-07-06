@@ -1,20 +1,21 @@
 <h3>Пройшло {{this.timer}} секунд</h3>
 <button type="button" class="btn btn-primary" (click)="reload()">Refresh</button>
 <p-table [columns]="cols" [value]="chains" [(selection)]="subscribed" rowIndex dataKey="{{rowIndex}}" [autoLayout]="true">  
-  <ng-template pTemplate="header" let-columns>
+  <ng-template pTemplate="header" let-columns let-rowData>
     <tr>
       <th style="width: 3em">
-        <p-tableCheckbox></p-tableCheckbox>
+        <!-- <p-tableCheckbox [value]="rowData" ></p-tableCheckbox> -->
+      </th>
       <th *ngFor="let col of columns" [style.width.px]="col.field === 'chain' ? '800' : ''"  [pSortableColumn]="col.field">
         {{col.header}}
         <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-    </th>
+      </th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-rowData let-columns="columns">
     <tr [pSelectableRow]="rowData">
       <td>
-        <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+        <p-tableCheckbox [value]="rowData" (onClick)="pin($event)" (click)="pin($event)" (isChecked)="pin($event)" (onChange)="pin($event)" (handleChange)="pin($event)" id="a"></p-tableCheckbox>
       </td>
       <td>
         {{rowData.gain}}
@@ -22,10 +23,10 @@
       <td>
         <app-chain-col [chain]="rowData?.chain.chainData" [dollarRate]="rowData?.chain.dollarRate"></app-chain-col>
       </td>
-      <td>
+      <td style="width: 80px">
         {{rowData.score}}
       </td>
-      <td>
+      <td  style="width: 70px">
         {{rowData.age}}
       </td>
       <td>
@@ -34,16 +35,6 @@
       <td>
         {{rowData.links}}
       </td>
-      <td>
-        {{rowData.id}}
-      </td>
     </tr>
-  </ng-template>
-  <ng-template pTemplate="summary">
-    <ul>
-      <li *ngFor="let car of selectedCars3" style="text-align: left">
-        {{car.vin + ' - ' + car.brand + ' - ' + car.year + ' - ' + car.color}}
-      </li>
-    </ul>
   </ng-template>
 </p-table>
