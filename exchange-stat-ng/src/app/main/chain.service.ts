@@ -65,6 +65,16 @@ export class ChainService {
         el.fromTitle.substring(el.fromTitle.length - 3, el.fromTitle.length));
   }
 
+  buildAllLinks(chainRates) {
+    for (let i = 0; i < chainRates.length; i++) {
+      const element = chainRates[i];
+      const preLinkC = element.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id=';
+      const preLinkBC = 'https://www.bestchange.ru/index.php?';
+      const exmoPair = element.changer === '899' ? this.buildExmoLink(element) : '';
+      window.open(preLinkBC + 'from=' + element.from + '&to=' + element.to + '&url=1');
+      window.open(preLinkC + (element.changer === '899' ? exmoPair : element.changer + '&from=' + element.from + '&to=' + element.to + '&url=1'));
+    }
+  }
   generateId(chain): string {
     return chain.reduce((rateAcc, rateCur) => {
       let accSum = '';

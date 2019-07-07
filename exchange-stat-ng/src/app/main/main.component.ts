@@ -58,7 +58,7 @@ export class MainComponent implements OnInit {
         age: this.chains.length ?
           this._chainService.getAgeOfChain(generatedId, this.chains) : 0,
         options: ' ',
-        links:  '',
+        links:  this._chainService.buildAllLinks(chainData),
         id: generatedId
       };
     });
@@ -95,7 +95,10 @@ export class MainComponent implements OnInit {
     if (j === 1) return `${rateAcc.from},${rateAcc.to},${rateAcc.changer};${rate.from},${rate.to},${rate.changer + ending}`;
     return rateAcc + `${rate.from},${rate.to},${rate.changer + ending}`;
   }
-
+  
+  openAllLinks(idx: number) {
+    this._chainService.buildAllLinks(this.chains[idx].chain.chainData);
+  }
   
   // tslint:disable-next-line:use-lifecycle-interface
   ngOnDestroy(): void {
