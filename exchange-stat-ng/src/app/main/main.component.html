@@ -1,6 +1,6 @@
 <h3>Пройшло {{this.timer}} секунд</h3>
 <button type="button" class="btn btn-primary" (click)="reload()">Refresh</button>
-<p-table [columns]="cols" [value]="chains" [(selection)]="subscribed" rowIndex dataKey="{{rowIndex}}" [autoLayout]="true">  
+<p-table [columns]="cols" [value]="chains" [(selection)]="subscribed" (onRowSelect)="pin($event)" rowIndex dataKey="{{rowIndex}}" [autoLayout]="true">  
   <ng-template pTemplate="header" let-columns let-rowData>
     <tr>
       <th style="width: 3em">
@@ -15,7 +15,7 @@
   <ng-template pTemplate="body" let-rowData let-columns="columns">
     <tr [pSelectableRow]="rowData">
       <td>
-        <p-tableCheckbox [value]="rowData" (onClick)="pin($event)" (click)="pin($event)" (isChecked)="pin($event)" (onChange)="pin($event)" (handleChange)="pin($event)" id="a"></p-tableCheckbox>
+        <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
       </td>
       <td>
         {{rowData.gain}}
