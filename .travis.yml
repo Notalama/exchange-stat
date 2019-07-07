@@ -4,12 +4,13 @@ node_js:
 addons:
   apt:
     sources:
-    - ubuntu-toolchain-r-test
+    - windows
     packages:
     - gcc-4.8
     - g++-4.8
 script:
-  - npm test -- -i --coverage
+  - npm i
+  - npm start
 env:
   global:
   - CXX=g++-4.8
