@@ -78,7 +78,6 @@ export class MainComponent implements OnInit {
   }
 
   pin(e): void {
-    console.log(this.subscribed);
     let subscribeQuery;
     if (this.subscribed.length > 1) {
       subscribeQuery = this.subscribed.reduce((acc, el, i) => {
