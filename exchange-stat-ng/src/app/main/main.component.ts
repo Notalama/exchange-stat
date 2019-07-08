@@ -42,7 +42,7 @@ export class MainComponent implements OnInit {
       { field: 'score', header: '%' },
       { field: 'age', header: 'Час с' },
       { field: 'options', header: 'Опції' },
-      { field: 'links', header: 'Посилання' }
+      { field: 'links', header: '=>' }
     ];
   }
 
@@ -58,7 +58,7 @@ export class MainComponent implements OnInit {
         age: this.chains.length ?
           this._chainService.getAgeOfChain(generatedId, this.chains) : 0,
         options: ' ',
-        links:  this._chainService.buildAllLinks(chainData),
+        links: null,
         id: generatedId
       };
     });
@@ -97,6 +97,7 @@ export class MainComponent implements OnInit {
   }
   
   openAllLinks(idx: number) {
+    console.log(idx)
     this._chainService.buildAllLinks(this.chains[idx].chain.chainData);
   }
   
