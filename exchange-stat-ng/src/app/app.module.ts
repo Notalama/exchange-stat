@@ -6,7 +6,7 @@ import { AuthGuard } from './auth-guard';
 import { StoreService } from './store.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
@@ -15,6 +15,7 @@ import {CheckboxModule} from 'primeng/checkbox';
 import { ChainRateComponent } from './main/chain-col/chain-rate/chain-rate.component';
 import { CalcRateSumPipe } from './main/chain-col/calc-rate-sum.pipe';
 import { BuildExmoLinkPipe } from './main/chain-col/build-exmo-link.pipe';
+import { SettingsFormComponent } from '../settings-form/settings-form.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { BuildExmoLinkPipe } from './main/chain-col/build-exmo-link.pipe';
     ChainColComponent,
     ChainRateComponent,
     CalcRateSumPipe,
-    BuildExmoLinkPipe
+    BuildExmoLinkPipe,
+    SettingsFormComponent
   ],
   imports: [
     BrowserModule,
@@ -32,7 +34,8 @@ import { BuildExmoLinkPipe } from './main/chain-col/build-exmo-link.pipe';
     AppRoutingModule,
     FormsModule,
     CheckboxModule,
-    TableModule
+    TableModule,
+    ReactiveFormsModule
   ],
   providers: [StoreService, AuthGuard, AuthGuardService],
   bootstrap: [AppComponent]
