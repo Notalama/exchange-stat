@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
-import { StoreService } from '../app/store.service';
+import { StoreService } from '../store.service';
 
 @Component({
   selector: 'app-settings-form',
@@ -62,5 +62,9 @@ export class SettingsFormComponent implements OnInit {
       mins: ['']
     });
 
+  }
+
+  submit() {
+    console.log('its working');
   }
 }
