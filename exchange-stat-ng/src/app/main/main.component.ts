@@ -17,10 +17,10 @@ export class MainComponent implements OnInit {
   timer = 0;
   // tslint:disable-next-line:variable-name
   constructor(private _chainService: ChainService, private _store: StoreService) { }
-   
+
   @ViewChild('a', null) el: ElementRef;
   ngOnInit() {
-    console.log(document.getElementById('a'))
+    console.log(document.getElementById('a'));
     setInterval(() => {
       this.timer++;
       this.chains.forEach(el => el.age++);
@@ -45,10 +45,10 @@ export class MainComponent implements OnInit {
       { field: 'links', header: 'Посилання' }
     ];
   }
-  ngAfterViewInit()
-  {
+  // tslint:disable-next-line:use-lifecycle-interface
+  ngAfterViewInit() {
      this.el.nativeElement.focus();
-     console.log(this.el)
+     console.log(this.el);
   }
   buildTable(data: any[]) {
 
