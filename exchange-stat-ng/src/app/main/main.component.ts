@@ -1,6 +1,7 @@
 import { ChainService } from './chain.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { StoreService } from '../store.service';
+import { Rate } from './models/rate';
 
 @Component({
   selector: 'app-main',
@@ -9,7 +10,7 @@ import { StoreService } from '../store.service';
 })
 export class MainComponent implements OnInit {
   cols: any[];
-  chains =  [];
+  chains = [];
   subscribed = [];
   currentDataArr: any[];
   interval: number;
@@ -18,7 +19,6 @@ export class MainComponent implements OnInit {
   // tslint:disable-next-line:variable-name
   constructor(private _chainService: ChainService, private _store: StoreService) { }
 
-  @ViewChild('a', null) el: ElementRef;
   ngOnInit() {
     console.log(document.getElementById('a'));
     setInterval(() => {
@@ -42,18 +42,12 @@ export class MainComponent implements OnInit {
       { field: 'score', header: '%' },
       { field: 'age', header: 'Час с' },
       { field: 'options', header: 'Опції' },
-      { field: 'links', header: 'Посилання' }
+      { field: 'links', header: '=>' }
     ];
-  }
-  // tslint:disable-next-line:use-lifecycle-interface
-  ngAfterViewInit() {
-     this.el.nativeElement.focus();
-     console.log(this.el);
   }
   buildTable(data: any[]) {
 
     this.chains = data.sort((a, b) => a.length - b.length).map((chainData, i) => {
-      console.log(chainData);
       const [dollarRate, profit, isSubs] = chainData.splice(chainData.length - 3, 3);
       const generatedId = this._chainService.generateId(chainData);
       return {
@@ -63,7 +57,7 @@ export class MainComponent implements OnInit {
         age: this.chains.length ?
           this._chainService.getAgeOfChain(generatedId, this.chains) : 0,
         options: ' ',
-        links:  '',
+        links: null,
         id: generatedId
       };
     });
@@ -82,9 +76,30 @@ export class MainComponent implements OnInit {
     }, this.interval);
   }
 
-  pin(e) {
-    console.log(e);
+  pin(e): void {
+    let subscribeQuery;
+    if (this.subscribed.length > 1) {
+      subscribeQuery = this.subscribed.reduce((acc, el, i) => {
+        const elArr = el.chain.chainData;
+        if (i === 1) return acc.chain.chainData.reduce(this.subsChainReducer) + elArr.reduce(this.subsChainReducer);
+        return acc + elArr.reduce(this.subsChainReducer);
+      });
+    } else subscribeQuery = this.subscribed[0].chain.chainData.reduce(this.subsChainReducer);
+    subscribeQuery = subscribeQuery.substring(0, subscribeQuery.length - 1)
+    this._store.urlParamsSubject.next({ key: 'chainSubscriptions', value: subscribeQuery })
   }
+
+  private subsChainReducer(rateAcc, rate, j, arr) {
+    const ending = j < (arr.length - 1) ? ';' : 'n';
+    if (j === 1) return `${rateAcc.from},${rateAcc.to},${rateAcc.changer};${rate.from},${rate.to},${rate.changer + ending}`;
+    return rateAcc + `${rate.from},${rate.to},${rate.changer + ending}`;
+  }
+  
+  openAllLinks(idx: number) {
+    console.log(idx)
+    this._chainService.buildAllLinks(this.chains[idx].chain.chainData);
+  }
+  
   // tslint:disable-next-line:use-lifecycle-interface
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.

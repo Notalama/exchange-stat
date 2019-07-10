@@ -26,7 +26,7 @@
 </div>
 
 
-<p-table [columns]="cols" [value]="chains" [(selection)]="subscribed" rowIndex dataKey="{{rowIndex}}" [autoLayout]="true">  
+<p-table [columns]="cols" [value]="chains" [(selection)]="subscribed" (onRowSelect)="pin($event)" rowIndex dataKey="{{rowIndex}}" [autoLayout]="true">  
   <ng-template pTemplate="header" let-columns let-rowData>
     <tr>
       <th style="width: 3em">
@@ -38,10 +38,10 @@
       </th>
     </tr>
   </ng-template>
-  <ng-template pTemplate="body" let-rowData let-columns="columns">
+  <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex" let-columns="columns">
     <tr [pSelectableRow]="rowData">
       <td>
-        <p-tableCheckbox [value]="rowData" (onClick)="pin($event)" (click)="pin($event)" (isChecked)="pin($event)" (onChange)="pin($event)" (handleChange)="pin($event)" id="a"></p-tableCheckbox>
+        <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
       </td>
       <td>
         {{rowData.gain}}
@@ -59,7 +59,8 @@
         {{rowData.options}}
       </td>
       <td>
-        {{rowData.links}}
+        <!-- {{rowData.links}} -->
+        <button pButton icon="pi pi-angle-right" (click)="openAllLinks(rowIndex)" type="button"></button>
       </td>
     </tr>
   </ng-template>

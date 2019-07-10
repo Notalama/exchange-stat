@@ -10,8 +10,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
-import {TableModule} from 'primeng/table';
-import {CheckboxModule} from 'primeng/checkbox';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
 import { ChainRateComponent } from './main/chain-col/chain-rate/chain-rate.component';
 import { CalcRateSumPipe } from './main/chain-col/calc-rate-sum.pipe';
 import { BuildExmoLinkPipe } from './main/chain-col/build-exmo-link.pipe';
@@ -35,7 +36,8 @@ import { SettingsFormComponent } from './settings-form/settings-form.component';
     FormsModule,
     CheckboxModule,
     TableModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ButtonModule
   ],
   providers: [StoreService, AuthGuard, AuthGuardService],
   bootstrap: [AppComponent]

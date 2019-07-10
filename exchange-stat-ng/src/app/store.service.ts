@@ -1,16 +1,26 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
+import { UrlParams } from './main/models/url-params';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StoreService {
 
+  private _urlParams = {
+    minBalance: 0,
+    minProfit: -1,
+    showExmo: false,
+    ltThreeLinks: false,
+    chainSubscriptions: '',
+    exmoOrdersCount: 0
+  };
   chains: Subject<any[]>;
   exchangers: Subject<any[]>;
   currencies: Subject<any[]>;
-  // url = `http://localhost:9000/best-change?minBalance=0&minProfit=-1&showExmo=false&ltThreeLinks=false`;
+  urlParamsSubject: Subject<any>;
+  // url = `http://localhost:9000/best-change?minBalance=0&minProfit=-1&showExmo=false&ltThreeLinks=false&chainSubscriptions=${this._urlParams.chainSubscriptions}`;
   url = 'assets/rates_1.json';
   currURL = 'http://localhost:9000/currencies';
   exchURL = 'http://localhost:9000/exchangers';
@@ -18,6 +28,11 @@ export class StoreService {
     this.chains = new Subject();
     this.currencies = new Subject();
     this.exchangers = new Subject();
+    this.urlParamsSubject = new Subject();
+    this.urlParamsSubject.subscribe(({ key, value }) => {
+      if (!key) return;
+      this._urlParams[key] = value;
+    });
   }
 
   getChains() {
