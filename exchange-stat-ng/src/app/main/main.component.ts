@@ -20,7 +20,7 @@ export class MainComponent implements OnInit {
   constructor(private _chainService: ChainService, private _store: StoreService) { }
 
   ngOnInit() {
-    console.log(document.getElementById('a'))
+    console.log(document.getElementById('a'));
     setInterval(() => {
       this.timer++;
       this.chains.forEach(el => el.age++);
@@ -45,7 +45,6 @@ export class MainComponent implements OnInit {
       { field: 'links', header: '=>' }
     ];
   }
-
   buildTable(data: any[]) {
 
     this.chains = data.sort((a, b) => a.length - b.length).map((chainData, i) => {

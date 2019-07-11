@@ -1,0 +1,46 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+
+  <div class="row">
+    <div class="col md6">
+      <label for="inCurr">Вхідна валюта</label>
+      <select class="form-control" formControlName="inCurr" id="inCurr">
+        <option *ngFor="let currTitle of currTitles">
+          {{currTitle}}
+        </option>
+      </select>
+    </div>
+    <div class="col md6">
+      <label for="outCurr">Вихідна валюта</label>
+      <select class="form-control" formControlName="outCurr" id="outCurr">
+        <option *ngFor="let currTitle of currTitles">
+          {{currTitle}}
+        </option>
+      </select>
+    </div>
+  </div>
+  <div class="mt-2">
+    <label for="exchanger">Обмінник</label>
+    <select class="form-control" formControlName="exchanger" id="exchanger">
+      <option *ngFor="let exchTitle of exchTitles">
+        {{exchTitle}}
+      </option>
+    </select>
+  </div>
+  <div class="row mt-2">
+    <div class="col md4">
+      <label for="blockTime">Днів</label>
+      <input class="form-control" formControlName="days" id="days">
+    </div>
+    <div class="col md4">
+      <label for="blockTime">Годин</label>
+      <input class="form-control" formControlName="hours" id="hours">
+    </div>
+    <div class="col md4">
+      <label for="blockTime">Хвилин</label>
+      <input class="form-control" formControlName="mins" id="mins">
+    </div>
+  </div>
+
+  <div class="mt-3">
+    <button type="submit" class="btn btn-primary float-right">Submit</button></div>
+</form>
