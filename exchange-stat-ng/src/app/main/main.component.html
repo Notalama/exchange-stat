@@ -1,12 +1,15 @@
-<h3>Пройшло {{this.timer}} секунд</h3>
-<button type="button" class="btn btn-primary" (click)="reload()">Refresh</button>
-<a class="btn btn-primary float-right ml-2" href="/custom-chain">CustomChain</a>
-<button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#settingsModal">
-  Settings
-</button>
+<div class="header mb-3">
+  <h3>Пройшло {{this.timer}} секунд</h3>
+  <button type="button" class="btn btn-primary" (click)="reload()">Refresh</button>
+  <a class="btn btn-primary float-right ml-2" href="/custom-chain">CustomChain</a>
+  <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#settingsModal">
+    Settings
+  </button>
+</div>
 
 <!-- Modal -->
-<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalTitle" aria-hidden="true">
+<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalTitle"
+  aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -26,15 +29,19 @@
 </div>
 
 
-<p-table [columns]="cols" [value]="chains" [(selection)]="subscribed" (onRowSelect)="pin($event)" rowIndex dataKey="{{rowIndex}}" [autoLayout]="true">  
+<p-table [columns]="cols" [value]="chains" [(selection)]="subscribed" (onRowSelect)="pin($event)" rowIndex
+  dataKey="{{rowIndex}}" [autoLayout]="true">
   <ng-template pTemplate="header" let-columns let-rowData>
     <tr>
       <th style="width: 3em">
         <!-- <p-tableCheckbox [value]="rowData" ></p-tableCheckbox> -->
       </th>
-      <th *ngFor="let col of columns" [style.width.px]="col.field === 'chain' ? '800' : ''"  [pSortableColumn]="col.field">
+      <th *ngFor="let col of columns" [style.width.px]="col.field === 'chain' ? '800' : ''"
+        [pSortableColumn]="col.field">
         {{col.header}}
-        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+          ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
+        </p-sortIcon>
       </th>
     </tr>
   </ng-template>
@@ -52,7 +59,7 @@
       <td style="width: 80px">
         {{rowData.score}}
       </td>
-      <td  style="width: 70px">
+      <td style="width: 70px">
         {{rowData.age}}
       </td>
       <td>

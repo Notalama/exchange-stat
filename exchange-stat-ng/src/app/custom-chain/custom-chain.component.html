@@ -39,8 +39,7 @@
       </div>
     </div>
 
-    <div class="mt-3 mb-3">
-      <button type="submit" class="btn btn-primary col-md-12" [disabled]="!form.valid">Submit</button></div>
+      <button type="submit" class="btn btn-primary col-md-1 mt-3 mb-3" [disabled]="!form.valid">Submit</button>
   </form>
 
   <p-table [columns]="cols" [value]="chains" [(selection)]="subscribed" (onRowSelect)="pin($event)" rowIndex dataKey="{{rowIndex}}" [autoLayout]="true">  
