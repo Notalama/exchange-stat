@@ -81,25 +81,23 @@ export class MainComponent implements OnInit {
     if (this.subscribed.length > 1) {
       subscribeQuery = this.subscribed.reduce((acc, el, i) => {
         const elArr = el.chain.chainData;
-        if (i === 1) return acc.chain.chainData.reduce(this.subsChainReducer) + elArr.reduce(this.subsChainReducer);
+        if (i === 1) { return acc.chain.chainData.reduce(this.subsChainReducer) + elArr.reduce(this.subsChainReducer); }
         return acc + elArr.reduce(this.subsChainReducer);
       });
-    } else subscribeQuery = this.subscribed[0].chain.chainData.reduce(this.subsChainReducer);
-    subscribeQuery = subscribeQuery.substring(0, subscribeQuery.length - 1)
-    this._store.urlParamsSubject.next({ key: 'chainSubscriptions', value: subscribeQuery })
+    } else { subscribeQuery = this.subscribed[0].chain.chainData.reduce(this.subsChainReducer); }
+    subscribeQuery = subscribeQuery.substring(0, subscribeQuery.length - 1);
+    this._store.urlParamsSubject.next({ key: 'chainSubscriptions', value: subscribeQuery });
   }
 
   private subsChainReducer(rateAcc, rate, j, arr) {
     const ending = j < (arr.length - 1) ? ';' : 'n';
-    if (j === 1) return `${rateAcc.from},${rateAcc.to},${rateAcc.changer};${rate.from},${rate.to},${rate.changer + ending}`;
+    if (j === 1) { return `${rateAcc.from},${rateAcc.to},${rateAcc.changer};${rate.from},${rate.to},${rate.changer + ending}`; }
     return rateAcc + `${rate.from},${rate.to},${rate.changer + ending}`;
   }
-  
   openAllLinks(idx: number) {
-    console.log(idx)
+    console.log(idx);
     this._chainService.buildAllLinks(this.chains[idx].chain.chainData);
   }
-  
   // tslint:disable-next-line:use-lifecycle-interface
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.

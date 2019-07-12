@@ -4,16 +4,16 @@
     <div class="col md6">
       <label for="inCurr">Вхідна валюта</label>
       <select class="form-control" formControlName="inCurr" id="inCurr">
-        <option *ngFor="let currTitle of currTitles">
-          {{currTitle}}
+        <option *ngFor="let currency of currencies">
+          {{currency.currencyTitle}}
         </option>
       </select>
     </div>
     <div class="col md6">
       <label for="outCurr">Вихідна валюта</label>
       <select class="form-control" formControlName="outCurr" id="outCurr">
-        <option *ngFor="let currTitle of currTitles">
-          {{currTitle}}
+        <option *ngFor="let currency of currencies">
+          {{currency.currencyTitle}}}
         </option>
       </select>
     </div>
@@ -21,8 +21,8 @@
   <div class="mt-2">
     <label for="exchanger">Обмінник</label>
     <select class="form-control" formControlName="exchanger" id="exchanger">
-      <option *ngFor="let exchTitle of exchTitles">
-        {{exchTitle}}
+      <option *ngFor="let exchanger of exchangers">
+        {{exchanger.exchangerTitle}}
       </option>
     </select>
   </div>
