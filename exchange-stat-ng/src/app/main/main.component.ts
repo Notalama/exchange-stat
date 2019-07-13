@@ -2,6 +2,7 @@ import { ChainService } from './chain.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { StoreService } from '../store.service';
 import { Rate } from './models/rate';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-main',
@@ -16,6 +17,7 @@ export class MainComponent implements OnInit {
   interval: number;
   minInterval = 5;
   timer = 0;
+  subscription: Subscription;
   // tslint:disable-next-line:variable-name
   constructor(private _chainService: ChainService, private _store: StoreService) { }
 
@@ -28,7 +30,7 @@ export class MainComponent implements OnInit {
     // this.loadItems();
     this.reloadInterval();
     this._store.getChains();
-    this._store.chains.subscribe(res => {
+    this.subscription = this._store.chains.subscribe(res => {
       console.log(res);
       this.buildTable(res);
 
@@ -81,29 +83,25 @@ export class MainComponent implements OnInit {
     if (this.subscribed.length > 1) {
       subscribeQuery = this.subscribed.reduce((acc, el, i) => {
         const elArr = el.chain.chainData;
-        if (i === 1) return acc.chain.chainData.reduce(this.subsChainReducer) + elArr.reduce(this.subsChainReducer);
+        if (i === 1) { return acc.chain.chainData.reduce(this.subsChainReducer) + elArr.reduce(this.subsChainReducer); }
         return acc + elArr.reduce(this.subsChainReducer);
       });
-    } else subscribeQuery = this.subscribed[0].chain.chainData.reduce(this.subsChainReducer);
-    subscribeQuery = subscribeQuery.substring(0, subscribeQuery.length - 1)
-    this._store.urlParamsSubject.next({ key: 'chainSubscriptions', value: subscribeQuery })
+    } else { subscribeQuery = this.subscribed[0].chain.chainData.reduce(this.subsChainReducer); }
+    subscribeQuery = subscribeQuery.substring(0, subscribeQuery.length - 1);
+    this._store.urlParamsSubject.next({ key: 'chainSubscriptions', value: subscribeQuery });
   }
 
   private subsChainReducer(rateAcc, rate, j, arr) {
     const ending = j < (arr.length - 1) ? ';' : 'n';
-    if (j === 1) return `${rateAcc.from},${rateAcc.to},${rateAcc.changer};${rate.from},${rate.to},${rate.changer + ending}`;
+    if (j === 1) { return `${rateAcc.from},${rateAcc.to},${rateAcc.changer};${rate.from},${rate.to},${rate.changer + ending}`; }
     return rateAcc + `${rate.from},${rate.to},${rate.changer + ending}`;
   }
-  
   openAllLinks(idx: number) {
-    console.log(idx)
+    console.log(idx);
     this._chainService.buildAllLinks(this.chains[idx].chain.chainData);
   }
-  
-  // tslint:disable-next-line:use-lifecycle-interface
+
   ngOnDestroy(): void {
-    // Called once, before the instance is destroyed.
-    // Add 'implements OnDestroy' to the class.
-    this._store.chains.unsubscribe();
+    this.subscription.unsubscribe();
   }
 }

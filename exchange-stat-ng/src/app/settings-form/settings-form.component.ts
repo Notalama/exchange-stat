@@ -11,10 +11,6 @@ import { StoreService } from '../store.service';
 export class SettingsFormComponent implements OnInit {
   form: FormGroup;
   currencies = [];
-  currTitles = [];
-  exchIds = [];
-  exchTitles = [];
-  currIds = [];
   exchangers = [];
 
 
@@ -24,12 +20,6 @@ export class SettingsFormComponent implements OnInit {
       console.log(res);
       this.currencies = res;
       console.log(this.currencies);
-      // tslint:disable-next-line:prefer-for-of
-      for (let i = 0; i < this.currencies.length; i++) {
-        this.currTitles.push(this.currencies[i].currencyTitle);
-        this.currIds.push(this.currencies[i].currencyId);
-      }
-      console.log(this.currTitles);
     }, err => {
       console.log(err);
     });
@@ -37,12 +27,6 @@ export class SettingsFormComponent implements OnInit {
     this._store.exchangers.subscribe(res => {
       console.log(res);
       this.exchangers = res;
-      // tslint:disable-next-line:prefer-for-of
-      for (let i = 0; i < this.exchangers.length; i++) {
-        this.exchTitles.push(this.exchangers[i].exchangerTitle);
-        this.exchIds.push(this.exchangers[i].exchangerId);
-      }
-      console.log(this.currTitles);
     }, err => {
       console.log(err);
     });
