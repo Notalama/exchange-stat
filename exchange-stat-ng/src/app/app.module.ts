@@ -18,12 +18,6 @@ import { CalcRateSumPipe } from './main/chain-col/calc-rate-sum.pipe';
 import { BuildExmoLinkPipe } from './main/chain-col/build-exmo-link.pipe';
 import { SettingsFormComponent } from './settings-form/settings-form.component';
 import { CustomChainComponent } from './custom-chain/custom-chain.component';
-import { Routes, RouterModule } from '@angular/router';
-
-const appRoutes: Routes = [
-  { path: 'custom-chain', component: CustomChainComponent },
-  { path: 'main', component: MainComponent}
-];
 
 @NgModule({
   declarations: [
@@ -37,7 +31,6 @@ const appRoutes: Routes = [
     CustomChainComponent
   ],
   imports: [
-    RouterModule.forRoot(appRoutes),
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,

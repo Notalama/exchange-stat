@@ -13,6 +13,17 @@ export class CustomChainComponent implements OnInit {
   form: FormGroup;
   currencies = [];
 
+  // tslint:disable-next-line:variable-name
+  constructor(private _chainService: ChainService, private formBuilder: FormBuilder, private _store: StoreService) {
+    this.form = this.formBuilder.group({
+      firstStep: ['', Validators.required],
+      secondStep: ['', Validators.required],
+      thirdStep: ['', Validators.required],
+      minBalance: ['', Validators.required]
+    });
+
+  }
+
   ngOnInit() {
     this._store.getCurrencies();
     this._store.currencies.subscribe(res => {
@@ -28,20 +39,6 @@ export class CustomChainComponent implements OnInit {
       { field: 'age', header: 'Час с' },
       { field: 'links', header: '=>' }
     ];
-  }
-
-
-
-
-  // tslint:disable-next-line:variable-name
-  constructor(private _chainService: ChainService, private formBuilder: FormBuilder, private _store: StoreService) {
-    this.form = this.formBuilder.group({
-      firstStep: ['', Validators.required],
-      secondStep: ['', Validators.required],
-      thirdStep: ['', Validators.required],
-      minBalance: ['', Validators.required]
-    });
-
   }
 
   submit() {
