@@ -16,6 +16,7 @@ export class MainComponent implements OnInit {
   interval: number;
   minInterval = 5;
   timer = 0;
+  subscription: any;
   // tslint:disable-next-line:variable-name
   constructor(private _chainService: ChainService, private _store: StoreService) { }
 
@@ -28,7 +29,7 @@ export class MainComponent implements OnInit {
     // this.loadItems();
     this.reloadInterval();
     this._store.getChains();
-    this._store.chains.subscribe(res => {
+    this.subscription = this._store.chains.subscribe(res => {
       console.log(res);
       this.buildTable(res);
 
@@ -102,6 +103,6 @@ export class MainComponent implements OnInit {
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.
     // Add 'implements OnDestroy' to the class.
-    this._store.chains.unsubscribe();
+    this.subscription.unsubscribe();
   }
 }
