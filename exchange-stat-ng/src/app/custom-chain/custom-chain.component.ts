@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { StoreService } from '../store.service';
 import { Subscription } from 'rxjs';
+import { ChainService } from '../main/chain.service';
 
 @Component({
   selector: 'app-custom-chain',
@@ -12,12 +13,14 @@ export class CustomChainComponent implements OnInit {
   cols: any[];
   form: FormGroup;
   currencies = [];
-  subscription: Subscription;
+  currSubscription: Subscription;
+  chainSubscription: Subscription;
+  chains = [];
   // tslint:disable-next-line:variable-name
-  constructor(private formBuilder: FormBuilder, private _store: StoreService) {
+  constructor(private _chainService: ChainService, private formBuilder: FormBuilder, private _store: StoreService) {
     this.form = this.formBuilder.group({
       firstStep: ['', Validators.required],
-      secondStep: [''],
+      secondStep: [null],
       thirdStep: [''],
       minBalance: ['', Validators.required]
     });
@@ -25,11 +28,13 @@ export class CustomChainComponent implements OnInit {
 
   ngOnInit() {
     this._store.getCurrencies();
-    this.subscription = this._store.currencies.subscribe(res => {
+    this.currSubscription = this._store.currencies.subscribe(res => {
       console.log(res);
       this.currencies = res;
-    }, err => {
-      console.log(err);
+    }, err => console.log(err));
+    this.chainSubscription = this._store.customChain.subscribe(res => {
+      const { chain, otherRates } = res;
+      this.buildTable(chain, otherRates);
     });
     this.cols = [
       { field: 'gain', header: 'Max Profit' },
@@ -40,13 +45,31 @@ export class CustomChainComponent implements OnInit {
     ];
   }
 
+  buildTable(data: any[], otherRates?: any[]) {
+
+    this.chains = data.sort((a, b) => a.length - b.length).map((chainData, i) => {
+      const [dollarRate, profit, isSubs] = chainData.splice(chainData.length - 3, 3);
+      const generatedId = this._chainService.generateId(chainData);
+      return {
+        gain: this._chainService.calcChainProfit(chainData, profit),
+        chain: {chainData, dollarRate, otherRates},
+        score: `${profit.toFixed(2)} %`,
+        age: this.chains.length ?
+          this._chainService.getAgeOfChain(generatedId, this.chains) : 0,
+        options: ' ',
+        links: null,
+        id: generatedId
+      };
+    });
+  }
+
   submit() {
     const { firstStep, secondStep, thirdStep, minBalance } = this.form.value;
     const chain = [firstStep, secondStep, thirdStep];
     if (!chain[2]) chain.pop();
     const query = {
-      chain,
-      amount: minBalance,
+      chain: ["120", "121", "142"],
+      amount: minBalance || '',
       isGoldMiddle: !secondStep
     };
     console.log(query);
@@ -54,7 +77,8 @@ export class CustomChainComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.currSubscription.unsubscribe();
+    this.chainSubscription.unsubscribe();
   }
 }
 

@@ -21,7 +21,7 @@ export class StoreService {
   chains: Subject<any[]>;
   exchangers: Subject<any[]>;
   currencies: Subject<any[]>;
-  customChain: Subject<any[]>;
+  customChain: Subject<{ chain: any[], otherRates: any[] }>;
   _urlParamsSubject: Subject<any>;
   // customChainParamsSubject: Subject<CustomChainConfig>;
   // url = `http://localhost:9000/best-change?minBalance=0&minProfit=-1&showExmo=false&ltThreeLinks=false&chainSubscriptions=${this._urlParams.chainSubscriptions}`;
@@ -88,7 +88,7 @@ export class StoreService {
   }
 
   getCustomChain(config: CustomChainConfig) {
-    return this.http.post(this.customChainURL, config).toPromise().then((res: any[]) => {
+    return this.http.post(this.customChainURL, config).toPromise().then((res: { chain: any[], otherRates: any[] }) => {
       this.customChain.next(res);
     });
   }
