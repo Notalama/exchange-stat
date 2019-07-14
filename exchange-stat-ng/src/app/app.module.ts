@@ -19,6 +19,7 @@ import { BuildExmoLinkPipe } from './main/chain-col/build-exmo-link.pipe';
 import { SettingsFormComponent } from './settings-form/settings-form.component';
 import { CustomChainComponent } from './custom-chain/custom-chain.component';
 import { ChainSettingsComponent } from './chain-settings/chain-settings.component';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { ChainSettingsComponent } from './chain-settings/chain-settings.componen
     CheckboxModule,
     TableModule,
     ReactiveFormsModule,
-    ButtonModule
+    ButtonModule,
+    RadioButtonModule
   ],
   providers: [StoreService, AuthGuard, AuthGuardService],
   bootstrap: [AppComponent]

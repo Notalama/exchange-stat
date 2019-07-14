@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { UrlParams } from './main/models/url-params';
 import { CustomChainConfig } from './main/models/customChainConfig';
+import { Rate } from './main/models/rate';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,7 @@ export class StoreService {
   currencies: Subject<any[]>;
   customChain: Subject<{ chain: any[], otherRates: any[] }>;
   _urlParamsSubject: Subject<any>;
+  _chainSettingsSubject: Subject<Rate[]>;
   // customChainParamsSubject: Subject<CustomChainConfig>;
   // url = `http://localhost:9000/best-change?minBalance=0&minProfit=-1&showExmo=false&ltThreeLinks=false&chainSubscriptions=${this._urlParams.chainSubscriptions}`;
   url = 'assets/rates_1.json';
@@ -40,6 +42,7 @@ export class StoreService {
       if (!key) return;
       this.urlParams[key] = value;
     });
+    this._chainSettingsSubject = new Subject();
   }
 
   getChains() {

@@ -101,6 +101,11 @@ export class MainComponent implements OnInit {
     this._chainService.buildAllLinks(this.chains[idx].chain.chainData);
   }
 
+  onChainSetClick(chain: Rate[]) {
+    console.log(chain);
+    this._store._chainSettingsSubject.next(chain);
+  }
+
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
