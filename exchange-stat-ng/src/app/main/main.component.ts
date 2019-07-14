@@ -88,7 +88,7 @@ export class MainComponent implements OnInit {
       });
     } else { subscribeQuery = this.subscribed[0].chain.chainData.reduce(this.subsChainReducer); }
     subscribeQuery = subscribeQuery.substring(0, subscribeQuery.length - 1);
-    this._store.urlParamsSubject.next({ key: 'chainSubscriptions', value: subscribeQuery });
+    this._store._urlParamsSubject.next({ key: 'chainSubscriptions', value: subscribeQuery });
   }
 
   private subsChainReducer(rateAcc, rate, j, arr) {

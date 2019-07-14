@@ -1,0 +1,216 @@
+{
+  "otherRates": [
+    [{
+      "give": "1",
+      "receive": "69.0001",
+      "from": "120",
+      "to": "121",
+      "amount": "736.67",
+      "dollarAmount": 11.748192159187969,
+      "exch": {
+        "exchangerId": "878",
+        "exchangerTitle": "CryptoBank24"
+      }
+    }, {
+      "give": "1",
+      "receive": "69.0001",
+      "from": "120",
+      "to": "121",
+      "amount": "3718.15",
+      "dollarAmount": 59.29594075594873,
+      "exch": {
+        "exchangerId": "251",
+        "exchangerTitle": "24Obmin"
+      }
+    }, {
+      "give": "1",
+      "receive": "69",
+      "from": "120",
+      "to": "121",
+      "amount": "1008181.08",
+      "dollarAmount": 16078.169409773247,
+      "exch": {
+        "exchangerId": "474",
+        "exchangerTitle": "SuperChangeNet"
+      }
+    }, {
+      "give": "1",
+      "receive": "68.99",
+      "from": "120",
+      "to": "121",
+      "amount": "23660.36",
+      "dollarAmount": 377.3283231780372,
+      "exch": {
+        "exchangerId": "664",
+        "exchangerTitle": "TierraPay"
+      }
+    }, {
+      "give": "1",
+      "receive": "68.9521",
+      "from": "120",
+      "to": "121",
+      "amount": "390",
+      "dollarAmount": 6.219603000099513,
+      "exch": {
+        "exchangerId": "204",
+        "exchangerTitle": "ChangeAm"
+      }
+    }],
+    [{
+      "give": "64.4944",
+      "receive": "1",
+      "from": "121",
+      "to": "88",
+      "amount": "913.6",
+      "dollarAmount": 924.505396528,
+      "exch": {
+        "exchangerId": "467",
+        "exchangerTitle": "GoodObmen"
+      }
+    }, {
+      "give": "64.4949",
+      "receive": "1",
+      "from": "121",
+      "to": "88",
+      "amount": "112.84",
+      "dollarAmount": 114.1869406132,
+      "exch": {
+        "exchangerId": "644",
+        "exchangerTitle": "UniEx"
+      }
+    }, {
+      "give": "64.49507736",
+      "receive": "1",
+      "from": "121",
+      "to": "88",
+      "amount": "1984.71",
+      "dollarAmount": 2008.4009473982999,
+      "exch": {
+        "exchangerId": "718",
+        "exchangerTitle": "Platov"
+      }
+    }, {
+      "give": "64.49532409",
+      "receive": "1",
+      "from": "121",
+      "to": "88",
+      "amount": "76.84",
+      "dollarAmount": 77.7572183332,
+      "exch": {
+        "exchangerId": "218",
+        "exchangerTitle": "A-Exchange"
+      }
+    }, {
+      "give": "64.4995",
+      "receive": "1",
+      "from": "121",
+      "to": "88",
+      "amount": "57.55",
+      "dollarAmount": 58.236958811499996,
+      "exch": {
+        "exchangerId": "723",
+        "exchangerTitle": "BitObmen"
+      }
+    }],
+    [{
+      "give": "1.1199",
+      "receive": "1",
+      "from": "88",
+      "to": "120",
+      "amount": "2725.76",
+      "dollarAmount": 3050.9431680000002,
+      "exch": {
+        "exchangerId": "644",
+        "exchangerTitle": "UniEx"
+      }
+    }, {
+      "give": "1.12",
+      "receive": "1",
+      "from": "88",
+      "to": "120",
+      "amount": "1195",
+      "dollarAmount": 1337.5635,
+      "exch": {
+        "exchangerId": "664",
+        "exchangerTitle": "TierraPay"
+      }
+    }, {
+      "give": "1.12",
+      "receive": "1",
+      "from": "88",
+      "to": "120",
+      "amount": "2774.52",
+      "dollarAmount": 3105.520236,
+      "exch": {
+        "exchangerId": "805",
+        "exchangerTitle": "BTCstaff"
+      }
+    }, {
+      "give": "1.12542714",
+      "receive": "1",
+      "from": "88",
+      "to": "120",
+      "amount": "8.68",
+      "dollarAmount": 9.715523999999998,
+      "exch": {
+        "exchangerId": "443",
+        "exchangerTitle": "ОбменОМ"
+      }
+    }, {
+      "give": "1.12701452",
+      "receive": "1",
+      "from": "88",
+      "to": "120",
+      "amount": "24.07",
+      "dollarAmount": 26.941551,
+      "exch": {
+        "exchangerId": "208",
+        "exchangerTitle": "Обмен.cc"
+      }
+    }]
+  ],
+  "chain": [
+    [{
+        "from": "120",
+        "fromTitle": "Advanced Cash EUR",
+        "to": "121",
+        "toTitle": "Advanced Cash RUB",
+        "changer": "565",
+        "changerTitle": "Transfer24",
+        "give": 1,
+        "receive": 69.00126709999999,
+        "amount": {
+          "amount": 103991.46,
+          "dollarAmount": 1658.4246066685346
+        }
+      }, {
+        "from": "121",
+        "fromTitle": "Advanced Cash RUB",
+        "to": "88",
+        "toTitle": "Advanced Cash USD",
+        "changer": "808",
+        "changerTitle": "ChangeCoins",
+        "give": 63.958,
+        "receive": 1,
+        "amount": {
+          "amount": 6.21,
+          "dollarAmount": 6.2841270932999995
+        }
+      }, {
+        "from": "88",
+        "fromTitle": "Advanced Cash USD",
+        "to": "120",
+        "toTitle": "Advanced Cash EUR",
+        "changer": "608",
+        "changerTitle": "GeeExchange",
+        "give": 1.11989989,
+        "receive": 1,
+        "amount": {
+          "amount": 10504.23,
+          "dollarAmount": 11757.384639
+        }
+      },
+      ["40", "120", "443", 1.1253989999999998, "1", "8.68"], -3.6652467583863757, false
+    ]
+  ]
+}

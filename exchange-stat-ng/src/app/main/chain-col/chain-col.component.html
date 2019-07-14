@@ -1,7 +1,13 @@
-<p *ngFor="let rate of chain; let i = index">
+<div *ngFor="let rate of chain; let i = index">
     <app-chain-rate [rate]="rate" [firstItem]="i + 1 === chain?.length ? chain[0] : null"></app-chain-rate>
+    <br/>
+    <ul *ngIf="!!otherRates">
+        <li *ngFor="let oRate of otherRates[i]; let j = index">
+            <app-chain-rate [rate]="oRate" [firstItem]="j + 1 === otherRates[i]?.length ? otherRates[i][0] : null" [isOtherRate]="true"></app-chain-rate>
+        </li>
+    </ul>
     <br/>
     <b *ngIf="(i + 1 === chain?.length)">
         <span style="color: green"><i class="fas fa-arrow-right"></i>{{chain[chain.length - 1]?.calcSum}} {{chain[0].fromTitle}}</span>
     </b>
-</p>
+</div>

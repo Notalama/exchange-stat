@@ -20,6 +20,7 @@ export class ChainService {
   }
 
   getChainCol(chain: any[], dollarRate: any[], otherRates: any[]) {
+    console.log(chain);
     const rates = chain.length;
     const sum = dollarRate ? this.calcRate(+dollarRate[3], +dollarRate[4], 1000) : 1;
     const calcFirst = this.calcRate(+chain[0].give, +chain[0].receive, +sum);
