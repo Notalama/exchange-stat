@@ -59,7 +59,6 @@ export class StoreService {
 
   getCurrencies() {
     return this.http.get(this.currURL).toPromise().then((res: any[]) => {
-      console.log(res);
       setTimeout(() => {
         this.currencies.next(res);
       }, 1000);
@@ -74,7 +73,6 @@ export class StoreService {
 
   getExchangers() {
     return this.http.get(this.exchURL).toPromise().then((res: any[]) => {
-      console.log(res);
       setTimeout(() => {
         this.exchangers.next(res);
       }, 1000);

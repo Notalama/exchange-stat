@@ -46,7 +46,7 @@
   <p-table [columns]="cols" [value]="chains" rowIndex dataKey="{{rowIndex}}" [autoLayout]="true">  
       <ng-template pTemplate="header" let-columns let-rowData>
         <tr>
-          <th *ngFor="let col of columns" [style.width.px]="col.field === 'chain' ? '800' : ''"  [pSortableColumn]="col.field">
+          <th *ngFor="let col of columns" [style.width.px]="col.field === 'chain' ? '800' : ''" [pSortableColumn]="col.field">
             {{col.header}}
             <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
           </th>
@@ -58,16 +58,13 @@
             {{rowData.gain}}
           </td>
           <td>
-            <app-chain-col [chain]="rowData?.chain.chainData" [dollarRate]="rowData?.chain.dollarRate" [otherRates]="rowData?.otherRates"></app-chain-col>
+            <app-chain-col [chain]="rowData?.chain.chainData" [dollarRate]="rowData?.chain.dollarRate" [otherRates]="rowData?.chain.otherRates"></app-chain-col>
           </td>
           <td style="width: 80px">
             {{rowData.score}}
           </td>
           <td  style="width: 70px">
             {{rowData.age}}
-          </td>
-          <td>
-            {{rowData.options}}
           </td>
           <td>
             {{rowData.links}}
