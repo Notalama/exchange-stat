@@ -19,7 +19,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <app-settings-form></app-settings-form>
+        <app-settings-form ></app-settings-form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -63,7 +63,8 @@
         {{rowData.age}}
       </td>
       <td>
-        {{rowData.options}}
+        <!-- {{rowData.options}} -->
+        <a [routerLink]="['/chain-settings']"><button type="button" class="btn btn-primary">Set</button></a>
       </td>
       <td>
         <!-- {{rowData.links}} -->

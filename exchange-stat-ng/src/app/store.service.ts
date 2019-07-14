@@ -90,8 +90,4 @@ export class StoreService {
       this.customChain.next(res);
     });
   }
-
-  // setCustomChainConfig(config: CustomChainConfig) {
-  //   this.customChainParams = config;
-  // }
 }

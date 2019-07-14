@@ -18,6 +18,7 @@ import { CalcRateSumPipe } from './main/chain-col/calc-rate-sum.pipe';
 import { BuildExmoLinkPipe } from './main/chain-col/build-exmo-link.pipe';
 import { SettingsFormComponent } from './settings-form/settings-form.component';
 import { CustomChainComponent } from './custom-chain/custom-chain.component';
+import { ChainSettingsComponent } from './chain-settings/chain-settings.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { CustomChainComponent } from './custom-chain/custom-chain.component';
     CalcRateSumPipe,
     BuildExmoLinkPipe,
     SettingsFormComponent,
-    CustomChainComponent
+    CustomChainComponent,
+    ChainSettingsComponent
   ],
   imports: [
     BrowserModule,
