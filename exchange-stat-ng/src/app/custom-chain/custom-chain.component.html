@@ -7,7 +7,7 @@
         <label for="firstStep">Перший крок</label>
         <select class="form-control" formControlName="firstStep" id="firstStep">
           <option value="" disabled selected>Select currency</option>
-          <option *ngFor="let curr of currencies">
+          <option *ngFor="let curr of currencies" [value]="curr.currencyId">
             {{curr.currencyTitle}}
           </option>
         </select>
@@ -15,8 +15,8 @@
       <div class="col-lg">
         <label for="secondStep">Другий крок</label>
         <select class="form-control" formControlName="secondStep" id="secondStep">
-          <option value="" disabled selected>Select currency</option>
-          <option *ngFor="let curr of currencies">
+          <option value="" selected>Select currency</option>
+          <option *ngFor="let curr of currencies" [value]="curr.currencyId">
             {{curr.currencyTitle}}
           </option>
         </select>
@@ -24,8 +24,8 @@
       <div class="col-lg">
         <label for="thirdStep">Третій крок</label>
         <select class="form-control" formControlName="thirdStep" id="thirdStep">
-          <option value="" disabled selected>Select currency</option>
-          <option *ngFor="let curr of currencies">
+          <option value="" selected>Select currency</option>
+          <option *ngFor="let curr of currencies" [value]="curr.currencyId">
             {{curr.currencyTitle}}
           </option>
         </select>

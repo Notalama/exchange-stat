@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { UrlParams } from './main/models/url-params';
+import { CustomChainConfig } from './main/models/customChainConfig';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StoreService {
 
-  private _urlParams = {
+  private urlParams = {
     minBalance: 0,
     minProfit: -1,
     showExmo: false,
@@ -16,27 +17,32 @@ export class StoreService {
     chainSubscriptions: '',
     exmoOrdersCount: 0
   };
+
   chains: Subject<any[]>;
   exchangers: Subject<any[]>;
   currencies: Subject<any[]>;
-  urlParamsSubject: Subject<any>;
+  customChain: Subject<any[]>;
+  _urlParamsSubject: Subject<any>;
+  // customChainParamsSubject: Subject<CustomChainConfig>;
   // url = `http://localhost:9000/best-change?minBalance=0&minProfit=-1&showExmo=false&ltThreeLinks=false&chainSubscriptions=${this._urlParams.chainSubscriptions}`;
   url = 'assets/rates_1.json';
-  currURL = 'http://localhost:9000/currencies';
-  exchURL = 'http://localhost:9000/exchangers';
+  private currURL = 'http://localhost:9000/currencies';
+  private exchURL = 'http://localhost:9000/exchangers';
+  private customChainURL = 'http://localhost:9000/custom-chain';
+
   constructor(private http: HttpClient) {
     this.chains = new Subject();
     this.currencies = new Subject();
     this.exchangers = new Subject();
-    this.urlParamsSubject = new Subject();
-    this.urlParamsSubject.subscribe(({ key, value }) => {
+    this.customChain = new Subject();
+    this._urlParamsSubject = new Subject();
+    this._urlParamsSubject.subscribe(({ key, value }) => {
       if (!key) return;
-      this._urlParams[key] = value;
+      this.urlParams[key] = value;
     });
   }
 
   getChains() {
-
     return this.http.get(this.url).toPromise().then((res: any[]) => {
       console.log(res);
       setTimeout(() => {
@@ -48,16 +54,10 @@ export class StoreService {
     }, err => {
       console.log(err);
       this.getChains();
-    }).catch(reason => {
-      console.log(reason);
-    }).finally(() => {
-      console.log('fina;');
     });
-
   }
 
   getCurrencies() {
-
     return this.http.get(this.currURL).toPromise().then((res: any[]) => {
       console.log(res);
       setTimeout(() => {
@@ -69,15 +69,10 @@ export class StoreService {
     }, err => {
       console.log(err);
       this.getCurrencies();
-    }).catch(reason => {
-      console.log(reason);
-    }).finally(() => {
-      console.log('final');
     });
   }
 
   getExchangers() {
-
     return this.http.get(this.exchURL).toPromise().then((res: any[]) => {
       console.log(res);
       setTimeout(() => {
@@ -89,10 +84,16 @@ export class StoreService {
     }, err => {
       console.log(err);
       this.getExchangers();
-    }).catch(reason => {
-      console.log(reason);
-    }).finally(() => {
-      console.log('final');
     });
   }
+
+  getCustomChain(config: CustomChainConfig) {
+    return this.http.post(this.customChainURL, config).toPromise().then((res: any[]) => {
+      this.customChain.next(res);
+    });
+  }
+
+  // setCustomChainConfig(config: CustomChainConfig) {
+  //   this.customChainParams = config;
+  // }
 }

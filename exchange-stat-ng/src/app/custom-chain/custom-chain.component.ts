@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { StoreService } from '../store.service';
-import { ChainService } from '../main/chain.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-custom-chain',
@@ -12,21 +12,20 @@ export class CustomChainComponent implements OnInit {
   cols: any[];
   form: FormGroup;
   currencies = [];
-
+  subscription: Subscription;
   // tslint:disable-next-line:variable-name
-  constructor(private _chainService: ChainService, private formBuilder: FormBuilder, private _store: StoreService) {
+  constructor(private formBuilder: FormBuilder, private _store: StoreService) {
     this.form = this.formBuilder.group({
       firstStep: ['', Validators.required],
-      secondStep: ['', Validators.required],
-      thirdStep: ['', Validators.required],
+      secondStep: [''],
+      thirdStep: [''],
       minBalance: ['', Validators.required]
     });
-
   }
 
   ngOnInit() {
     this._store.getCurrencies();
-    this._store.currencies.subscribe(res => {
+    this.subscription = this._store.currencies.subscribe(res => {
       console.log(res);
       this.currencies = res;
     }, err => {
@@ -42,7 +41,20 @@ export class CustomChainComponent implements OnInit {
   }
 
   submit() {
-    console.log('its working');
+    const { firstStep, secondStep, thirdStep, minBalance } = this.form.value;
+    const chain = [firstStep, secondStep, thirdStep];
+    if (!chain[2]) chain.pop();
+    const query = {
+      chain,
+      amount: minBalance,
+      isGoldMiddle: !secondStep
+    };
+    console.log(query);
+    this._store.getCustomChain(query);
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 }
 
