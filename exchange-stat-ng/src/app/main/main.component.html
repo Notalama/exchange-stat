@@ -1,10 +1,25 @@
-<div class="header mb-3">
-  <h3>Пройшло {{this.timer}} секунд</h3>
-  <button type="button" class="btn btn-primary" (click)="reload()">Refresh</button>
-  <a class="btn btn-primary float-right ml-2" routerLink="/custom-chain">CustomChain</a>
-  <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#settingsModal">
-    Settings
-  </button>
+<div class="container mt-2">
+  <div class="row">
+    <div class="col-md-2 mt-2">
+      <h6>Пройшло {{this.timer}} секунд</h6>
+      <div class="mt-3">
+          <h6>Інтервал {{this.interval / 1000}} с</h6></div>
+    </div>
+    <div class="col-md-1">
+      <button type="button" class="btn btn-primary" data-toggle="modal" (click)="updateInterval(1000)">+</button>
+      <button type="button" class="btn btn-primary pr-3 text-center mt-1" data-toggle="modal" (click)="updateInterval(-1000)">-</button>
+    </div>
+    <div class="col-md-7">
+      <app-header></app-header>
+    </div>
+    <div class="col-md-2">
+      <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#settingsModal">Settings</button>
+      <a routerLink="/custom-chain" class="float-right mt-1">CustomChain <i class="pi pi-arrow-right"></i></a>
+    </div>
+    <div class="col-md-12 text-center mb-2">
+      <button type="button" class="btn btn-primary" (click)="reload()">Refresh</button>
+    </div>
+  </div>
 </div>
 
 <!-- Modal -->
