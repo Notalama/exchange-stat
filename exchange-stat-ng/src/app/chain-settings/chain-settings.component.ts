@@ -14,29 +14,35 @@ export class ChainSettingsComponent implements OnInit {
 
   blockValue: string;
   form: FormGroup;
+  chain: Rate[];
   constructor(private _store: StoreService, private formBuilder: FormBuilder, private _SettingsService: SettingsService) { }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      blockValue: [null, Validators.required],
-      days: [0, Validators.required],
-      hours: [0, Validators.required],
-      mins: [0, Validators.required]
+      hideCurr: [''],
+      hideChanger: [''],
+      hideAllCurrFrom: [''],
+      hideAllCurrTo: [''],
+      hideAllChangers: [''],
+      hideRate: [null],
+      hideAllRates: [null],
+      days: [0],
+      hours: [0],
+      mins: [0]
     });
     this._store._chainSettingsSubject.subscribe((chain: Rate[]) => {
+      this.chain = chain;
       console.log(chain);
     });
   }
 
   submit() {
-    console.log(this.form.value);
-    this._SettingsService.subminSettings(this.form.value).toPromise().then(response => {
+    this._SettingsService.submitSettings(this.form.value).toPromise().then(response => {
       // eslint-disable-next-line
       console.log(response)
-      // if (response.status === 200) {
-      //   this.resetForm()
-      //   // this.$emit('hideform', false)
-      // }
-    });
+    }, err => {
+      // eslint-disable-next-line
+      console.log(err);
+    })
   }
 }
