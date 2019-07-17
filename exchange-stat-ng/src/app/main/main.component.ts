@@ -15,7 +15,7 @@ export class MainComponent implements OnInit {
   subscribed = [];
   currentDataArr: any[];
   interval: number;
-  minInterval = 5;
+  minInterval = 6000;
   timer = 0;
   subscription: Subscription;
   // tslint:disable-next-line:variable-name
