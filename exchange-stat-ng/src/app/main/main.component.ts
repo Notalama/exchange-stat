@@ -23,11 +23,12 @@ export class MainComponent implements OnInit {
 
   ngOnInit() {
     console.log(document.getElementById('a'));
+    this.interval = 10000;
     setInterval(() => {
       this.timer++;
       this.chains.forEach(el => el.age++);
     }, 997);
-    // this.loadItems();
+    // this.reload();
     this.reloadInterval();
     this._store.getChains();
     this.subscription = this._store.chains.subscribe(res => {
@@ -72,7 +73,7 @@ export class MainComponent implements OnInit {
     if (interval >= 0 || this.interval >= this.minInterval) { this.interval += interval; }
   }
   reloadInterval() {
-    // this.loadItems();
+    this.reload();
     setTimeout(() => {
       this.reloadInterval();
     }, this.interval);
