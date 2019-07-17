@@ -2,6 +2,7 @@ import { ChainService } from './chain.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { StoreService } from '../store.service';
 import { Rate } from './models/rate';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-main',
@@ -16,7 +17,7 @@ export class MainComponent implements OnInit {
   interval: number;
   minInterval = 5;
   timer = 0;
-  subscription: any;
+  subscription: Subscription;
   // tslint:disable-next-line:variable-name
   constructor(private _chainService: ChainService, private _store: StoreService) { }
 
@@ -88,7 +89,7 @@ export class MainComponent implements OnInit {
       });
     } else { subscribeQuery = this.subscribed[0].chain.chainData.reduce(this.subsChainReducer); }
     subscribeQuery = subscribeQuery.substring(0, subscribeQuery.length - 1);
-    this._store.urlParamsSubject.next({ key: 'chainSubscriptions', value: subscribeQuery });
+    this._store._urlParamsSubject.next({ key: 'chainSubscriptions', value: subscribeQuery });
   }
 
   private subsChainReducer(rateAcc, rate, j, arr) {
@@ -100,10 +101,8 @@ export class MainComponent implements OnInit {
     console.log(idx);
     this._chainService.buildAllLinks(this.chains[idx].chain.chainData);
   }
-  // tslint:disable-next-line:use-lifecycle-interface
+
   ngOnDestroy(): void {
-    // Called once, before the instance is destroyed.
-    // Add 'implements OnDestroy' to the class.
     this.subscription.unsubscribe();
   }
 }
