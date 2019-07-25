@@ -3,8 +3,8 @@
   <div class="container mb-2">
     <div class="row text-center">
       <div class="col-sm-2">
-        <label for="orders">Ордери...</label>
-        <input type="number" class="form-control" formControlName="orders" id="orders">
+        <label for="exmoOrdersCount">Ордери...</label>
+        <input type="number" class="form-control" formControlName="exmoOrdersCount" id="orders">
       </div>
       <div class="col-sm-3">
         <label for="minBalance">Min Balance</label>
@@ -15,17 +15,17 @@
         <input type="number" class="form-control" formControlName="minProfit" id="minProfit">
       </div>
       <div class="col-sm-2">
-        <label for="search">Search</label>
-        <input type="text" class="form-control" formControlName="search" id="search">
+        <!-- <label for="search">Search</label>
+        <input type="text" class="form-control" [(ngModel)]="search" id="search"> -->
       </div>
       <div class="col-md-2 mt-3">
         <div class="form-check">
-          <input class="form-check-input" formControlName="exmo" type="checkbox" id="gridCheck">
+          <input class="form-check-input" formControlName="showExmo" type="checkbox" id="gridCheck">
           <label class="form-check-label" for="gridCheck">Exmo</label>
         </div>
         <div class="form-check float-right mt-2">
-          <input class="form-check-input" formControlName="fourSteps" type="checkbox" id="gridCheck">
-          <label class="form-check-label" for="gridCheck">4Кроки</label>
+          <input class="form-check-input" formControlName="ltThreeLinks" type="checkbox" id="gridCheck">
+          <label class="form-check-label" for="gridCheck">4 Кроки</label>
         </div>
       </div>
     </div>

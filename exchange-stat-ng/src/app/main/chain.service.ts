@@ -104,7 +104,6 @@ export class ChainService {
   }
 
   getAgeOfChain(chainId: string, currentDataArr: Rate[]): number {
-    console.log(currentDataArr);
     const pos = currentDataArr.find(el => el.id === chainId);
     if (pos) { return pos.age || 0;
      } else { return 0; }

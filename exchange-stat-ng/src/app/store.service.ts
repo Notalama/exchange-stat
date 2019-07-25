@@ -9,7 +9,7 @@ import { CustomChainConfig } from './main/models/customChainConfig';
 })
 export class StoreService {
 
-  private urlParams = {
+  private urlParams: UrlParams = {
     minBalance: 0,
     minProfit: -1,
     showExmo: false,
@@ -22,10 +22,9 @@ export class StoreService {
   exchangers: Subject<any[]>;
   currencies: Subject<any[]>;
   customChain: Subject<{ chain: any[], otherRates: any[] }>;
-  _urlParamsSubject: Subject<any>;
-  // customChainParamsSubject: Subject<CustomChainConfig>;
-  // url = `http://localhost:9000/best-change?minBalance=0&minProfit=-1&showExmo=false&ltThreeLinks=false&chainSubscriptions=${this._urlParams.chainSubscriptions}`;
-  url = 'assets/rates_1.json';
+
+  chainsUrl = `http://localhost:9000/best-change?minBalance=${this.urlParams.minBalance}&minProfit=${this.urlParams.minProfit}&showExmo=${this.urlParams.minProfit}&ltThreeLinks=${this.urlParams.ltThreeLinks}&${this.urlParams.exmoOrdersCount}&chainSubscriptions=${this.urlParams.chainSubscriptions}`;
+  // url = 'assets/rates_1.json';
   private currURL = 'http://localhost:9000/currencies';
   private exchURL = 'http://localhost:9000/exchangers';
   private customChainURL = 'http://localhost:9000/custom-chain';
@@ -35,22 +34,11 @@ export class StoreService {
     this.currencies = new Subject();
     this.exchangers = new Subject();
     this.customChain = new Subject();
-    this._urlParamsSubject = new Subject();
-    this._urlParamsSubject.subscribe(({ key, value }) => {
-      if (!key) return;
-      this.urlParams[key] = value;
-    });
   }
 
   getChains() {
-    return this.http.get(this.url).toPromise().then((res: any[]) => {
-      console.log(res);
-      setTimeout(() => {
-        this.chains.next(res);
-      }, 1000);
-      setTimeout(() => {
-        this.getChains();
-      }, 1000000);
+    return this.http.get(this.chainsUrl).toPromise().then((res: any[]) => {
+      this.chains.next(res);
     }, err => {
       console.log(err);
       this.getChains();
@@ -91,6 +79,11 @@ export class StoreService {
     });
   }
 
+  set _urlParams (value: UrlParams) {
+    Object.keys(value).forEach(key => {
+      this.urlParams[key] = value[key];
+    });
+  }
   // setCustomChainConfig(config: CustomChainConfig) {
   //   this.customChainParams = config;
   // }

@@ -13,6 +13,7 @@ export class MainComponent implements OnInit {
   cols: any[];
   chains = [];
   subscribed = [];
+  subscribedIds = [];
   currentDataArr: any[];
   interval: number;
   minInterval = 6000;
@@ -22,8 +23,7 @@ export class MainComponent implements OnInit {
   constructor(private _chainService: ChainService, private _store: StoreService) { }
 
   ngOnInit() {
-    console.log(document.getElementById('a'));
-    this.interval = 10000;
+    this.interval = 100009999999;
     setInterval(() => {
       this.timer++;
       this.chains.forEach(el => el.age++);
@@ -32,9 +32,7 @@ export class MainComponent implements OnInit {
     this.reloadInterval();
     this._store.getChains();
     this.subscription = this._store.chains.subscribe(res => {
-      console.log(res);
       this.buildTable(res);
-
     }, err => {
       console.log(err);
     });
@@ -53,7 +51,9 @@ export class MainComponent implements OnInit {
     this.chains = data.sort((a, b) => a.length - b.length).map((chainData, i) => {
       const [dollarRate, profit, isSubs] = chainData.splice(chainData.length - 3, 3);
       const generatedId = this._chainService.generateId(chainData);
-      return {
+      const isSubcriber = this.subscribedIds.some(id => id === generatedId);
+      
+      const tableRowObject = {
         gain: this._chainService.calcChainProfit(chainData, profit),
         chain: {chainData, dollarRate},
         score: `${profit.toFixed(2)} %`,
@@ -63,6 +63,8 @@ export class MainComponent implements OnInit {
         links: null,
         id: generatedId
       };
+      if (isSubcriber) this.subscribed.push(tableRowObject);
+      return tableRowObject;
     });
   }
   reload() {
@@ -80,16 +82,19 @@ export class MainComponent implements OnInit {
   }
 
   pin(e): void {
-    let subscribeQuery;
+    let chainSubscriptions;
+    this.subscribedIds = this.subscribed.map(chainRow => this._chainService.generateId(chainRow.chain.chainData));
+    console.log(this.subscribedIds);
     if (this.subscribed.length > 1) {
-      subscribeQuery = this.subscribed.reduce((acc, el, i) => {
+      chainSubscriptions = this.subscribed.reduce((acc, el, i) => {
         const elArr = el.chain.chainData;
         if (i === 1) { return acc.chain.chainData.reduce(this.subsChainReducer) + elArr.reduce(this.subsChainReducer); }
         return acc + elArr.reduce(this.subsChainReducer);
       });
-    } else { subscribeQuery = this.subscribed[0].chain.chainData.reduce(this.subsChainReducer); }
-    subscribeQuery = subscribeQuery.substring(0, subscribeQuery.length - 1);
-    this._store._urlParamsSubject.next({ key: 'chainSubscriptions', value: subscribeQuery });
+    } else { chainSubscriptions = this.subscribed[0].chain.chainData.reduce(this.subsChainReducer); }
+    chainSubscriptions = chainSubscriptions.substring(0, chainSubscriptions.length - 1);
+    this._store._urlParams = {chainSubscriptions};
+    
   }
 
   private subsChainReducer(rateAcc, rate, j, arr) {
