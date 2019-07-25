@@ -23,7 +23,13 @@ export class StoreService {
   currencies: Subject<any[]>;
   customChain: Subject<{ chain: any[], otherRates: any[] }>;
 
-  chainsUrl = `http://localhost:9000/best-change?minBalance=${this.urlParams.minBalance}&minProfit=${this.urlParams.minProfit}&showExmo=${this.urlParams.minProfit}&ltThreeLinks=${this.urlParams.ltThreeLinks}&${this.urlParams.exmoOrdersCount}&chainSubscriptions=${this.urlParams.chainSubscriptions}`;
+  private chainsUrl = 'http://localhost:9000/best-change?minBalance=' +
+    this.urlParams.minBalance + '&minProfit=' +
+    this.urlParams.minProfit + '&showExmo=' +
+    this.urlParams.minProfit + '&ltThreeLinks=' +
+    this.urlParams.ltThreeLinks + '&exmoOrdersCount=' +
+    this.urlParams.exmoOrdersCount + '&chainSubscriptions=' +
+    this.urlParams.chainSubscriptions;
   // url = 'assets/rates_1.json';
   private currURL = 'http://localhost:9000/currencies';
   private exchURL = 'http://localhost:9000/exchangers';
@@ -83,8 +89,12 @@ export class StoreService {
     Object.keys(value).forEach(key => {
       this.urlParams[key] = value[key];
     });
+    this.chainsUrl = 'http://localhost:9000/best-change?minBalance=' +
+    this.urlParams.minBalance + '&minProfit=' +
+    this.urlParams.minProfit + '&showExmo=' +
+    this.urlParams.minProfit + '&ltThreeLinks=' +
+    this.urlParams.ltThreeLinks + '&exmoOrdersCount=' +
+    this.urlParams.exmoOrdersCount + '&chainSubscriptions=' +
+    this.urlParams.chainSubscriptions;
   }
-  // setCustomChainConfig(config: CustomChainConfig) {
-  //   this.customChainParams = config;
-  // }
 }

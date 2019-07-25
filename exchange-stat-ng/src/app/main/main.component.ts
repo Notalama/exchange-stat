@@ -23,7 +23,7 @@ export class MainComponent implements OnInit {
   constructor(private _chainService: ChainService, private _store: StoreService) { }
 
   ngOnInit() {
-    this.interval = 100009999999;
+    this.interval = 10000;
     setInterval(() => {
       this.timer++;
       this.chains.forEach(el => el.age++);
@@ -47,7 +47,7 @@ export class MainComponent implements OnInit {
     ];
   }
   buildTable(data: any[]) {
-
+    this.subscribed = [];
     this.chains = data.sort((a, b) => a.length - b.length).map((chainData, i) => {
       const [dollarRate, profit, isSubs] = chainData.splice(chainData.length - 3, 3);
       const generatedId = this._chainService.generateId(chainData);
@@ -84,7 +84,6 @@ export class MainComponent implements OnInit {
   pin(e): void {
     let chainSubscriptions;
     this.subscribedIds = this.subscribed.map(chainRow => this._chainService.generateId(chainRow.chain.chainData));
-    console.log(this.subscribedIds);
     if (this.subscribed.length > 1) {
       chainSubscriptions = this.subscribed.reduce((acc, el, i) => {
         const elArr = el.chain.chainData;
@@ -93,7 +92,8 @@ export class MainComponent implements OnInit {
       });
     } else { chainSubscriptions = this.subscribed[0].chain.chainData.reduce(this.subsChainReducer); }
     chainSubscriptions = chainSubscriptions.substring(0, chainSubscriptions.length - 1);
-    this._store._urlParams = {chainSubscriptions};
+
+    this._store._urlParams = { chainSubscriptions: chainSubscriptions };
     
   }
 
