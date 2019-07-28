@@ -1,0 +1,61 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <div class="form-group">
+    <input type="checkbox" class="form-radio-input" formControlName="allExchangers">
+    <label class="form-check-label" >Всі обмінники</label>
+  </div>
+  <div class="form-group">
+    <input type="checkbox" class="form-radio-input" formControlName="allCurrencies">
+    <label class="form-check-label" >Всі валюти</label>
+  </div>
+  <div class="form-group">
+    <input type="checkbox" class="form-radio-input" formControlName="firstCurrency">
+    <label class="form-check-label" >Перша валюта</label>
+  </div>
+  <div class="form-group">
+    <input type="checkbox" class="form-radio-input" formControlName="secondCurrency">
+    <label class="form-check-label" >Друга валюта</label>
+  </div>
+  <div class="form-group">
+    <input type="checkbox" class="form-radio-input" formControlName="thirdCurrency">
+    <label class="form-check-label" >Третя валюта</label>
+  </div>
+  <div class="form-group">
+    <input type="checkbox" class="form-radio-input" formControlName="firstExchanger">
+    <label class="form-check-label" >Перший обмінник</label>
+  </div>
+  <div class="form-group">
+    <input type="checkbox" class="form-radio-input" formControlName="secondExchanger">
+    <label class="form-check-label" >Другий обмінник</label>
+  </div>
+  <div class="form-group">
+    <input type="checkbox" class="form-radio-input" formControlName="thirdExchanger">
+    <label class="form-check-label" >Третій обмінние</label>
+  </div>
+  <div class="form-group">
+    <input type="checkbox" class="form-radio-input" formControlName="firstPair">
+    <label class="form-check-label" >Перша пара</label>
+  </div>
+  <div class="form-group">
+    <input type="checkbox" class="form-radio-input" formControlName="secondPair">
+    <label class="form-check-label" >Друга пара</label>
+  </div>
+  <div class="form-group">
+    <input type="checkbox" class="form-radio-input" formControlName="thirdPair">
+    <label class="form-check-label" >Третя пара</label>
+  </div>
+  <div class="row mt-2">
+    <div class="col md4">
+      <label for="blockTime">Днів</label>
+      <input class="form-control" formControlName="days" id="days">
+    </div>
+    <div class="col md4">
+      <label for="blockTime">Годин</label>
+      <input class="form-control" formControlName="hours" id="hours">
+    </div>
+    <div class="col md4">
+      <label for="blockTime">Хвилин</label>
+      <input class="form-control" formControlName="mins" id="mins">
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>

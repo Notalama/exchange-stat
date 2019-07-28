@@ -22,7 +22,8 @@ export class StoreService {
   exchangers: Subject<any[]>;
   currencies: Subject<any[]>;
   customChain: Subject<{ chain: any[], otherRates: any[] }>;
-
+  chainForSettings: Subject<any>;
+  chainFS: any;
   private chainsUrl = 'http://localhost:9000/best-change?minBalance=' +
     this.urlParams.minBalance + '&minProfit=' +
     this.urlParams.minProfit + '&showExmo=' +
@@ -36,10 +37,12 @@ export class StoreService {
   private customChainURL = 'http://localhost:9000/custom-chain';
 
   constructor(private http: HttpClient) {
+    this.chainForSettings = new Subject();
     this.chains = new Subject();
     this.currencies = new Subject();
     this.exchangers = new Subject();
     this.customChain = new Subject();
+    this.chainForSettings.subscribe(val => this.chainFS = val);
   }
 
   getChains() {

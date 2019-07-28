@@ -106,6 +106,11 @@ export class MainComponent implements OnInit {
     this._chainService.buildAllLinks(this.chains[idx].chain.chainData);
   }
 
+  selectChain(chainRow) {
+    console.log(chainRow);
+    this._store.chainForSettings.next(chainRow);
+  }
+
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
