@@ -11,7 +11,7 @@ export class StoreService {
 
   private urlParams: UrlParams = {
     minBalance: 0,
-    minProfit: -1,
+    minProfit: 1,
     showExmo: false,
     ltThreeLinks: false,
     chainSubscriptions: '',

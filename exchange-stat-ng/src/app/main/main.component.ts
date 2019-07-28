@@ -51,7 +51,6 @@ export class MainComponent implements OnInit {
     this.chains = data.sort((a, b) => a.length - b.length).map((chainData, i) => {
       const [dollarRate, profit, isSubs] = chainData.splice(chainData.length - 3, 3);
       const generatedId = this._chainService.generateId(chainData);
-      const isSubcriber = this.subscribedIds.some(id => id === generatedId);
       
       const tableRowObject = {
         gain: this._chainService.calcChainProfit(chainData, profit),
@@ -61,9 +60,9 @@ export class MainComponent implements OnInit {
           this._chainService.getAgeOfChain(generatedId, this.chains) : 0,
         options: ' ',
         links: null,
-        id: generatedId
+        id: generatedId,
+        isSubs
       };
-      if (isSubcriber) this.subscribed.push(tableRowObject);
       return tableRowObject;
     });
   }

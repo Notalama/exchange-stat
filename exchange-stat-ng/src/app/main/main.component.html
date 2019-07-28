@@ -67,7 +67,7 @@
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex" let-columns="columns">
-    <tr [pSelectableRow]="rowData">
+    <tr [pSelectableRow]="rowData" [ngClass]="{'subscribed': rowData?.isSubs, 'test': true}">
       <td>
         <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
       </td>
