@@ -50,35 +50,28 @@ export class StoreService {
       this.chains.next(res);
     }, err => {
       console.log(err);
-      this.getChains();
     });
   }
 
   getCurrencies() {
     return this.http.get(this.currURL).toPromise().then((res: any[]) => {
-      setTimeout(() => {
-        this.currencies.next(res);
-      }, 1000);
+      this.currencies.next(res);
       setTimeout(() => {
         this.getCurrencies();
       }, 1000000);
     }, err => {
       console.log(err);
-      this.getCurrencies();
     });
   }
 
   getExchangers() {
     return this.http.get(this.exchURL).toPromise().then((res: any[]) => {
-      setTimeout(() => {
-        this.exchangers.next(res);
-      }, 1000);
+      this.exchangers.next(res);
       setTimeout(() => {
         this.getExchangers();
       }, 1000000);
     }, err => {
       console.log(err);
-      this.getExchangers();
     });
   }
 
