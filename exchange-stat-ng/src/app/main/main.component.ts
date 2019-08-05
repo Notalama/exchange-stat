@@ -61,7 +61,8 @@ export class MainComponent implements OnInit {
         options: ' ',
         links: null,
         id: generatedId,
-        isSubs
+        isSubs,
+        titles: this._chainService.getTitles(chainData)
       };
       return tableRowObject;
     });

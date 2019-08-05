@@ -45,7 +45,7 @@
 
 
 <p-table #dt [columns]="cols" [value]="chains" [(selection)]="subscribed" (onRowSelect)="pin($event)" rowIndex
-  dataKey="{{rowIndex}}" [autoLayout]="true" tableStyleClass="table-class">
+  dataKey="{{rowIndex}}" [autoLayout]="true" tableStyleClass="table-class" [globalFilterFields]="['titles']">
   <ng-template pTemplate="caption">
     <div style="text-align: right">        
         <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
@@ -84,7 +84,7 @@
         {{rowData.age}}
       </td>
       <td>
-        <a [routerLink]="['/chain-settings']"><p-button type="button" (click)="selectChain(rowData)"><i class="pi pi-bars"></i></p-button></a>
+        <a [routerLink]="['/chain-settings']"><p-button type="button" (click)="selectChain(rowData)" class="btn"><i class="pi pi-bars"></i></p-button></a>
       </td>
       <td>
         <!-- {{rowData.links}} -->

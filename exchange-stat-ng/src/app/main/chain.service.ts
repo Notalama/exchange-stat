@@ -108,4 +108,8 @@ export class ChainService {
     if (pos) { return pos.age || 0;
      } else { return 0; }
   }
+
+  getTitles(chainData: any[]) {
+    return chainData.reduce((prev, curr) => `${prev.fromTitle} ${curr.fromTitle}`);
+  }
 }
