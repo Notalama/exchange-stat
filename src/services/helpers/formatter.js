@@ -39,7 +39,11 @@ module.exports = {
     result.push({
       exchangerId: '899',
       exchangerTitle: 'Exmo Trade'
-    })
+    },
+    {
+      exchangerId: '901',
+      exchangerTitle: 'Kuna Trade'
+      })
     return result
   },
   compileResponse: async (result) => {

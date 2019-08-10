@@ -33,7 +33,6 @@ module.exports = {
         kunaOrders[kunaCurr[i]] = await axios.get(`https://api.kuna.io/v3/book/${kunaCurr[i]}`)
 
       }
-      console.log(kunaOrders);
       return kunaOrders;
     } catch (err) {
       console.error(err, 'kuna orders error');

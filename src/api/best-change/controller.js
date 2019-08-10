@@ -54,7 +54,7 @@ module.exports = {
               // * TO GET CURRENCIES AND EXCHANGERS FROM INFO.ZIP *
 
               const exmoRatesUnform = []
-              if (showExmo === 'true') {
+              if (showExmo == 'true') {
                 const {data: exmoRates} = await getExmoOrders({exmoOrdersCount})
                 for (const key in exmoRates) {
                   if (exmoRates.hasOwnProperty(key)) {
@@ -105,41 +105,32 @@ module.exports = {
                   }
                 }
               }
-              if (showKuna === true) {
+              const kunaRatesUnform = [];
+              if (showKuna == 'true') {
                 const kunaRate = await getKunaOrders();
-                const kunaRatesUnform = [];
                 // tslint:disable-next-line:forin
                 for (const key in kunaRate) {
                   if (kunaRate.hasOwnProperty(key)) {
                     const bkey = key.toUpperCase();
-                    const element = Object.values(kunaRate[key])[0];
-                    let frst = currencies.find(curr => curr.title === bkey.substring(0, 3));
-                    let scnd = currencies.find(curr => curr.title === bkey.substring(3, 6));
-                    if (key.length !== 6) {
-                      frst = currencies.find(curr => curr.title === bkey.substring(0, 3));
-                      scnd = currencies.find(curr => curr.title === bkey.substring(3, 7));
-                    }
-                    console.log(frst, scnd, element);
+                    const element = Object.values(kunaRate[key].data);
+                    const frst = currencies.find(curr => curr.title === bkey.substring(0, 3));
+                    const scnd = currencies.find(curr => curr.title === bkey.substring(3, bkey.length));
                     element.forEach(el => {
                       if (el[1] > 0) {
-                        const give = el[0];
-                        const receive = el[2];
-                        const rate = `${frst.id};${scnd.id};900;${give};${receive};${el[1]}`;
+                        const rate = `${frst.id};${scnd.id};901;${el[0]};1;${el[1]}`;
                         kunaRatesUnform.push(rate);
                       } else if (el[1] < 0) {
-                        const give = el[0];
-                        const receive = el[2];
-                        const rate = `${scnd.id};${scnfrstd.id};900;${give};${receive};${el[1]}`;
+                        const rate = `${scnd.id};${frst.id};901;1;${el[0]};${Math.abs(el[1])}`;
                         kunaRatesUnform.push(rate);
                       }
-                  });
-                    console.log(kunaRatesUnform);
+                    });
                 }
               }
                 }
               // console.log(`${+minBalance}  ${+minProfit} s-- minb and minprof`)
+              const unformattedList = [...ratesBuffer.split('\n'), ...exmoRatesUnform, ...kunaRatesUnform];
               await formatRates({
-                unformattedList: ratesBuffer.split('\n').concat(exmoRatesUnform),
+                unformattedList,
                 minAmount: +minBalance,
                 minProfit: +minProfit,
                 chainSubscriptions,

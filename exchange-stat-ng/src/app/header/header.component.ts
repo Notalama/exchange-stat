@@ -19,7 +19,8 @@ export class HeaderComponent implements OnInit {
       minBalance: [10],
       showExmo: [false],
       ltThreeLinks: [false],
-      showKuna: [false]
+      showKuna: [false],
+      chainSubscriptions: ['']
     });
    }
 

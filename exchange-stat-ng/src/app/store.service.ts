@@ -13,6 +13,7 @@ export class StoreService {
     minBalance: 0,
     minProfit: 1,
     showExmo: false,
+    showKuna: false,
     ltThreeLinks: false,
     chainSubscriptions: '',
     exmoOrdersCount: 0
@@ -27,7 +28,8 @@ export class StoreService {
   private chainsUrl = 'http://localhost:9000/best-change?minBalance=' +
     this.urlParams.minBalance + '&minProfit=' +
     this.urlParams.minProfit + '&showExmo=' +
-    this.urlParams.minProfit + '&ltThreeLinks=' +
+    this.urlParams.showExmo + '&showKuna=' +
+    this.urlParams.showKuna + '&ltThreeLinks=' +
     this.urlParams.ltThreeLinks + '&exmoOrdersCount=' +
     this.urlParams.exmoOrdersCount + '&chainSubscriptions=' +
     this.urlParams.chainSubscriptions;
@@ -88,7 +90,8 @@ export class StoreService {
     this.chainsUrl = 'http://localhost:9000/best-change?minBalance=' +
     this.urlParams.minBalance + '&minProfit=' +
     this.urlParams.minProfit + '&showExmo=' +
-    this.urlParams.minProfit + '&ltThreeLinks=' +
+    this.urlParams.showExmo + '&showKuna=' +
+    this.urlParams.showKuna + '&ltThreeLinks=' +
     this.urlParams.ltThreeLinks + '&exmoOrdersCount=' +
     this.urlParams.exmoOrdersCount + '&chainSubscriptions=' +
     this.urlParams.chainSubscriptions;
