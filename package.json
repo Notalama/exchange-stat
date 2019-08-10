@@ -19,6 +19,8 @@
     "setupTestFrameworkScriptFile": "<rootDir>/test/setup.js"
   },
   "devDependencies": {
+    "@types/node": "^12.6.8",
+    "@types/webpack-env": "^1.14.0",
     "apidoc": "^0.17.6",
     "apidoc-markdown": "^0.2.0",
     "babel-eslint": "^8.0.1",

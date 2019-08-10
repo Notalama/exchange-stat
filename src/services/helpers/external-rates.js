@@ -24,12 +24,20 @@ module.exports = {
   },
   getKunaOrders: async function () {
     try {
-      const BTC = 'ethbtc'
-      const exmoOrders = await axios.get(`https://api.exmo.com/v1/order_book/?pair=${BTC}&limit=5`)
-      return exmoOrders
+      // tslint:disable-next-line:prefer-const
+      let kunaOrders = {};
+      // tslint:disable-next-line:max-line-length
+      const kunaCurr = ['btcusdt', 'btcusd', 'btcrub', 'ethbtc', 'eosbtc'];
+      // tslint:disable-next-line:prefer-for-of
+      for (let i = 0; i < kunaCurr.length; i++) {
+        kunaOrders[kunaCurr[i]] = await axios.get(`https://api.kuna.io/v3/book/${kunaCurr[i]}`)
+
+      }
+      console.log(kunaOrders);
+      return kunaOrders;
     } catch (err) {
-      console.error(err, 'kuna orders error')
-      return err
+      console.error(err, 'kuna orders error');
+      return err;
     }
   },
   buildStringRates: function ({
@@ -70,6 +78,6 @@ module.exports = {
     //   let a = receiveAcc !== 1 ? (giveAcc !== 1 ? console.log(giveAcc, receiveAcc, 84) : null) : null
     //   let rateBid = `${frst.id};${scnd.id};899;${giveAcc};${receiveAcc};${balanceAcc}`
     //   exmoRatesUnform.push(rateBid)
-  //   }
+    //   }
   }
 }

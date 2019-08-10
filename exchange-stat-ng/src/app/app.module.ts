@@ -20,6 +20,7 @@ import { SettingsFormComponent } from './settings-form/settings-form.component';
 import { CustomChainComponent } from './custom-chain/custom-chain.component';
 import { HeaderComponent } from './header/header.component';
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -33,6 +34,9 @@ import { HeaderComponent } from './header/header.component';
     HeaderComponent
   ],
   imports: [
+    BrowserModule,
+    // import HttpClientModule after BrowserModule.
+    HttpClientModule,
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
