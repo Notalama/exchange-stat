@@ -15,7 +15,7 @@ const {
 module.exports = {
   index: (req, res, next) => {
     try {
-      const { minBalance, minProfit, chainSubscriptions, ltThreeLinks, showExmo, exmoOrdersCount } = req.query
+      const { minBalance, minProfit, chainSubscriptions, ltThreeLinks, showExmo, exmoOrdersCount, showKuna } = req.query
       http.get('http://api.bestchange.ru/info.zip', (data) => {
         const {
           statusCode

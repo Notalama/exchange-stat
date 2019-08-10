@@ -44,8 +44,14 @@
 </div>
 
 
-<p-table [columns]="cols" [value]="chains" [(selection)]="subscribed" (onRowSelect)="pin($event)" rowIndex
-  dataKey="{{rowIndex}}" [autoLayout]="true">
+<p-table #dt [columns]="cols" [value]="chains" [(selection)]="subscribed" (onRowSelect)="pin($event)" rowIndex
+  dataKey="{{rowIndex}}" [autoLayout]="true" tableStyleClass="table-class" [globalFilterFields]="['titles']">
+  <ng-template pTemplate="caption">
+    <div style="text-align: right">        
+        <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+        <input type="text" pInputText size="50" placeholder="Global Filter" (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+    </div>
+  </ng-template>
   <ng-template pTemplate="header" let-columns let-rowData>
     <tr>
       <th style="width: 3em">
@@ -61,7 +67,7 @@
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex" let-columns="columns">
-    <tr [pSelectableRow]="rowData">
+    <tr [pSelectableRow]="rowData" [ngClass]="{'subscribed': rowData?.isSubs, 'test': true}">
       <td>
         <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
       </td>
@@ -78,7 +84,7 @@
         {{rowData.age}}
       </td>
       <td>
-        {{rowData.options}}
+        <a [routerLink]="['/chain-settings']"><p-button type="button" (click)="selectChain(rowData)"><i class="pi pi-bars"></i></p-button></a>
       </td>
       <td>
         <!-- {{rowData.links}} -->

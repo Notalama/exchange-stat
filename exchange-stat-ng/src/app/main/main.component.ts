@@ -2,6 +2,7 @@ import { ChainService } from './chain.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { StoreService } from '../store.service';
 import { Rate } from './models/rate';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-main',
@@ -12,16 +13,16 @@ export class MainComponent implements OnInit {
   cols: any[];
   chains = [];
   subscribed = [];
+  subscribedIds = [];
   currentDataArr: any[];
   interval: number;
-  minInterval = 5;
+  minInterval = 6000;
   timer = 0;
-  subscription: any;
+  subscription: Subscription;
   // tslint:disable-next-line:variable-name
   constructor(private _chainService: ChainService, private _store: StoreService) { }
 
   ngOnInit() {
-    console.log(document.getElementById('a'));
     this.interval = 10000;
     setInterval(() => {
       this.timer++;
@@ -31,9 +32,7 @@ export class MainComponent implements OnInit {
     this.reloadInterval();
     this._store.getChains();
     this.subscription = this._store.chains.subscribe(res => {
-      console.log(res);
       this.buildTable(res);
-
     }, err => {
       console.log(err);
     });
@@ -48,11 +47,12 @@ export class MainComponent implements OnInit {
     ];
   }
   buildTable(data: any[]) {
-
+    this.subscribed = [];
     this.chains = data.sort((a, b) => a.length - b.length).map((chainData, i) => {
       const [dollarRate, profit, isSubs] = chainData.splice(chainData.length - 3, 3);
       const generatedId = this._chainService.generateId(chainData);
-      return {
+      
+      const tableRowObject = {
         gain: this._chainService.calcChainProfit(chainData, profit),
         chain: {chainData, dollarRate},
         score: `${profit.toFixed(2)} %`,
@@ -60,8 +60,11 @@ export class MainComponent implements OnInit {
           this._chainService.getAgeOfChain(generatedId, this.chains) : 0,
         options: ' ',
         links: null,
-        id: generatedId
+        id: generatedId,
+        isSubs,
+        titles: this._chainService.getTitles(chainData)
       };
+      return tableRowObject;
     });
   }
   reload() {
@@ -79,16 +82,19 @@ export class MainComponent implements OnInit {
   }
 
   pin(e): void {
-    let subscribeQuery;
+    let chainSubscriptions;
+    this.subscribedIds = this.subscribed.map(chainRow => this._chainService.generateId(chainRow.chain.chainData));
     if (this.subscribed.length > 1) {
-      subscribeQuery = this.subscribed.reduce((acc, el, i) => {
+      chainSubscriptions = this.subscribed.reduce((acc, el, i) => {
         const elArr = el.chain.chainData;
         if (i === 1) { return acc.chain.chainData.reduce(this.subsChainReducer) + elArr.reduce(this.subsChainReducer); }
         return acc + elArr.reduce(this.subsChainReducer);
       });
-    } else { subscribeQuery = this.subscribed[0].chain.chainData.reduce(this.subsChainReducer); }
-    subscribeQuery = subscribeQuery.substring(0, subscribeQuery.length - 1);
-    this._store.urlParamsSubject.next({ key: 'chainSubscriptions', value: subscribeQuery });
+    } else { chainSubscriptions = this.subscribed[0].chain.chainData.reduce(this.subsChainReducer); }
+    chainSubscriptions = chainSubscriptions.substring(0, chainSubscriptions.length - 1);
+
+    this._store._urlParams = { chainSubscriptions: chainSubscriptions };
+    
   }
 
   private subsChainReducer(rateAcc, rate, j, arr) {
@@ -100,10 +106,13 @@ export class MainComponent implements OnInit {
     console.log(idx);
     this._chainService.buildAllLinks(this.chains[idx].chain.chainData);
   }
-  // tslint:disable-next-line:use-lifecycle-interface
+
+  selectChain(chainRow) {
+    console.log(chainRow);
+    this._store.chainForSettings.next(chainRow);
+  }
+
   ngOnDestroy(): void {
-    // Called once, before the instance is destroyed.
-    // Add 'implements OnDestroy' to the class.
     this.subscription.unsubscribe();
   }
 }

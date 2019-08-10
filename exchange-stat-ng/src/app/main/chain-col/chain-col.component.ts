@@ -10,6 +10,7 @@ export class ChainColComponent implements OnInit {
 
   @Input() chain: any[];
   @Input() dollarRate: any[];
+  @Input() otherRates: any[];
 
   // sum: number | string;
   // exchOne: string;

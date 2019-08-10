@@ -17,15 +17,12 @@ export class SettingsFormComponent implements OnInit {
   ngOnInit(): void {
     this._store.getCurrencies();
     this._store.currencies.subscribe(res => {
-      console.log(res);
       this.currencies = res;
-      console.log(this.currencies);
     }, err => {
       console.log(err);
     });
     this._store.getExchangers();
     this._store.exchangers.subscribe(res => {
-      console.log(res);
       this.exchangers = res;
     }, err => {
       console.log(err);

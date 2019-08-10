@@ -10,6 +10,8 @@ export class ChainRateComponent implements OnInit {
 
   @Input() rate: Rate = null;
   @Input() firstItem: Rate = null;
+  @Input() isOtherRate: Rate = null;
+  
   constructor() { }
 
   ngOnInit() {

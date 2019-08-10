@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { StoreService } from '../store.service';
+import { UrlParams } from '../main/models/url-params';
 
 @Component({
   selector: 'app-header',
@@ -7,20 +9,26 @@ import { FormBuilder } from '@angular/forms';
   styleUrls: ['./header.component.sass']
 })
 export class HeaderComponent implements OnInit {
-  form: any;
+  form: FormGroup;
+  search: string;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder, private _store: StoreService) {
     this.form = this.formBuilder.group({
-      search: [''],
-      orders: [''],
+      exmoOrdersCount: [0],
       minProfit: [0.4],
       minBalance: [10],
-      exmo: [false],
-      fourSteps: [false]
+      showExmo: [false],
+      ltThreeLinks: [false],
+      showKuna: [false]
     });
    }
 
   ngOnInit() {
+    this.form.valueChanges.subscribe((value: UrlParams) => {
+      this._store._urlParams = value;
+    }, err => {
+      console.log(err);
+    });
   }
 
 }

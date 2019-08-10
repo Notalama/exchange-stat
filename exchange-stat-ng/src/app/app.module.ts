@@ -1,3 +1,4 @@
+import { ChainSettingsComponent } from './chain-settings/chain-settings.component';
 import { ChainColComponent } from './main/chain-col/chain-col.component';
 import { MainComponent } from './main/main.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -31,7 +32,8 @@ import { HeaderComponent } from './header/header.component';
     BuildExmoLinkPipe,
     SettingsFormComponent,
     CustomChainComponent,
-    HeaderComponent
+    HeaderComponent,
+    ChainSettingsComponent
   ],
   imports: [
     BrowserModule,

@@ -1,3 +1,4 @@
+import { ChainSettingsComponent } from './chain-settings/chain-settings.component';
 import { MainComponent } from './main/main.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
@@ -7,7 +8,8 @@ import { CustomChainComponent } from './custom-chain/custom-chain.component';
 const appRoutes: Routes = [
   { path: '', redirectTo: '/main', pathMatch: 'full' },
   { path: 'main', canActivate: [AuthGuard], canLoad: [AuthGuard], component: MainComponent },
-  { path: 'custom-chain', component: CustomChainComponent }
+  { path: 'custom-chain', component: CustomChainComponent },
+  { path: 'chain-settings', component: ChainSettingsComponent}
 ];
 
 @NgModule({

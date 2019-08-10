@@ -7,7 +7,7 @@
         <label for="firstStep">Перший крок</label>
         <select class="form-control" formControlName="firstStep" id="firstStep">
           <option value="" disabled selected>Select currency</option>
-          <option *ngFor="let curr of currencies">
+          <option *ngFor="let curr of currencies" [value]="curr.currencyId">
             {{curr.currencyTitle}}
           </option>
         </select>
@@ -15,8 +15,8 @@
       <div class="col-lg">
         <label for="secondStep">Другий крок</label>
         <select class="form-control" formControlName="secondStep" id="secondStep">
-          <option value="" disabled selected>Select currency</option>
-          <option *ngFor="let curr of currencies">
+          <option value="null" selected>Select currency</option>
+          <option *ngFor="let curr of currencies" [value]="curr.currencyId">
             {{curr.currencyTitle}}
           </option>
         </select>
@@ -24,8 +24,8 @@
       <div class="col-lg">
         <label for="thirdStep">Третій крок</label>
         <select class="form-control" formControlName="thirdStep" id="thirdStep">
-          <option value="" disabled selected>Select currency</option>
-          <option *ngFor="let curr of currencies">
+          <option value="" selected>Select currency</option>
+          <option *ngFor="let curr of currencies" [value]="curr.currencyId">
             {{curr.currencyTitle}}
           </option>
         </select>
@@ -39,16 +39,14 @@
       </div>
     </div>
 
-      <button type="submit" class="btn btn-primary col-md-1 mt-3 mb-3" [disabled]="!form.valid">Submit</button>
+      <button type="submit" class="btn btn-primary col-md-1 mt-3 mb-3" >Submit</button>
+      <!-- [disabled]="!form.valid" -->
   </form>
 
-  <p-table [columns]="cols" [value]="chains" [(selection)]="subscribed" (onRowSelect)="pin($event)" rowIndex dataKey="{{rowIndex}}" [autoLayout]="true">  
+  <p-table [columns]="cols" [value]="chains" rowIndex dataKey="{{rowIndex}}" [autoLayout]="true">  
       <ng-template pTemplate="header" let-columns let-rowData>
         <tr>
-          <th style="width: 3em">
-            <!-- <p-tableCheckbox [value]="rowData" ></p-tableCheckbox> -->
-          </th>
-          <th *ngFor="let col of columns" [style.width.px]="col.field === 'chain' ? '800' : ''"  [pSortableColumn]="col.field">
+          <th *ngFor="let col of columns" [style.width.px]="col.field === 'chain' ? '800' : ''" [pSortableColumn]="col.field">
             {{col.header}}
             <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
           </th>
@@ -57,22 +55,16 @@
       <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex" let-columns="columns">
         <tr [pSelectableRow]="rowData">
           <td>
-            <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
-          </td>
-          <td>
             {{rowData.gain}}
           </td>
           <td>
-            <app-chain-col [chain]="rowData?.chain.chainData" [dollarRate]="rowData?.chain.dollarRate"></app-chain-col>
+            <app-chain-col [chain]="rowData?.chain.chainData" [dollarRate]="rowData?.chain.dollarRate" [otherRates]="rowData?.chain.otherRates"></app-chain-col>
           </td>
           <td style="width: 80px">
             {{rowData.score}}
           </td>
           <td  style="width: 70px">
             {{rowData.age}}
-          </td>
-          <td>
-            {{rowData.options}}
           </td>
           <td>
             {{rowData.links}}
