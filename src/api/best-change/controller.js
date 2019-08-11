@@ -55,7 +55,7 @@ module.exports = {
 
               const exmoRatesUnform = []
               if (showExmo == 'true') {
-                const {data: exmoRates} = await getExmoOrders({exmoOrdersCount})
+                const { data: exmoRates } = await getExmoOrders({ exmoOrdersCount })
                 for (const key in exmoRates) {
                   if (exmoRates.hasOwnProperty(key)) {
                     const element = exmoRates[key]
@@ -105,28 +105,28 @@ module.exports = {
                   }
                 }
               }
-              const kunaRatesUnform = [];
+              const kunaRatesUnform = []
               if (showKuna == 'true') {
-                const kunaRate = await getKunaOrders();
+                const kunaRate = await getKunaOrders()
                 // tslint:disable-next-line:forin
                 for (const key in kunaRate) {
                   if (kunaRate.hasOwnProperty(key)) {
-                    const bkey = key.toUpperCase();
-                    const element = Object.values(kunaRate[key].data);
-                    const frst = currencies.find(curr => curr.title === bkey.substring(0, 3));
-                    const scnd = currencies.find(curr => curr.title === bkey.substring(3, bkey.length));
+                    const bkey = key.toUpperCase()
+                    const element = Object.values(kunaRate[key].data)
+                    const frst = currencies.find(curr => curr.title === bkey.substring(0, 3))
+                    const scnd = currencies.find(curr => curr.title === bkey.substring(3, bkey.length))
                     element.forEach(el => {
                       if (el[1] > 0) {
-                        const rate = `${frst.id};${scnd.id};901;${el[0]};1;${el[1]}`;
-                        kunaRatesUnform.push(rate);
+                        const rate = `${frst.id};${scnd.id};901;${el[0]};1;${el[1]}`
+                        kunaRatesUnform.push(rate)
                       } else if (el[1] < 0) {
-                        const rate = `${scnd.id};${frst.id};901;1;${el[0]};${Math.abs(el[1])}`;
-                        kunaRatesUnform.push(rate);
+                        const rate = `${scnd.id};${frst.id};901;1;${el[0]};${Math.abs(el[1])}`
+                        kunaRatesUnform.push(rate)
                       }
-                    });
+                    })
+                  }
                 }
               }
-                }
               // console.log(`${+minBalance}  ${+minProfit} s-- minb and minprof`)
               const unformattedList = [...ratesBuffer.split('\n'), ...exmoRatesUnform, ...kunaRatesUnform];
               await formatRates({
