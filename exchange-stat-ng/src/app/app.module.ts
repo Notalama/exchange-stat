@@ -20,7 +20,8 @@ import { BuildExmoLinkPipe } from './main/chain-col/build-exmo-link.pipe';
 import { SettingsFormComponent } from './settings-form/settings-form.component';
 import { CustomChainComponent } from './custom-chain/custom-chain.component';
 import { HeaderComponent } from './header/header.component';
-
+import {MessagesModule} from 'primeng/messages';
+import {MessageModule} from 'primeng/message';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,9 @@ import { HeaderComponent } from './header/header.component';
     CheckboxModule,
     TableModule,
     ReactiveFormsModule,
-    ButtonModule
+    ButtonModule,
+    MessagesModule,
+    MessageModule
   ],
   providers: [StoreService, AuthGuard, AuthGuardService],
   bootstrap: [AppComponent]
