@@ -37,13 +37,13 @@ module.exports = {
     }
     // custom exmo
     result.push({
-      exchangerId: '899',
+      exchangerId: '1024',
       exchangerTitle: 'Exmo Trade'
     },
     {
-      exchangerId: '901',
+      exchangerId: '1025',
       exchangerTitle: 'Kuna Trade'
-      })
+    })
     return result
   },
   compileResponse: async (result) => {

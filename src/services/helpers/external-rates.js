@@ -31,7 +31,6 @@ module.exports = {
       // tslint:disable-next-line:prefer-for-of
       for (let i = 0; i < kunaCurr.length; i++) {
         kunaOrders[kunaCurr[i]] = await axios.get(`https://api.kuna.io/v3/book/${kunaCurr[i]}`)
-
       }
       return kunaOrders;
     } catch (err) {

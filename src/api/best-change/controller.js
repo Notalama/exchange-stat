@@ -73,7 +73,7 @@ module.exports = {
                       })
                       giveAccum = (giveAccum / element.ask.length).toFixed(6)
                       receiveAccum = (receiveAccum / element.ask.length).toFixed(6)
-                      let rateAsk = `${scnd.id};${frst.id};899;${giveAccum};${receiveAccum};${balanceAccum}`
+                      let rateAsk = `${scnd.id};${frst.id};1024;${giveAccum};${receiveAccum};${balanceAccum}`
                       exmoRatesUnform.push(rateAsk)
 
                       let giveAcc = 0
@@ -86,19 +86,19 @@ module.exports = {
                       })
                       giveAcc = (giveAcc / element.bid.length).toFixed(6)
                       receiveAcc = (receiveAcc / element.bid.length).toFixed(6)
-                      let rateBid = `${frst.id};${scnd.id};899;${giveAcc};${receiveAcc};${balanceAcc}`
+                      let rateBid = `${frst.id};${scnd.id};1024;${giveAcc};${receiveAcc};${balanceAcc}`
                       exmoRatesUnform.push(rateBid)
                     } else if (frst && scnd && !exmoOrdersCount) {
                       element.ask.forEach(el => {
                         const give = +el[0] < 1 ? '1' : +el[0]
                         const receive = +el[0] < 1 ? (1 / +el[0]) : '1'
-                        const rate = `${scnd.id};${frst.id};899;${give};${receive};${el[1]}`
+                        const rate = `${scnd.id};${frst.id};1024;${give};${receive};${el[1]}`
                         exmoRatesUnform.push(rate)
                       })
                       element.bid.forEach(el => {
                         const give = +el[0] < 1 ? 1 / +el[0] : '1'
                         const receive = +el[0] < 1 ? '1' : +el[0]
-                        const rate = `${frst.id};${scnd.id};899;${give};${receive};${el[2]}`
+                        const rate = `${frst.id};${scnd.id};1024;${give};${receive};${el[2]}`
                         exmoRatesUnform.push(rate)
                       })
                     }
@@ -117,10 +117,10 @@ module.exports = {
                     const scnd = currencies.find(curr => curr.title === bkey.substring(3, bkey.length))
                     element.forEach(el => {
                       if (el[1] > 0) {
-                        const rate = `${frst.id};${scnd.id};901;${el[0]};1;${el[1]}`
+                        const rate = `${frst.id};${scnd.id};1025;${el[0]};1;${el[1]}`
                         kunaRatesUnform.push(rate)
                       } else if (el[1] < 0) {
-                        const rate = `${scnd.id};${frst.id};901;1;${el[0]};${Math.abs(el[1])}`
+                        const rate = `${scnd.id};${frst.id};1025;1;${el[0]};${Math.abs(el[1])}`
                         kunaRatesUnform.push(rate)
                       }
                     })

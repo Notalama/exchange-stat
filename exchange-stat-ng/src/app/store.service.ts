@@ -25,6 +25,7 @@ export class StoreService {
   customChain: Subject<{ chain: any[], otherRates: any[] }>;
   chainForSettings: Subject<any>;
   chainFS: any;
+  private isActiveR: boolean;
   private chainsUrl = 'http://localhost:9000/best-change?minBalance=' +
     this.urlParams.minBalance + '&minProfit=' +
     this.urlParams.minProfit + '&showExmo=' +
@@ -48,11 +49,17 @@ export class StoreService {
   }
 
   getChains() {
-    return this.http.get(this.chainsUrl).toPromise().then((res: any[]) => {
-      this.chains.next(res);
-    }, err => {
-      console.log(err);
-    });
+    if (!this.isActiveR) {
+      this.isActiveR = true;
+      return this.http.get(this.chainsUrl).toPromise().then((res: any[]) => {
+        this.isActiveR = false;
+        this.chains.next(res);
+      }, err => {
+        console.log(err);
+      });
+    } else {
+      return null;
+    }
   }
 
   getCurrencies() {

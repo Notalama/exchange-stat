@@ -29,19 +29,19 @@ export class ChainService {
     const calcFourth = rates >= 4 ? this.calcRate(+chain[3].give, +chain[3].receive, +calcThird) : null;
     const compiledChain = [];
     chain.forEach((rate, i) => {
-      const preLinkC = rate.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id=';
+      const preLinkC = rate.changer === '1024' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id=';
       const preLinkBC = 'https://www.bestchange.ru/index.php?';
-      const exmoPair = rate.changer === '899' ? this.buildExmoLink(rate) : '';
+      const exmoPair = rate.changer === '1024' ? this.buildExmoLink(rate) : '';
       const arrowLinkParams = `&from=${rate.from}&to=${rate.to}&url=1">'`;
-      const changerLinkParams = rate.changer === '899' ? `${exmoPair}">` : `${rate.changer}&from=${rate.from}&to=${rate.to}&url=1">'`;
+      const changerLinkParams = rate.changer === '1024' ? `${exmoPair}">` : `${rate.changer}&from=${rate.from}&to=${rate.to}&url=1">'`;
       let items = '<li>'
       // other rates template fill
       if (otherRates.length) {
         otherRates[i].forEach(oRate => {
-          const preC = oRate.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id=';
-          const exmo = oRate.changer === '899' ? this.buildExmoLink(oRate) : '';
+          const preC = oRate.changer === '1024' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id=';
+          const exmo = oRate.changer === '1024' ? this.buildExmoLink(oRate) : '';
           const arrow = `&from=${oRate.from}&to=${oRate.to}&url=1">'`;
-          const changer = oRate.changer === '899' ? `${exmo}">` : `${oRate.changer}&from=${oRate.from}&to=${oRate.to}&url=1">'`;
+          const changer = oRate.changer === '1024' ? `${exmo}">` : `${oRate.changer}&from=${oRate.from}&to=${oRate.to}&url=1">'`;
           items += this.getChangerLink({rate: oRate, preLinkC: preC, preLinkBC, arrowLinkParams: arrow, changerLinkParams: changer}) + '</li><li>';
         });
       }
@@ -87,11 +87,11 @@ export class ChainService {
   buildAllLinks(chainRates) {
     for (let i = 0; i < chainRates.length; i++) {
       const element = chainRates[i];
-      const preLinkC = element.changer === '899' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id=';
+      const preLinkC = element.changer === '1024' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id=';
       const preLinkBC = 'https://www.bestchange.ru/index.php?';
-      const exmoPair = element.changer === '899' ? this.buildExmoLink(element) : '';
+      const exmoPair = element.changer === '1024' ? this.buildExmoLink(element) : '';
       window.open(preLinkBC + 'from=' + element.from + '&to=' + element.to + '&url=1');
-      window.open(preLinkC + (element.changer === '899' ? exmoPair : element.changer + '&from=' + element.from + '&to=' + element.to + '&url=1'));
+      window.open(preLinkC + (element.changer === '1024' ? exmoPair : element.changer + '&from=' + element.from + '&to=' + element.to + '&url=1'));
     }
   }
   generateId(chain): string {

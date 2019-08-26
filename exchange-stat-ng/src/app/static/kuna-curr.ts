@@ -1,0 +1,1 @@
+export const _currs = ['btcusdt', 'btcusd', 'btcrub', 'ethbtc', 'eosbtc'];
