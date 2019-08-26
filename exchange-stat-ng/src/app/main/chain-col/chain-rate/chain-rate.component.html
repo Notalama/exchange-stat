@@ -1,6 +1,9 @@
 {{isOtherRate ? '' : rate?.calcSum + ' ' + rate?.fromTitle}} 
 <a target="_blank" href="https://www.bestchange.ru/index.php?&from={{rate.from}}&to={{rate.to}}&url=1">
   <i class="pi pi-arrow-right"></i>
-</a> - <a target="_blank" [href]="rate.changer === '1024' ? 'https://exmo.me/uk/trade#?pair=' + (rate | buildExmoLink) :
+</a> - <a
+  target="_blank"
+  [href]="rate.changer === '1024' ? 'https://exmo.me/uk/trade#?pair=' + (rate | buildExmoLink) :
+  rate.changer === '1025' ? 'https://kuna.io/markets/' + (rate | buildKunaLink) :
   'https://www.bestchange.ru/click.php?id=' + rate.changer + '&from=' + rate.from + '&to=' + rate.to + '&url=1'">{{rate.changerTitle}}</a> 
   ({{rate?.give}} : {{rate?.receive}}; {{isOtherRate ? rate?.amount : rate?.amount.amount}}, {{isOtherRate ? rate?.dollarAmount?.toFixed(4) : rate?.amount.dollarAmount?.toFixed(4)}})

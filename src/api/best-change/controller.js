@@ -115,6 +115,8 @@ module.exports = {
                     const element = Object.values(kunaRate[key].data)
                     const frst = currencies.find(curr => curr.title === bkey.substring(0, 3))
                     const scnd = currencies.find(curr => curr.title === bkey.substring(3, bkey.length))
+                    console.log(frst, ' - 118 frst contoller');
+                    console.log(scnd, ' - 118 scnd contoller');
                     element.forEach(el => {
                       if (el[1] > 0) {
                         const rate = `${frst.id};${scnd.id};1025;${el[0]};1;${el[1]}`

@@ -9,7 +9,7 @@
 <form [formGroup]="form" (ngSubmit)="submit()">
   <div class="form-group">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="allExchangers">
-    <label class="form-check-label" >Всі обмінники</label>
+    <label class="form-check-label" >Всі обмінники: {{this.chain.chain.chainData | }}</label>
   </div>
   <div class="form-group">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="allCurrencies">
