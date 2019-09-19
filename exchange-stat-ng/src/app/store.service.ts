@@ -48,11 +48,15 @@ export class StoreService {
     this.chainForSettings.subscribe(val => this.chainFS = val);
   }
 
+  set _isActiveR (val) {
+    console.log(val)
+    this.isActiveR = val;
+  }
+  
   getChains() {
-    if (!this.isActiveR) {
-      this.isActiveR = true;
+    console.log(this.isActiveR)
+    if (this.isActiveR) {
       return this.http.get(this.chainsUrl).toPromise().then((res: any[]) => {
-        this.isActiveR = false;
         this.chains.next(res);
       }, err => {
         console.log(err);

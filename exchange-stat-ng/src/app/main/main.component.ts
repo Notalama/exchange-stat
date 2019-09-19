@@ -19,6 +19,7 @@ export class MainComponent implements OnInit {
   minInterval = 6000;
   timer = 0;
   subscription: Subscription;
+  toggleLoader = true;
   // tslint:disable-next-line:variable-name
   constructor(private _chainService: ChainService, private _store: StoreService) { }
 
@@ -53,7 +54,6 @@ export class MainComponent implements OnInit {
       
       const [dollarRate, profit, isSubs] = chainData.splice(chainData.length - 3, 3);
       const generatedId = this._chainService.generateId(chainData);
-      
       const tableRowObject = {
         gain: this._chainService.calcChainProfit(chainData, profit),
         chain: {chainData, dollarRate},
@@ -112,6 +112,13 @@ export class MainComponent implements OnInit {
   selectChain(chainRow) {
     console.log(chainRow);
     this._store.chainForSettings.next(chainRow);
+  }
+
+  toggleLoad() {
+    console.log(this._store._isActiveR)
+    this.toggleLoader = !this.toggleLoader;
+    this._store._isActiveR = this.toggleLoader;
+    
   }
 
   ngOnDestroy(): void {

@@ -1,3 +1,4 @@
+import { BuildKunaLinkPipe } from './main/chain-col/build-kuna-link.pipe';
 import { ChainSettingsComponent } from './chain-settings/chain-settings.component';
 import { ChainColComponent } from './main/chain-col/chain-col.component';
 import { MainComponent } from './main/main.component';
@@ -31,6 +32,7 @@ import {MessageModule} from 'primeng/message';
     ChainRateComponent,
     CalcRateSumPipe,
     BuildExmoLinkPipe,
+    BuildKunaLinkPipe,
     SettingsFormComponent,
     CustomChainComponent,
     HeaderComponent,

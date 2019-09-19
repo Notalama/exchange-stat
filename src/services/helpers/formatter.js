@@ -84,7 +84,8 @@ module.exports = {
           }
         })
       }
-
+      const profitPercent = chain[chain.length - 2].toFixed(2)
+      if (profitPercent > 500) return
       compiled.push(chain[chain.length - 1], chain[chain.length - 2], index < result.subs)
       response.push(compiled)
     })

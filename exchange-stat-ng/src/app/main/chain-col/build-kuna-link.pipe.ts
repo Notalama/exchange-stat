@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { kuna } from '../../static/kuna-curr'
+import { _currs } from '../../static/kuna-curr'
 @Pipe({
   name: 'buildKunaLink'
 })

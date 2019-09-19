@@ -80,7 +80,7 @@ module.exports = async function formatAndFilterRates ({
           if (result.byCurr[id][j]) {
             const el = result.byCurr[id][j]
             if (rowArray[1] === el[1]) {
-              const bonus = bonuses.find(bon => bon.changer === rowArray[2])
+              const bonus = bonuses.find(bon => (bon.changer === rowArray[2] && (bon.from === rowArray[0] || bon.to === rowArray[1]))) || bonuses.find(bon => bon.changer === rowArray[2])
               if (bonus) rowArray = calcBonus(rowArray, bonus)
               rowArray = calcCommission(rowArray, commissions)
               const isProfitable = +rowArray[3] <= +el[3] && +rowArray[4] >= +el[4]
@@ -89,7 +89,7 @@ module.exports = async function formatAndFilterRates ({
               }
               break
             } else if (j === result.byCurr[id].length - 1) {
-              const bonus = bonuses.find(bon => bon.changer === rowArray[2])
+              const bonus = bonuses.find(bon => (bon.changer === rowArray[2] && (bon.from === rowArray[0] || bon.to === rowArray[1]))) || bonuses.find(bon => bon.changer === rowArray[2])
               if (bonus) rowArray = calcBonus(rowArray, bonus)
               rowArray = calcCommission(rowArray, commissions)
               result.byCurr[id][rowArray[1]] = rowArray
@@ -99,7 +99,7 @@ module.exports = async function formatAndFilterRates ({
         }
       } else {
         result.byCurr[id] = []
-        const bonus = bonuses.find(bon => bon.changer === rowArray[2])
+        const bonus = bonuses.find(bon => (bon.changer === rowArray[2] && (bon.from === rowArray[0] || bon.to === rowArray[1]))) || bonuses.find(bon => bon.changer === rowArray[2])
         if (bonus) rowArray = calcBonus(rowArray, bonus)
         rowArray = calcCommission(rowArray, commissions)
         // to filter by dollar amount of changer

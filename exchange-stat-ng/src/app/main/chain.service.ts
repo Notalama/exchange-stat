@@ -19,50 +19,50 @@ export class ChainService {
     return ((minAmount / 100) * profit).toFixed(2) + ' $';
   }
 
-  getChainCol(chain: any[], dollarRate: any[], otherRates: any[]) {
-    console.log(chain);
-    const rates = chain.length;
-    const sum = dollarRate ? this.calcRate(+dollarRate[3], +dollarRate[4], 1000) : 1;
-    const calcFirst = this.calcRate(+chain[0].give, +chain[0].receive, +sum);
-    const calcSecond = this.calcRate(+chain[1].give, +chain[1].receive, +calcFirst);
-    const calcThird = rates >= 3 ? this.calcRate(+chain[2].give, +chain[2].receive, +calcSecond) : null;
-    const calcFourth = rates >= 4 ? this.calcRate(+chain[3].give, +chain[3].receive, +calcThird) : null;
-    const compiledChain = [];
-    chain.forEach((rate, i) => {
-      const preLinkC = rate.changer === '1024' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id=';
-      const preLinkBC = 'https://www.bestchange.ru/index.php?';
-      const exmoPair = rate.changer === '1024' ? this.buildExmoLink(rate) : '';
-      const arrowLinkParams = `&from=${rate.from}&to=${rate.to}&url=1">'`;
-      const changerLinkParams = rate.changer === '1024' ? `${exmoPair}">` : `${rate.changer}&from=${rate.from}&to=${rate.to}&url=1">'`;
-      let items = '<li>'
-      // other rates template fill
-      if (otherRates.length) {
-        otherRates[i].forEach(oRate => {
-          const preC = oRate.changer === '1024' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id=';
-          const exmo = oRate.changer === '1024' ? this.buildExmoLink(oRate) : '';
-          const arrow = `&from=${oRate.from}&to=${oRate.to}&url=1">'`;
-          const changer = oRate.changer === '1024' ? `${exmo}">` : `${oRate.changer}&from=${oRate.from}&to=${oRate.to}&url=1">'`;
-          items += this.getChangerLink({rate: oRate, preLinkC: preC, preLinkBC, arrowLinkParams: arrow, changerLinkParams: changer}) + '</li><li>';
-        });
-      }
-      const others = otherRates.length ? '<ul class="others-list">' + items + '</ul>' : '';
-      const exch = `<a target="_blank" href="${preLinkBC + arrowLinkParams}<i class="fas fa-arrow-right"></i></a> -
-          <a target="_blank" href="${preLinkC + changerLinkParams + rate.changerTitle}</a>
-          (${rate.give} : ${rate.receive};${rate.amount.amount}, ${rate.amount.dollarAmount.toFixed(4)} $) <br> ${others}`;
-      compiledChain.push(exch);
-    });
-    const currOne = sum + ' ' + chain[0].fromTitle;
-    const exchOne = compiledChain[0];
-    const currTwo = `<i class="fas fa-arrow-right"></i>${calcFirst}  ${chain[1].fromTitle}`;
-    const exchTwo = compiledChain[1];
-    const currThree = rates >= 3 ? `<i class="fas fa-arrow-right"></i>${calcSecond} ${chain[2].fromTitle}` : '';
-    const exchThree = rates >= 3 ? compiledChain[2] : '';
-    const currFour = rates === 4 ? `<i class="fas fa-arrow-right"></i> ${calcSecond} ${chain[3].fromTitle}` : '';
-    const exchFour = rates === 4 ? compiledChain[3] : '';
-    const exitSum = rates === 2 ? calcSecond : rates === 3 ? calcThird : calcFourth;
-    const endChain = `<span style="color: green"><i class="fas fa-arrow-right"></i>${exitSum} ${chain[0].fromTitle}</span>`;
-    return currOne + exchOne + currTwo + exchTwo + currThree + exchThree + currFour + exchFour + endChain;
-  }
+  // getChainCol(chain: any[], dollarRate: any[], otherRates: any[]) {
+  //   console.log(chain);
+  //   const rates = chain.length;
+  //   const sum = dollarRate ? this.calcRate(+dollarRate[3], +dollarRate[4], 1000) : 1;
+  //   const calcFirst = this.calcRate(+chain[0].give, +chain[0].receive, +sum);
+  //   const calcSecond = this.calcRate(+chain[1].give, +chain[1].receive, +calcFirst);
+  //   const calcThird = rates >= 3 ? this.calcRate(+chain[2].give, +chain[2].receive, +calcSecond) : null;
+  //   const calcFourth = rates >= 4 ? this.calcRate(+chain[3].give, +chain[3].receive, +calcThird) : null;
+  //   const compiledChain = [];
+  //   chain.forEach((rate, i) => {
+  //     const preLinkC = rate.changer === '1024' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id=';
+  //     const preLinkBC = 'https://www.bestchange.ru/index.php?';
+  //     const exmoPair = rate.changer === '1024' ? this.buildExmoLink(rate) : '';
+  //     const arrowLinkParams = `&from=${rate.from}&to=${rate.to}&url=1">'`;
+  //     const changerLinkParams = rate.changer === '1024' ? `${exmoPair}">` : `${rate.changer}&from=${rate.from}&to=${rate.to}&url=1">'`;
+  //     let items = '<li>'
+  //     // other rates template fill
+  //     if (otherRates.length) {
+  //       otherRates[i].forEach(oRate => {
+  //         const preC = oRate.changer === '1024' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id=';
+  //         const exmo = oRate.changer === '1024' ? this.buildExmoLink(oRate) : '';
+  //         const arrow = `&from=${oRate.from}&to=${oRate.to}&url=1">'`;
+  //         const changer = oRate.changer === '1024' ? `${exmo}">` : `${oRate.changer}&from=${oRate.from}&to=${oRate.to}&url=1">'`;
+  //         items += this.getChangerLink({rate: oRate, preLinkC: preC, preLinkBC, arrowLinkParams: arrow, changerLinkParams: changer}) + '</li><li>';
+  //       });
+  //     }
+  //     const others = otherRates.length ? '<ul class="others-list">' + items + '</ul>' : '';
+  //     const exch = `<a target="_blank" href="${preLinkBC + arrowLinkParams}<i class="fas fa-arrow-right"></i></a> -
+  //         <a target="_blank" href="${preLinkC + changerLinkParams + rate.changerTitle}</a>
+  //         (${rate.give} : ${rate.receive};${rate.amount.amount}, ${rate.amount.dollarAmount.toFixed(4)} $) <br> ${others}`;
+  //     compiledChain.push(exch);
+  //   });
+  //   const currOne = sum + ' ' + chain[0].fromTitle;
+  //   const exchOne = compiledChain[0];
+  //   const currTwo = `<i class="fas fa-arrow-right"></i>${calcFirst}  ${chain[1].fromTitle}`;
+  //   const exchTwo = compiledChain[1];
+  //   const currThree = rates >= 3 ? `<i class="fas fa-arrow-right"></i>${calcSecond} ${chain[2].fromTitle}` : '';
+  //   const exchThree = rates >= 3 ? compiledChain[2] : '';
+  //   const currFour = rates === 4 ? `<i class="fas fa-arrow-right"></i> ${calcSecond} ${chain[3].fromTitle}` : '';
+  //   const exchFour = rates === 4 ? compiledChain[3] : '';
+  //   const exitSum = rates === 2 ? calcSecond : rates === 3 ? calcThird : calcFourth;
+  //   const endChain = `<span style="color: green"><i class="fas fa-arrow-right"></i>${exitSum} ${chain[0].fromTitle}</span>`;
+  //   return currOne + exchOne + currTwo + exchTwo + currThree + exchThree + currFour + exchFour + endChain;
+  // }
 
   private getChangerLink({rate, preLinkBC, preLinkC, arrowLinkParams, changerLinkParams}) {
     return `<a target="_blank" href="${preLinkBC + arrowLinkParams}<i class="fas fa-arrow-right"></i></a> -

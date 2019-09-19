@@ -3,6 +3,7 @@ const fs = require('fs')
 const StreamZip = require('node-stream-zip')
 const Iconv = require('iconv').Iconv
 const { currencies } = require('./exmo-currencies')
+const kunaCurrencies = require('./kuna-currencies')
 const exchangersModel = require('./../exchangers/model')
 
 const {
@@ -113,16 +114,14 @@ module.exports = {
                   if (kunaRate.hasOwnProperty(key)) {
                     const bkey = key.toUpperCase()
                     const element = Object.values(kunaRate[key].data)
-                    const frst = currencies.find(curr => curr.title === bkey.substring(0, 3))
-                    const scnd = currencies.find(curr => curr.title === bkey.substring(3, bkey.length))
-                    console.log(frst, ' - 118 frst contoller');
-                    console.log(scnd, ' - 118 scnd contoller');
+                    const frst = kunaCurrencies.currencies.find(curr => curr.title === bkey.substring(0, 3))
+                    const scnd = kunaCurrencies.currencies.find(curr => curr.title === bkey.substring(3, bkey.length))
                     element.forEach(el => {
                       if (el[1] > 0) {
-                        const rate = `${frst.id};${scnd.id};1025;${el[0]};1;${el[1]}`
+                        const rate = `${scnd.id};${frst.id};1025;${el[0]};1;${el[1]}`
                         kunaRatesUnform.push(rate)
                       } else if (el[1] < 0) {
-                        const rate = `${scnd.id};${frst.id};1025;1;${el[0]};${Math.abs(el[1])}`
+                        const rate = `${frst.id};${scnd.id};1025;1;${el[0]};${Math.abs(el[1])}`
                         kunaRatesUnform.push(rate)
                       }
                     })
@@ -130,7 +129,7 @@ module.exports = {
                 }
               }
               // console.log(`${+minBalance}  ${+minProfit} s-- minb and minprof`)
-              const unformattedList = [...ratesBuffer.split('\n'), ...exmoRatesUnform, ...kunaRatesUnform];
+              const unformattedList = [...ratesBuffer.split('\n'), ...exmoRatesUnform, ...kunaRatesUnform]
               await formatRates({
                 unformattedList,
                 minAmount: +minBalance,

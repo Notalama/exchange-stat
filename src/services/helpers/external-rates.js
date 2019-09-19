@@ -25,17 +25,18 @@ module.exports = {
   getKunaOrders: async function () {
     try {
       // tslint:disable-next-line:prefer-const
-      let kunaOrders = {};
+      let kunaOrders = {}
       // tslint:disable-next-line:max-line-length
-      const kunaCurr = ['btcusdt', 'btcusd', 'btcrub', 'ethbtc', 'eosbtc'];
+      const kunaCurr = ['btcusdt', 'btcusd', 'btcrub', 'ethbtc', 'eosbtc']
       // tslint:disable-next-line:prefer-for-of
       for (let i = 0; i < kunaCurr.length; i++) {
         kunaOrders[kunaCurr[i]] = await axios.get(`https://api.kuna.io/v3/book/${kunaCurr[i]}`)
       }
-      return kunaOrders;
+      
+      return kunaOrders
     } catch (err) {
-      console.error(err, 'kuna orders error');
-      return err;
+      console.error(err, 'kuna orders error')
+      return err
     }
   },
   buildStringRates: function ({
