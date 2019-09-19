@@ -119,9 +119,11 @@ module.exports = {
                     element.forEach(el => {
                       if (el[1] > 0) {
                         const rate = `${scnd.id};${frst.id};1025;${el[0]};1;${el[1]}`
+                        // const rate = `${frst.id};${scnd.id};1025;${el[0]};1;${el[1]}`
                         kunaRatesUnform.push(rate)
                       } else if (el[1] < 0) {
                         const rate = `${frst.id};${scnd.id};1025;1;${el[0]};${Math.abs(el[1])}`
+                        // const rate = `${scnd.id};${frst.id};1025;1;${el[0]};${Math.abs(el[1])}`
                         kunaRatesUnform.push(rate)
                       }
                     })

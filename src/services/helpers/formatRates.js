@@ -44,6 +44,7 @@ module.exports = async function formatRates ({
             if (secondEl && secondEl[1] === firstEl[0]) {
               let chain = [firstEl, secondEl]
               const profit = calcChain([firstEl, secondEl], absCommis)
+              if ((firstEl[0] === '40' || secondEl[0] === '40') && (firstEl[2] === '1025' || secondEl[2] === '1025')) console.log(chain, ' - 47 chain fornmmatRates')
               if (profit > minProfit) {
                 // *** Chain currencies to dollar compare ***
                 const calcedAmount = calcAmountToDoll(chain, byCurr, minAmount)
@@ -136,7 +137,7 @@ module.exports = async function formatRates ({
     // hide clone chains
     sorted.forEach((el, i) => {
       const prevElProfit = sorted[i - 1] ? sorted[i - 1][sorted[i - 1].length - 2] : 0
-      if (sorted[i - 1] && el[el.length - 2].toFixed(6) !== prevElProfit.toFixed(6)) filtered.push(el)
+      if (el[el.length - 2].toFixed(6) !== prevElProfit.toFixed(6)) filtered.push(el)
     })
     return {
       profitArr: readySubs.concat(filtered),

@@ -49,6 +49,7 @@ module.exports = async function formatAndFilterRates ({
   // const byCurrExmo = module.exports.structRates(exmoRates)
   // console.log(byCurrExmo, '37')
   try {
+    const tempTopRates = []
     for (let i = 0; i < unformattedList.length; i++) {
       let rowArray = unformattedList[i].split(';')
       rowArray.splice(6, rowArray.length)
@@ -84,7 +85,9 @@ module.exports = async function formatAndFilterRates ({
               if (bonus) rowArray = calcBonus(rowArray, bonus)
               rowArray = calcCommission(rowArray, commissions)
               const isProfitable = +rowArray[3] <= +el[3] && +rowArray[4] >= +el[4]
-              if (isProfitable) {
+              const isOverRated = tempTopRates[rowArray[1]] ? Math.abs(+rowArray[3] - +tempTopRates[rowArray[1]][3]) < +tempTopRates[rowArray[1]][3] || Math.abs(+rowArray[4] - +tempTopRates[rowArray[1]][4]) < +tempTopRates[rowArray[1]][4] : false
+              if (isProfitable && !isOverRated) {
+                if (rowArray[2] === '1025' && el[2] !== '1025') tempTopRates[rowArray[1]] = el
                 result.byCurr[id][rowArray[1]] = rowArray
               }
               break
