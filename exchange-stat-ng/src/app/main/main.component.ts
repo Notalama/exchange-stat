@@ -47,11 +47,12 @@ export class MainComponent implements OnInit {
       { field: 'links', header: '=>' }
     ];
   }
+  
   buildTable(data: any[]) {
     this.subscribed = [];
-    
+    console.log(data);
+    const pinnedSubscriptions = [];
     this.chains = data.sort((a, b) => a.length - b.length).map((chainData, i) => {
-      
       const [dollarRate, profit, isSubs] = chainData.splice(chainData.length - 3, 3);
       const generatedId = this._chainService.generateId(chainData);
       const tableRowObject = {
@@ -66,16 +67,24 @@ export class MainComponent implements OnInit {
         isSubs,
         titles: this._chainService.getTitles(chainData)
       };
+      if (isSubs) {
+        pinnedSubscriptions.push(tableRowObject);
+      }
       return tableRowObject;
     });
+    this.chains = this.chains.filter((el, i) => pinnedSubscriptions.length ? !pinnedSubscriptions.some(sub => sub.id === el.id) : true);
+    this.chains = [...pinnedSubscriptions, ...this.chains];
   }
+
   reload() {
     this._store.getChains();
     this.timer = 0;
   }
+
   updateInterval(interval = 0) {
     if (interval >= 0 || this.interval >= this.minInterval) { this.interval += interval; }
   }
+
   reloadInterval() {
     this.reload();
     setTimeout(() => {
@@ -94,9 +103,7 @@ export class MainComponent implements OnInit {
       });
     } else { chainSubscriptions = this.subscribed[0].chain.chainData.reduce(this.subsChainReducer); }
     chainSubscriptions = chainSubscriptions.substring(0, chainSubscriptions.length - 1);
-
     this._store._urlParams = { chainSubscriptions: chainSubscriptions };
-    
   }
 
   private subsChainReducer(rateAcc, rate, j, arr) {
@@ -104,8 +111,8 @@ export class MainComponent implements OnInit {
     if (j === 1) { return `${rateAcc.from},${rateAcc.to},${rateAcc.changer};${rate.from},${rate.to},${rate.changer + ending}`; }
     return rateAcc + `${rate.from},${rate.to},${rate.changer + ending}`;
   }
+
   openAllLinks(idx: number) {
-    console.log(idx);
     this._chainService.buildAllLinks(this.chains[idx].chain.chainData);
   }
 

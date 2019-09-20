@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Rate } from './models/rate';
+import { _currs } from '../static/kuna-curr';
 
 @Injectable({
   providedIn: 'root'
@@ -84,14 +85,19 @@ export class ChainService {
         el.fromTitle.substring(el.fromTitle.length - 3, el.fromTitle.length));
   }
 
+  buildKunaLink(element) {
+    return _currs[element.from + element.to] || _currs[element.to + element.from];
+  }
+
   buildAllLinks(chainRates) {
     for (let i = 0; i < chainRates.length; i++) {
       const element = chainRates[i];
-      const preLinkC = element.changer === '1024' ? 'https://exmo.me/uk/trade#?pair=' : 'https://www.bestchange.ru/click.php?id=';
+      const preLinkC = element.changer === '1024' ? 'https://exmo.me/uk/trade#?pair=' : (element.changer === '1025' ? 'https://kuna.io/markets/' : 'https://www.bestchange.ru/click.php?id=');
       const preLinkBC = 'https://www.bestchange.ru/index.php?';
       const exmoPair = element.changer === '1024' ? this.buildExmoLink(element) : '';
+      const kunaPair = element.changer === '1025' ? this.buildKunaLink(element) : '';
       window.open(preLinkBC + 'from=' + element.from + '&to=' + element.to + '&url=1');
-      window.open(preLinkC + (element.changer === '1024' ? exmoPair : element.changer + '&from=' + element.from + '&to=' + element.to + '&url=1'));
+      window.open(preLinkC + (element.changer === '1024' ? exmoPair : (element.changer === '1025' ? kunaPair : element.changer + '&from=' + element.from + '&to=' + element.to + '&url=1')));
     }
   }
   generateId(chain): string {
