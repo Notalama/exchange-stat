@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { StoreService } from '../store.service';
 import { Subscription } from 'rxjs';
@@ -9,7 +9,7 @@ import { ChainService } from '../main/chain.service';
   templateUrl: './custom-chain.component.html',
   styleUrls: ['./custom-chain.component.sass']
 })
-export class CustomChainComponent implements OnInit {
+export class CustomChainComponent implements OnInit, OnDestroy {
   cols: any[];
   form: FormGroup;
   currencies = [];
@@ -27,6 +27,7 @@ export class CustomChainComponent implements OnInit {
   }
 
   ngOnInit() {
+    this._store._isActiveR = false;
     this._store.getCurrencies();
     this.currSubscription = this._store.currencies.subscribe(res => {
       console.log(res);
@@ -79,6 +80,7 @@ export class CustomChainComponent implements OnInit {
   ngOnDestroy(): void {
     this.currSubscription.unsubscribe();
     this.chainSubscription.unsubscribe();
+    this._store._isActiveR = true;
   }
 }
 

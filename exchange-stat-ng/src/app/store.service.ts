@@ -25,7 +25,7 @@ export class StoreService {
   customChain: Subject<{ chain: any[], otherRates: any[] }>;
   chainForSettings: Subject<any>;
   chainFS: any;
-  private isActiveR: boolean;
+  private isActiveR = true;
   private chainsUrl = 'http://localhost:9000/best-change?minBalance=' +
     this.urlParams.minBalance + '&minProfit=' +
     this.urlParams.minProfit + '&showExmo=' +
@@ -49,15 +49,15 @@ export class StoreService {
   }
 
   set _isActiveR (val) {
-    console.log(val)
     this.isActiveR = val;
   }
   
   getChains() {
-    console.log(this.isActiveR)
     if (this.isActiveR) {
+      this._isActiveR = false;
       return this.http.get(this.chainsUrl).toPromise().then((res: any[]) => {
         this.chains.next(res);
+        this._isActiveR = true;
       }, err => {
         console.log(err);
       });
