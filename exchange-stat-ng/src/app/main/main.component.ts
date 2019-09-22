@@ -50,7 +50,7 @@ export class MainComponent implements OnInit {
   
   buildTable(data: any[]) {
     this.subscribed = [];
-    console.log(data);
+    // console.log(data);
     const pinnedSubscriptions = [];
     this.chains = data.sort((a, b) => a.length - b.length).map((chainData, i) => {
       const [dollarRate, profit, isSubs] = chainData.splice(chainData.length - 3, 3);
