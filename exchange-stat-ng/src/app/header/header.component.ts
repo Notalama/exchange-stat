@@ -14,12 +14,12 @@ export class HeaderComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder, private _store: StoreService) {
     this.form = this.formBuilder.group({
-      exmoOrdersCount: [3],
+      exmoOrdersCount: [4],
       minProfit: [0.4],
-      minBalance: [10],
-      showExmo: [false],
+      minBalance: [200],
+      showExmo: [true],
       ltThreeLinks: [false],
-      showKuna: [false],
+      showKuna: [true],
       chainSubscriptions: ['']
     });
    }
