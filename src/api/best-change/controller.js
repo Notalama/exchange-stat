@@ -116,15 +116,27 @@ module.exports = {
                     const element = Object.values(kunaRate[key].data)
                     const frst = kunaCurrencies.currencies.find(curr => curr.title === bkey.substring(0, 3))
                     const scnd = kunaCurrencies.currencies.find(curr => curr.title === bkey.substring(3, bkey.length))
-                    element.forEach(el => {
-                      if (el[1] > 0) {
-                        const rate = `${scnd.id};${frst.id};1025;${el[0]};1;${el[1]}`
-                        // const rate = `${frst.id};${scnd.id};1025;${el[0]};1;${el[1]}`
+                    let sumBalance = 0
+                    let sumBalanceRatesCount = 0
+                    element.some(el => {
+                      let rate
+                      let balance = Math.abs(el[1]) + sumBalance
+                      sumBalance += balance
+                      if (balance < minBalance && sumBalanceRatesCount <= exmoOrdersCount) { // get avg sum for minBalance
+                        sumBalance = balance
+                        sumBalanceRatesCount++
+                        return false
+                      } else if (balance) {
+                        if (el[1] > 0) {
+                          rate = `${scnd.id};${frst.id};1025;${el[0]};1;${balance}`
+                          // const rate = `${frst.id};${scnd.id};1025;${el[0]};1;${el[1]}`
+                        } else if (el[1] < 0) {
+                          rate = `${frst.id};${scnd.id};1025;1;${el[0]};${balance}`
+                          // const rate = `${scnd.id};${frst.id};1025;1;${el[0]};${Math.abs(el[1])}`
+                        }
                         kunaRatesUnform.push(rate)
-                      } else if (el[1] < 0) {
-                        const rate = `${frst.id};${scnd.id};1025;1;${el[0]};${Math.abs(el[1])}`
-                        // const rate = `${scnd.id};${frst.id};1025;1;${el[0]};${Math.abs(el[1])}`
-                        kunaRatesUnform.push(rate)
+                        sumBalance = 0
+                        return true
                       }
                     })
                   }

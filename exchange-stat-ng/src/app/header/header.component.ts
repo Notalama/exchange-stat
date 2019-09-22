@@ -14,7 +14,7 @@ export class HeaderComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder, private _store: StoreService) {
     this.form = this.formBuilder.group({
-      exmoOrdersCount: [0],
+      exmoOrdersCount: [3],
       minProfit: [0.4],
       minBalance: [10],
       showExmo: [false],

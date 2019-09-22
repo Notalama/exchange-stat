@@ -44,7 +44,6 @@ module.exports = async function formatRates ({
             if (secondEl && secondEl[1] === firstEl[0]) {
               let chain = [firstEl, secondEl]
               const profit = calcChain([firstEl, secondEl], absCommis)
-              if ((firstEl[0] === '40' || secondEl[0] === '40') && (firstEl[2] === '1025' || secondEl[2] === '1025')) console.log(chain, ' - 47 chain fornmmatRates')
               if (profit > minProfit) {
                 // *** Chain currencies to dollar compare ***
                 const calcedAmount = calcAmountToDoll(chain, byCurr, minAmount)

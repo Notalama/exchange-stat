@@ -16,7 +16,7 @@ export class StoreService {
     showKuna: false,
     ltThreeLinks: false,
     chainSubscriptions: '',
-    exmoOrdersCount: 0
+    exmoOrdersCount: 3
   };
 
   chains: Subject<any[]>;
@@ -26,6 +26,7 @@ export class StoreService {
   chainForSettings: Subject<any>;
   chainFS: any;
   private isActiveR = true;
+  private reloadOnWait = false;
   private chainsUrl = 'http://localhost:9000/best-change?minBalance=' +
     this.urlParams.minBalance + '&minProfit=' +
     this.urlParams.minProfit + '&showExmo=' +
@@ -52,12 +53,19 @@ export class StoreService {
     this.isActiveR = val;
   }
   
+  set _refresh (val) {
+    this.reloadOnWait = val;
+  }
   getChains() {
     if (this.isActiveR) {
       this._isActiveR = false;
       return this.http.get(this.chainsUrl).toPromise().then((res: any[]) => {
         this.chains.next(res);
         this._isActiveR = true;
+        if (this.reloadOnWait) {
+          this.getChains();
+          this._refresh = false;
+        }
       }, err => {
         console.log(err);
       });

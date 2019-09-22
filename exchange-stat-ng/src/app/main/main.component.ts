@@ -81,6 +81,11 @@ export class MainComponent implements OnInit {
     this.timer = 0;
   }
 
+  refresh() {
+    this._store._refresh = true;
+    this._store.getChains();
+  }
+
   updateInterval(interval = 0) {
     if (interval >= 0 || this.interval >= this.minInterval) { this.interval += interval; }
   }
