@@ -50,9 +50,9 @@ export class MainComponent implements OnInit {
   
   buildTable(data: any[]) {
     this.subscribed = [];
-    // console.log(data);
     const pinnedSubscriptions = [];
-    if (!this.chains.length && data.length) document.getElementById('aud').play();
+    // @ts-ignore
+    if (!this.chains.length && data.length && document.getElementById('aud').play) document.getElementById('aud').play();
     this.chains = data.sort((a, b) => a.length - b.length).map((chainData, i) => {
       const [dollarRate, profit, isSubs] = chainData.splice(chainData.length - 3, 3);
       const generatedId = this._chainService.generateId(chainData);
