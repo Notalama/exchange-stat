@@ -33,9 +33,8 @@ export class ChainSettingsComponent implements OnInit, OnDestroy {
       firstPair: [false],
       secondPair: [false],
       thirdPair: [false],
-      firstRate: [false],
-      secondRate: [false],
-      thirdRate: [false],
+      ratesIn: this.formBuilder.array([this.formBuilder.control(false),this.formBuilder.control(false),this.formBuilder.control(false),this.formBuilder.control(false)]),
+      ratesOut:this.formBuilder.array([this.formBuilder.control(false),this.formBuilder.control(false),this.formBuilder.control(false),this.formBuilder.control(false)]),
       days: [null],
       hours: [null],
       mins: [null]
@@ -67,9 +66,12 @@ export class ChainSettingsComponent implements OnInit, OnDestroy {
     if (value.firstPair) this.hideRate({ inCurrencyId: chain[0].from, outCurrencyId: chain[0].to });
     if (value.secondPair) this.hideRate({ inCurrencyId: chain[1].from, outCurrencyId: chain[1].to });
     if (value.thirdPair) this.hideRate({ inCurrencyId: chain[2].from, outCurrencyId: chain[2].to });
-    if (value.firstRate) this.hideRate({ inCurrencyId: chain[0].from, outCurrencyId: chain[0].to, changerId: chain[0].changer });
-    if (value.secondRate) this.hideRate({ inCurrencyId: chain[1].from, outCurrencyId: chain[1].to, changerId: chain[1].changer });
-    if (value.thirdRate) this.hideRate({ inCurrencyId: chain[2].from, outCurrencyId: chain[2].to, changerId: chain[2].changer });
+    value.ratesIn.forEach((el, i) => {
+      if (el) this.hideRate({ inCurrencyId: chain[i].from, changerId: chain[i].changer });
+    });
+    value.ratesOut.forEach((el, i) => {
+      if (el) this.hideRate({ outCurrencyId: chain[i].from, changerId: chain[i].changer });
+    });
     this.form.reset();
   }
 

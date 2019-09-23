@@ -17,35 +17,35 @@
   </div>
   <div class="form-group">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="firstCurrencyIn">
-    <label class="form-check-label" >Перша вхід <span class="option-value-title">{{this.chain.chain.chainData[0].fromTitle}}; </span></label>
+    <label class="form-check-label" >Перша валюта вхід <span class="option-value-title">{{this.chain.chain.chainData[0].fromTitle}}; </span></label>
   </div>
   <div class="form-group">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="firstCurrencyOut">
-    <label class="form-check-label" >Перша вихід <span class="option-value-title">{{this.chain.chain.chainData[0].toTitle}}; </span></label>
+    <label class="form-check-label" >Перша валюта вихід <span class="option-value-title">{{this.chain.chain.chainData[0].toTitle}}; </span></label>
   </div>
   <div class="form-group">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="secondCurrencyIn">
-    <label class="form-check-label" >Друга вхід <span class="option-value-title">{{this.chain.chain.chainData[1].fromTitle}}; </span></label>
+    <label class="form-check-label" >Друга валюта вхід <span class="option-value-title">{{this.chain.chain.chainData[1].fromTitle}}; </span></label>
   </div>
   <div class="form-group">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="secondCurrencyOut">
-    <label class="form-check-label" >Друга вихід <span class="option-value-title">{{this.chain.chain.chainData[1].toTitle}}; </span></label>
+    <label class="form-check-label" >Друга валюта вихід <span class="option-value-title">{{this.chain.chain.chainData[1].toTitle}}; </span></label>
   </div>
   <div class="form-group" *ngIf="chain.length > 2">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="thirdCurrencyIn">
-    <label class="form-check-label" >Третя вхід <span class="option-value-title">{{this.chain.chain.chainData[2].fromTitle}}; </span></label>
+    <label class="form-check-label" >Третя валюта вхід <span class="option-value-title">{{this.chain.chain.chainData[2].fromTitle}}; </span></label>
   </div>
   <div class="form-group" *ngIf="chain.length > 2">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="thirdCurrencyOut">
-    <label class="form-check-label" >Третя вихід <span class="option-value-title">{{this.chain.chain.chainData[2].toTitle}}; </span></label>
+    <label class="form-check-label" >Третя валюта вихід <span class="option-value-title">{{this.chain.chain.chainData[2].toTitle}}; </span></label>
   </div>
   <div class="form-group" *ngIf="chain.length > 3">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="thirdCurrencyIn">
-    <label class="form-check-label" >Четверта вхід <span class="option-value-title">{{this.chain.chain.chainData[2].fromTitle}}; </span></label>
+    <label class="form-check-label" >Четверта валюта вхід <span class="option-value-title">{{this.chain.chain.chainData[2].fromTitle}}; </span></label>
   </div>
   <div class="form-group" *ngIf="chain.length > 3">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="thirdCurrencyOut">
-    <label class="form-check-label" >Четверта вихід <span class="option-value-title">{{this.chain.chain.chainData[3].toTitle}}; </span></label>
+    <label class="form-check-label" >Четверта валюта вихід <span class="option-value-title">{{this.chain.chain.chainData[3].toTitle}}; </span></label>
   </div>
   <div class="form-group">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="firstExchanger">
@@ -79,19 +79,19 @@
     <input type="checkbox" class="form-radio-input mr-1" formControlName="thirdPair">
     <label class="form-check-label" >Четверта пара <span class="option-value-title">{{this.chain.chain.chainData[3].fromTitle + '-' + this.chain.chain.chainData[3].toTitle}}; </span></label>
   </div>
+  <div formArrayName="ratesIn">
+    <div class="form-group" *ngFor="let rate of this.chain.chain.chainData; let i = index">
+      <input type="checkbox" class="form-radio-input mr-1" [formControlName]="i">
+      <label class="form-check-label" > {{i + 1}} Вхідна валюта - Обмінник <span class="option-value-title">{{rate.fromTitle + ' - ' + rate.changerTitle}}</span></label>
+    </div>
+  </div>
+  <div formArrayName="ratesOut">
+    <div class="form-group" *ngFor="let rate of this.chain.chain.chainData; let i = index">
+      <input type="checkbox" class="form-radio-input mr-1" [formControlName]="i">
+      <label class="form-check-label" > {{i + 1}} Вихідна валюта - Обмінник <span class="option-value-title">{{rate.fromTitle + ' - ' + rate.changerTitle}}</span></label>
+    </div>
+  </div>
 
-  <!-- <div class="form-group">
-    <input type="checkbox" class="form-radio-input mr-1" formControlName="firstRate">
-    <label class="form-check-label" >Перший рейт</label>
-  </div>
-  <div class="form-group">
-    <input type="checkbox" class="form-radio-input mr-1" formControlName="secondRate">
-    <label class="form-check-label" >Другий рейт</label>
-  </div>
-  <div class="form-group" *ngIf="chain.length > 2">
-    <input type="checkbox" class="form-radio-input mr-1" formControlName="thirdRate">
-    <label class="form-check-label" >Третій рейт</label>
-  </div> -->
   <div class="row mt-2">
     <div class="col md4">
       <label for="blockTime">Днів</label>
