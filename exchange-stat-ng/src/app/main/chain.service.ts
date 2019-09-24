@@ -77,12 +77,17 @@ export class ChainService {
   }
 
   buildExmoLink(el) {
-    return (el.toTitle[el.toTitle.length - 1] === ')' ?
+    let pairLink = (el.toTitle[el.toTitle.length - 1] === ')' ?
       el.toTitle.substring(el.toTitle.search('\\(') + 1, el.toTitle.length - 1) :
       el.toTitle.substring(el.toTitle.length - 3, el.toTitle.length)) + '_' +
       (el.fromTitle[el.fromTitle.length - 1] === ')' ?
         el.fromTitle.substring(el.fromTitle.search('\\(') + 1, el.fromTitle.length - 1) :
         el.fromTitle.substring(el.fromTitle.length - 3, el.fromTitle.length));
+    if (pairLink === 'BTC_ETH') pairLink = 'ETH_BTC';
+    if (pairLink === 'USD_ETH') pairLink = 'ETH_USD';
+    if (pairLink === 'USD_BTC') pairLink = 'USD_BTC';
+    if (pairLink === 'BTC_LTC') pairLink = 'LTC_BTC';
+    return pairLink;
   }
 
   buildKunaLink(element) {
@@ -92,7 +97,7 @@ export class ChainService {
   buildAllLinks(chainRates) {
     for (let i = 0; i < chainRates.length; i++) {
       const element = chainRates[i];
-      const preLinkC = element.changer === '1024' ? 'https://exmo.me/uk/trade#?pair=' : (element.changer === '1025' ? 'https://kuna.io/markets/' : 'https://www.bestchange.ru/click.php?id=');
+      const preLinkC = element.changer === '1024' ? 'https://exmo.me/uk/trade/' : (element.changer === '1025' ? 'https://kuna.io/markets/' : 'https://www.bestchange.ru/click.php?id=');
       const preLinkBC = 'https://www.bestchange.ru/index.php?';
       const exmoPair = element.changer === '1024' ? this.buildExmoLink(element) : '';
       const kunaPair = element.changer === '1025' ? this.buildKunaLink(element) : '';
