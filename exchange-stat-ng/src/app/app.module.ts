@@ -23,6 +23,7 @@ import { CustomChainComponent } from './custom-chain/custom-chain.component';
 import { HeaderComponent } from './header/header.component';
 import {MessagesModule} from 'primeng/messages';
 import {MessageModule} from 'primeng/message';
+import { RoundPipe } from './main/chain-col/chain-rate/roundPipe';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import {MessageModule} from 'primeng/message';
     ChainRateComponent,
     CalcRateSumPipe,
     BuildExmoLinkPipe,
+    RoundPipe,
     BuildKunaLinkPipe,
     SettingsFormComponent,
     CustomChainComponent,
