@@ -84,11 +84,10 @@ export class ChainSettingsComponent implements OnInit, OnDestroy {
       };
       this.http.post('http://localhost:9000/temp-hide', params).toPromise().then((res: any) => {
         if (res.message === 'success') {
-          this.show({severity: 'success', summary: 'Success message', detail: 'Налаштування збережені'});
+          this._store.showNotification.next({severity: 'success', summary: 'Success message', detail: 'Налаштування збережені'})
         } else {
-          this.show({severity: 'error', summary: 'Warning message', detail: `Відбулась помилка. ${res.message}`});
+          this._store.showNotification.next({severity: 'error', summary: 'Warning message', detail: `Відбулась помилка. ${res.message}`});
         }
-        console.log(res);
       }, err => console.log(err));
     });
   }
@@ -103,9 +102,9 @@ export class ChainSettingsComponent implements OnInit, OnDestroy {
       };
       this.http.post('http://localhost:9000/temp-hide', params).toPromise().then((res: any) => {
         if (res.message === 'success') {
-          this.show({severity: 'success', summary: 'Success message', detail: 'Налаштування збережені'});
+          this._store.showNotification.next({severity: 'success', summary: 'Success message', detail: 'Налаштування збережені'});
         } else {
-          this.show({severity: 'error', summary: 'Warning message', detail: `Відбулась помилка. ${res.message}`});
+          this._store.showNotification.next({severity: 'error', summary: 'Warning message', detail: `Відбулась помилка. ${res.message}`});
         }
         console.log(res);
       }, err => console.log(err));
@@ -118,9 +117,9 @@ export class ChainSettingsComponent implements OnInit, OnDestroy {
     params[prop] = value;
     this.http.post('http://localhost:9000/temp-hide', params).toPromise().then((res: any) => {
       if (res.message === 'success') {
-        this.show({severity: 'success', summary: 'Success message', detail: 'Налаштування збережені'});
+        this._store.showNotification.next({severity: 'success', summary: 'Success message', detail: 'Налаштування збережені'});
       } else {
-        this.show({severity: 'error', summary: 'Warning message', detail: `Відбулась помилка. ${res.message}`});
+        this._store.showNotification.next({severity: 'error', summary: 'Warning message', detail: `Відбулась помилка. ${res.message}`});
       }
       console.log(res);
     }, err => console.log(err));
@@ -130,25 +129,13 @@ export class ChainSettingsComponent implements OnInit, OnDestroy {
     if (!param) return;
     this.http.post('http://localhost:9000/temp-hide', param).toPromise().then((res: any) => {
       if (res.message === 'success') {
-        this.show({severity: 'success', summary: 'Успіх', detail: 'Налаштування збережені'});
+        this._store.showNotification.next({severity: 'success', summary: 'Успіх', detail: 'Налаштування збережені'});
       } else {
-        this.show({severity: 'error', summary: 'Warning message', detail: `Відбулась помилка. ${res.message}`});
+        this._store.showNotification.next({severity: 'error', summary: 'Warning message', detail: `Відбулась помилка. ${res.message}`});
       }
       console.log(res);
     }, err => console.log(err));
   }
-
-  show({severity, summary, detail}) {
-    this.msgs.push({ severity, summary, detail });
-    setTimeout(() => {
-      this.hide();
-    }, 3000);
-  }
-  
-  hide() {
-    this.msgs = [];
-  }
-
   ngOnDestroy(): void {
     this.chainSubsctiption.unsubscribe();
   }

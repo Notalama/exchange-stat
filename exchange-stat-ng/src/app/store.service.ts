@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { UrlParams } from './main/models/url-params';
 import { CustomChainConfig } from './main/models/customChainConfig';
+import { Notification } from './helpers/models';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class StoreService {
     exmoOrdersCount: 3
   };
 
+  showNotification: Subject<Notification>;
   chains: Subject<any[]>;
   exchangers: Subject<any[]>;
   currencies: Subject<any[]>;
@@ -46,9 +48,10 @@ export class StoreService {
     this.currencies = new Subject();
     this.exchangers = new Subject();
     this.customChain = new Subject();
+    this.showNotification = new Subject();
     this.chainForSettings.subscribe(val => this.chainFS = val);
   }
-
+  
   set _isActiveR (val) {
     this.isActiveR = val;
   }
