@@ -17,7 +17,6 @@ export class SettingsFormComponent implements OnInit {
   ngOnInit(): void {
     this._store.getCurrencies();
     this._store.currencies.subscribe(res => {
-      console.log(res);
       this.currencies = [{changerTitle: '', changerId: null}, ...res];
     }, err => {
       console.log(err);
