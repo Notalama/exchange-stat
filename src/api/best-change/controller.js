@@ -117,48 +117,49 @@ module.exports = {
                     const frst = kunaCurrencies.currencies.find(curr => curr.title === bkey.substring(0, 3))
                     const scnd = kunaCurrencies.currencies.find(curr => curr.title === bkey.substring(3, bkey.length))
                     let sumBalance = 0
-                    let sumBalanceRatesCount = 0
+                    let sumBalanceRatesCount = 1
                     let bid = ''
                     let ask = ''
                     let bidRate = 0
                     let askRate = 0
                     console.log(frst, scnd, ' : first - scnd')
                     element.forEach(el => {
-                      const calcBalance = +el[1] < 0 ? Math.abs(+el[1]) : Math.abs(+el[1]) * +el[0]
+                      if (bid && ask) return
+                      const calcBalance = +el[1] < 0 ? Math.abs(+el[1]) : (+el[1] * +el[0])
                       let balance = calcBalance + sumBalance
                       if (+el[1] > 0) bidRate += +el[0]
-                      else askRate += +el[0]
+                      else {
+                        if (sumBalanceRatesCount >= 4 && askRate === 0) sumBalanceRatesCount = 1
+                        askRate += +el[0]
+                      }
                       // const t = (frst.id === '40' && scnd.id === '93') || (frst.id === '93' && scnd.id === '40')
                       // if (t) {
                       //   console.log(el[0], ' - rate')
                       // }
-                      console.log(sumBalanceRatesCount, balance)
-                      if (balance < +minBalance && sumBalanceRatesCount < +exmoOrdersCount) { // get avg sum for minBalance
+                      if (sumBalanceRatesCount < +exmoOrdersCount) { // get avg sum for minBalance
                         sumBalance += +balance
                         sumBalanceRatesCount++
                       } else {
                         if (+el[1] > 0 && !bid) {
-                          bid = `${frst.id};${scnd.id};1025;1;${bidRate / (sumBalanceRatesCount || 1)};${balance}`
-                          sumBalanceRatesCount = 0
+                          bid = `${frst.id};${scnd.id};1025;1;${(bidRate / sumBalanceRatesCount)};${balance}`
+                          sumBalanceRatesCount = 1
+                          balance = 0
+                          sumBalance = 0
+                        } else if (+el[1] < 0 && !ask) {
+                          ask = `${scnd.id};${frst.id};1025;${(askRate / sumBalanceRatesCount)};1;${balance}`
+                          sumBalanceRatesCount = 1
                           balance = 0
                           sumBalance = 0
                         }
-                        if (+el[1] < 0 && !ask) {
-                          ask = `${scnd.id};${frst.id};1025;${askRate / (sumBalanceRatesCount || 1)};1;${balance}`
-                          sumBalanceRatesCount = 0
-                          balance = 0
-                          sumBalance = 0
-                        }
-                        sumBalance = 0
                       }
                     })
-                    console.log(bid, ' - bid')
-                    console.log(ask, ' - ask')
                     kunaRatesUnform.push(bid)
                     kunaRatesUnform.push(ask)
                   }
                 }
               }
+              console.log(exmoRatesUnform.slice(0, 2), ' - exmo kuna next')
+              console.log(kunaRatesUnform)
               // console.log(`${+minBalance}  ${+minProfit} s-- minb and minprof`)
               const unformattedList = [...ratesBuffer.split('\n'), ...exmoRatesUnform, ...kunaRatesUnform]
               await formatRates({
