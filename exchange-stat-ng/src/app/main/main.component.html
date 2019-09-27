@@ -9,6 +9,8 @@
           <h6>Інтервал {{this.interval / 1000}} с</h6></div>
     </div>
     <div class="col-md-1">
+      <label>{{interval}}</label>
+      <input type="number" class="form-control" [(ngModel)]="interval" id="orders">
       <button type="button" class="btn btn-primary" data-toggle="modal" (click)="updateInterval(1000)">+</button>
       <button type="button" class="btn btn-primary pr-3 text-center mt-1" data-toggle="modal" (click)="updateInterval(-1000)">-</button>
     </div>

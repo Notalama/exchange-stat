@@ -71,6 +71,7 @@ export class StoreService {
         }
       }, err => {
         console.log(err);
+        this._isActiveR = true;
       });
     } else {
       return null;

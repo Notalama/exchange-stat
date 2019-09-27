@@ -112,10 +112,6 @@ module.exports = async function formatAndFilterRates ({
             if (currArr[rowArray[1]]) {
               rateAmount = calcDollAmount(currArr[rowArray[1]][5], rowArray, minAmount)
               if (rateAmount < +minAmount) {
-                // if exmo, get average value
-                // if (rowArray[2] === '1024') {
-
-                // } else
                 currArr[rowArray[1]] = undefined
               } else currArr[rowArray[1]][6] = rateAmount
             }

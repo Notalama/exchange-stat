@@ -118,31 +118,44 @@ module.exports = {
                     const scnd = kunaCurrencies.currencies.find(curr => curr.title === bkey.substring(3, bkey.length))
                     let sumBalance = 0
                     let sumBalanceRatesCount = 0
-                    element.some(el => {
-                      let rate
-                      let balance = Math.abs(+el[1]) + sumBalance
-                      sumBalance += +balance
-                      console.log(sumBalance, exmoOrdersCount, typeof exmoOrdersCount)
-                      console.log(el)
-                      console.log(`${scnd.id};${frst.id};1025;${el[0]};1;${balance}`, ' - 127 controller ----')
+                    let bid = ''
+                    let ask = ''
+                    let bidRate = 0
+                    let askRate = 0
+                    console.log(frst, scnd, ' : first - scnd')
+                    element.forEach(el => {
+                      const calcBalance = +el[1] < 0 ? Math.abs(+el[1]) : Math.abs(+el[1]) * +el[0]
+                      let balance = calcBalance + sumBalance
+                      if (+el[1] > 0) bidRate += +el[0]
+                      else askRate += +el[0]
+                      // const t = (frst.id === '40' && scnd.id === '93') || (frst.id === '93' && scnd.id === '40')
+                      // if (t) {
+                      //   console.log(el[0], ' - rate')
+                      // }
+                      console.log(sumBalanceRatesCount, balance)
                       if (balance < +minBalance && sumBalanceRatesCount < +exmoOrdersCount) { // get avg sum for minBalance
-                        sumBalance = +balance
+                        sumBalance += +balance
                         sumBalanceRatesCount++
-                        return false
-                      } else if (+exmoOrdersCount === sumBalanceRatesCount) {
-                        if (el[1] > 0) {
-                          rate = `${scnd.id};${frst.id};1025;${el[0]};1;${balance}`
-                          // const rate = `${frst.id};${scnd.id};1025;${el[0]};1;${el[1]}`
-                        } else if (el[1] < 0) {
-                          rate = `${frst.id};${scnd.id};1025;1;${el[0]};${balance}`
-                          // const rate = `${scnd.id};${frst.id};1025;1;${el[0]};${Math.abs(el[1])}`
+                      } else {
+                        if (+el[1] > 0 && !bid) {
+                          bid = `${frst.id};${scnd.id};1025;1;${bidRate / (sumBalanceRatesCount || 1)};${balance}`
+                          sumBalanceRatesCount = 0
+                          balance = 0
+                          sumBalance = 0
                         }
-                        kunaRatesUnform.push(rate)
+                        if (+el[1] < 0 && !ask) {
+                          ask = `${scnd.id};${frst.id};1025;${askRate / (sumBalanceRatesCount || 1)};1;${balance}`
+                          sumBalanceRatesCount = 0
+                          balance = 0
+                          sumBalance = 0
+                        }
                         sumBalance = 0
-                        return true
                       }
                     })
-                    console.log(kunaRatesUnform, ' - controller 142')
+                    console.log(bid, ' - bid')
+                    console.log(ask, ' - ask')
+                    kunaRatesUnform.push(bid)
+                    kunaRatesUnform.push(ask)
                   }
                 }
               }
@@ -165,7 +178,8 @@ module.exports = {
         }
       })
     } catch (e) {
-      console.error(e, 'bestChange controller error')
+      console.log(e, 'bestChange controller error')
+      res.status(500).json({message: 'Bestchange request error'})
     }
   }
 }
