@@ -63,7 +63,7 @@ module.exports = {
                     const divIndex = key.search('_')
                     const frst = currencies.find(curr => curr.title === key.substring(0, divIndex))
                     const scnd = currencies.find(curr => curr.title === key.substring(divIndex + 1, key.length))
-                    if (frst && scnd && exmoOrdersCount) {
+                    if (frst && scnd && +exmoOrdersCount) {
                       let giveAccum = 0
                       let receiveAccum = 0
                       let balanceAccum = 0
@@ -89,7 +89,7 @@ module.exports = {
                       receiveAcc = (receiveAcc / element.bid.length).toFixed(6)
                       let rateBid = `${frst.id};${scnd.id};1024;${giveAcc};${receiveAcc};${balanceAcc}`
                       exmoRatesUnform.push(rateBid)
-                    } else if (frst && scnd && !exmoOrdersCount) {
+                    } else if (frst && scnd && !+exmoOrdersCount) {
                       element.ask.forEach(el => {
                         const give = +el[0] < 1 ? '1' : +el[0]
                         const receive = +el[0] < 1 ? (1 / +el[0]) : '1'
@@ -120,13 +120,16 @@ module.exports = {
                     let sumBalanceRatesCount = 0
                     element.some(el => {
                       let rate
-                      let balance = Math.abs(el[1]) + sumBalance
-                      sumBalance += balance
-                      if (balance < minBalance && sumBalanceRatesCount <= exmoOrdersCount) { // get avg sum for minBalance
-                        sumBalance = balance
+                      let balance = Math.abs(+el[1]) + sumBalance
+                      sumBalance += +balance
+                      console.log(sumBalance, exmoOrdersCount, typeof exmoOrdersCount)
+                      console.log(el)
+                      console.log(`${scnd.id};${frst.id};1025;${el[0]};1;${balance}`, ' - 127 controller ----')
+                      if (balance < +minBalance && sumBalanceRatesCount < +exmoOrdersCount) { // get avg sum for minBalance
+                        sumBalance = +balance
                         sumBalanceRatesCount++
                         return false
-                      } else if (balance) {
+                      } else if (+exmoOrdersCount === sumBalanceRatesCount) {
                         if (el[1] > 0) {
                           rate = `${scnd.id};${frst.id};1025;${el[0]};1;${balance}`
                           // const rate = `${frst.id};${scnd.id};1025;${el[0]};1;${el[1]}`
@@ -139,6 +142,7 @@ module.exports = {
                         return true
                       }
                     })
+                    console.log(kunaRatesUnform, ' - controller 142')
                   }
                 }
               }
