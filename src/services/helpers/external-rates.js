@@ -27,7 +27,7 @@ module.exports = {
       // tslint:disable-next-line:prefer-const
       let kunaOrders = {}
       // tslint:disable-next-line:max-line-length
-      const kunaCurr = ['btcusdt', 'btcusd', 'btcrub', 'ethbtc', 'eosbtc']
+      const kunaCurr = ['btcusdt', 'btcusd', 'btcrub', 'ethbtc', 'eosbtc', 'btcuah']
       // tslint:disable-next-line:prefer-for-of
       for (let i = 0; i < kunaCurr.length; i++) {
         kunaOrders[kunaCurr[i]] = await axios.get(`https://api.kuna.io/v3/book/${kunaCurr[i]}`)
