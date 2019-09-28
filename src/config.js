@@ -40,7 +40,7 @@ const config = {
     mongo: {
       uri: 'mongodb://localhost/current-stat-dev',
       options: {
-        debug: true
+        debug: false
       }
     }
   },

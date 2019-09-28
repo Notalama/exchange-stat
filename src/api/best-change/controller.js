@@ -5,7 +5,7 @@ const Iconv = require('iconv').Iconv
 const { currencies } = require('./exmo-currencies')
 const kunaCurrencies = require('./kuna-currencies')
 const exchangersModel = require('./../exchangers/model')
-
+const axios = require('axios')
 const {
   formatRates,
   formatExchangers,
@@ -14,17 +14,18 @@ const {
   getKunaOrders
 } = require('./../../services/helpers')
 module.exports = {
-  index: (req, res, next) => {
+  index: async (req, res, next) => {
     try {
       const { minBalance, minProfit, chainSubscriptions, ltThreeLinks, showExmo, exmoOrdersCount, showKuna } = req.query
-      http.get('http://api.bestchange.ru/info.zip', (data) => {
-        const {
-          statusCode
-        } = data
-        if (statusCode !== 200) {
-          res.status(400).send('info.zip not found', data)
+      console.log('request start 20')
+      await axios({method: 'get', url: 'http://api.bestchange.ru/info.zip', responseType: 'stream'}).then(function (axiosResponse) {
+        console.log('bestchange responded', !!axiosResponse)
+        const { data } = axiosResponse
+        if (!data) {
+          res.status(400).send({message: 'info.zip not found', data})
           console.log(data, 'api bestchange failed')
         } else {
+          console.log('zip is start 28')
           const zipWriteBuffer = fs.createWriteStream('info/info.zip')
           data.pipe(zipWriteBuffer)
           zipWriteBuffer.on('finish', () => {
@@ -33,6 +34,7 @@ module.exports = {
               storeEntries: true
             })
             zip.on('ready', async () => {
+              console.log('zip is ready 38')
               let rates = zip.entryDataSync('bm_rates.dat')
               const iconv = new Iconv('WINDOWS-1251', 'UTF-8')
               const ratesBuffer = iconv.convert(rates).toString()
@@ -117,40 +119,40 @@ module.exports = {
                     const frst = kunaCurrencies.currencies.find(curr => curr.title === bkey.substring(0, 3))
                     const scnd = kunaCurrencies.currencies.find(curr => curr.title === bkey.substring(3, bkey.length))
                     let sumBalance = 0
-                    let sumBalanceRatesCount = 1
                     let bid = ''
                     let ask = ''
                     let bidRate = 0
                     let askRate = 0
                     console.log(frst, scnd, ' : first - scnd')
-                    element.forEach(el => {
-                      if (bid && ask) return
-                      const calcBalance = +el[1] < 0 ? Math.abs(+el[1]) : (+el[1] * +el[0])
+                    const askIndex = element.findIndex(e => +e[1] < 0)
+                    const bidRatesCount = +element[exmoOrdersCount][1] && +element[exmoOrdersCount][1] > 0 ? +exmoOrdersCount : askIndex
+                    const askRatesCount = element[askIndex + +exmoOrdersCount] ? askIndex + +exmoOrdersCount : element.length
+                    const bidRates = element.slice(0, bidRatesCount)
+                    const askRates = element.slice(askIndex, askRatesCount)
+                    bidRates.forEach((rate, i) => {
+                      const calcBalance = +rate[1] * +rate[0]
                       let balance = calcBalance + sumBalance
-                      if (+el[1] > 0) bidRate += +el[0]
-                      else {
-                        if (sumBalanceRatesCount >= 4 && askRate === 0) sumBalanceRatesCount = 1
-                        askRate += +el[0]
+                      bidRate = bidRate + +rate[0]
+                      sumBalance = sumBalance + +balance
+                      if (i === bidRates.length - 1) {
+                        const rateCalc = bidRate / bidRates.length
+                        const give = rateCalc < 1 ? 1 / rateCalc : '1'
+                        const receive = rateCalc < 1 ? '1' : rateCalc
+                        bid = `${frst.id};${scnd.id};1025;${give};${receive};${balance}`
+                        sumBalance = 0
+                        balance = 0
                       }
-                      // const t = (frst.id === '40' && scnd.id === '93') || (frst.id === '93' && scnd.id === '40')
-                      // if (t) {
-                      //   console.log(el[0], ' - rate')
-                      // }
-                      if (sumBalanceRatesCount < +exmoOrdersCount) { // get avg sum for minBalance
-                        sumBalance += +balance
-                        sumBalanceRatesCount++
-                      } else {
-                        if (+el[1] > 0 && !bid) {
-                          bid = `${frst.id};${scnd.id};1025;1;${(bidRate / sumBalanceRatesCount)};${balance}`
-                          sumBalanceRatesCount = 1
-                          balance = 0
-                          sumBalance = 0
-                        } else if (+el[1] < 0 && !ask) {
-                          ask = `${scnd.id};${frst.id};1025;${(askRate / sumBalanceRatesCount)};1;${balance}`
-                          sumBalanceRatesCount = 1
-                          balance = 0
-                          sumBalance = 0
-                        }
+                    })
+                    askRates.forEach((rate, i) => {
+                      const calcBalance = Math.abs(+rate[1]) * +rate[0]
+                      let balance = calcBalance + sumBalance
+                      askRate = askRate + +rate[0]
+                      sumBalance = sumBalance + +balance
+                      if (i === askRates.length - 1) {
+                        const rateCalc = askRate / askRates.length
+                        const give = rateCalc < 1 ? '1' : rateCalc
+                        const receive = rateCalc < 1 ? (1 / rateCalc) : '1'
+                        ask = `${scnd.id};${frst.id};1025;${give};${receive};${balance}`
                       }
                     })
                     kunaRatesUnform.push(bid)
@@ -178,6 +180,7 @@ module.exports = {
           })
         }
       })
+      console.log('after await 185')
     } catch (e) {
       console.log(e, 'bestChange controller error')
       res.status(500).json({message: 'Bestchange request error'})

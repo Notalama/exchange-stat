@@ -13,11 +13,11 @@ export class StoreService {
   private urlParams: UrlParams = {
     minBalance: 0,
     minProfit: 1,
-    showExmo: false,
-    showKuna: false,
+    showExmo: true,
+    showKuna: true,
     ltThreeLinks: false,
     chainSubscriptions: '',
-    exmoOrdersCount: 3
+    exmoOrdersCount: 4
   };
 
   showNotification: Subject<Notification>;
