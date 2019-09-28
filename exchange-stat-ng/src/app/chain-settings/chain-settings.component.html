@@ -7,14 +7,14 @@
   </div>
 </div>
 <form [formGroup]="form" (ngSubmit)="submit()">
-  <div class="form-group">
+  <!-- <div class="form-group">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="allExchangers">
     <label class="form-check-label" >Всі обмінники: <span *ngFor="let rate of this.chain.chain.chainData" class="option-value-title">{{rate.changerTitle}}; </span></label>
-  </div>
-  <div class="form-group">
+  </div> -->
+  <!-- <div class="form-group">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="allCurrencies">
     <label class="form-check-label" >Всі валюти <span *ngFor="let rate of this.chain.chain.chainData" class="option-value-title">{{rate.fromTitle}}; </span></label>
-  </div>
+  </div> -->
   <div class="form-group">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="firstCurrencyIn">
     <label class="form-check-label" >Перша валюта вхід <span class="option-value-title">{{this.chain.chain.chainData[0].fromTitle}}; </span></label>
@@ -23,14 +23,14 @@
     <input type="checkbox" class="form-radio-input mr-1" formControlName="firstCurrencyOut">
     <label class="form-check-label" >Перша валюта вихід <span class="option-value-title">{{this.chain.chain.chainData[0].toTitle}}; </span></label>
   </div>
-  <div class="form-group">
+  <!-- <div class="form-group">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="secondCurrencyIn">
     <label class="form-check-label" >Друга валюта вхід <span class="option-value-title">{{this.chain.chain.chainData[1].fromTitle}}; </span></label>
-  </div>
-  <div class="form-group">
+  </div> -->
+  <!-- <div class="form-group">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="secondCurrencyOut">
     <label class="form-check-label" >Друга валюта вихід <span class="option-value-title">{{this.chain.chain.chainData[1].toTitle}}; </span></label>
-  </div>
+  </div> -->
   <div class="form-group" *ngIf="chain.length > 2">
     <input type="checkbox" class="form-radio-input mr-1" formControlName="thirdCurrencyIn">
     <label class="form-check-label" >Третя валюта вхід <span class="option-value-title">{{this.chain.chain.chainData[2].fromTitle}}; </span></label>

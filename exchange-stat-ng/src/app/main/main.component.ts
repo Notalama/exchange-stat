@@ -83,10 +83,9 @@ export class MainComponent implements OnInit {
   }
 
   refresh() {
-    // this._store._refresh = true;
-    this.reload();
-    
-    // this._store.getChains();
+    this._store._refresh = true;
+    // this.reload();
+    this._store.getChains();
   }
 
   updateInterval(interval = 0) {

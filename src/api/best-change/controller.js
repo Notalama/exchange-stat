@@ -17,6 +17,7 @@ module.exports = {
   index: async (req, res, next) => {
     try {
       const { minBalance, minProfit, chainSubscriptions, ltThreeLinks, showExmo, exmoOrdersCount, showKuna } = req.query
+      console.log('new request')
       await axios({method: 'get', url: 'http://api.bestchange.ru/info.zip', responseType: 'stream'}).then(function (axiosResponse) {
         const { data } = axiosResponse
         if (!data) {
@@ -175,6 +176,9 @@ module.exports = {
             })
           })
         }
+      }).catch(error => {
+        console.log(error, ' - 179')
+        res.status(500).json({message: 'Bestchange request error'})
       })
     } catch (e) {
       console.log(e, 'bestChange controller error')
