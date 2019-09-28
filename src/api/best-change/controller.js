@@ -177,7 +177,7 @@ module.exports = {
           })
         }
       }).catch(error => {
-        console.log(error, ' - 179')
+        console.log(error, ' - 179 - Bestchange request error')
         res.status(500).json({message: 'Bestchange request error'})
       })
     } catch (e) {
