@@ -19,13 +19,11 @@ module.exports = {
       const { minBalance, minProfit, chainSubscriptions, ltThreeLinks, showExmo, exmoOrdersCount, showKuna } = req.query
       console.log('request start 20')
       await axios({method: 'get', url: 'http://api.bestchange.ru/info.zip', responseType: 'stream'}).then(function (axiosResponse) {
-        console.log('bestchange responded', !!axiosResponse)
         const { data } = axiosResponse
         if (!data) {
           res.status(400).send({message: 'info.zip not found', data})
           console.log(data, 'api bestchange failed')
         } else {
-          console.log('zip is start 28')
           const zipWriteBuffer = fs.createWriteStream('info/info.zip')
           data.pipe(zipWriteBuffer)
           zipWriteBuffer.on('finish', () => {
@@ -34,7 +32,6 @@ module.exports = {
               storeEntries: true
             })
             zip.on('ready', async () => {
-              console.log('zip is ready 38')
               let rates = zip.entryDataSync('bm_rates.dat')
               const iconv = new Iconv('WINDOWS-1251', 'UTF-8')
               const ratesBuffer = iconv.convert(rates).toString()
