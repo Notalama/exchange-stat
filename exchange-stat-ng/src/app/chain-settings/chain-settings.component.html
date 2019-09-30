@@ -88,7 +88,7 @@
   <div formArrayName="ratesOut">
     <div class="form-group" *ngFor="let rate of this.chain.chain.chainData; let i = index">
       <input type="checkbox" class="form-radio-input mr-1" [formControlName]="i">
-      <label class="form-check-label" > {{i + 1}} Вихідна валюта - Обмінник <span class="option-value-title">{{rate.fromTitle + ' - ' + rate.changerTitle}}</span></label>
+      <label class="form-check-label" > {{i + 1}} Вихідна валюта - Обмінник <span class="option-value-title">{{rate.changerTitle + ' - ' + rate.toTitle}}</span></label>
     </div>
   </div>
 

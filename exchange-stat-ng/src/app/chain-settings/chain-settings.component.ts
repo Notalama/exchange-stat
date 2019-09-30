@@ -70,7 +70,7 @@ export class ChainSettingsComponent implements OnInit, OnDestroy {
       if (el) this.hideRate({ inCurrencyId: chain[i].from, changerId: chain[i].changer });
     });
     value.ratesOut.forEach((el, i) => {
-      if (el) this.hideRate({ outCurrencyId: chain[i].from, changerId: chain[i].changer });
+      if (el) this.hideRate({ outCurrencyId: chain[i].to, changerId: chain[i].changer });
     });
     this.form.reset();
   }
