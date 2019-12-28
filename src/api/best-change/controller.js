@@ -122,7 +122,7 @@ module.exports = {
                     let askRate = 0
                     console.log(frst, scnd, ' : first - scnd')
                     const askIndex = element.findIndex(e => +e[1] < 0)
-                    const bidRatesCount = +element[exmoOrdersCount][1] && +element[exmoOrdersCount][1] > 0 ? +exmoOrdersCount : askIndex
+                    const bidRatesCount = +element[exmoOrdersCount] && +element[exmoOrdersCount][1] && +element[exmoOrdersCount][1] > 0 ? +exmoOrdersCount : askIndex
                     const askRatesCount = element[askIndex + +exmoOrdersCount] ? askIndex + +exmoOrdersCount : element.length
                     const bidRates = element.slice(0, bidRatesCount)
                     const askRates = element.slice(askIndex, askRatesCount)
