@@ -28,11 +28,11 @@ const config = {
     apiRoot: process.env.API_ROOT || '',
     masterKey: requireProcessEnv('MASTER_KEY'),
     mongo: {
-      options: {
-        db: {
-          safe: true
-        }
-      }
+      // options: {
+      //   db: {
+      //     safe: true
+      //   }
+      // }
     }
   },
   test: { },
