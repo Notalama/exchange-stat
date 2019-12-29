@@ -29,9 +29,9 @@ const config = {
     masterKey: requireProcessEnv('MASTER_KEY'),
     mongo: {
       options: {
-        db: {
-          safe: true
-        }
+        // db: {
+        //   safe: true
+        // }
       }
     }
   },
