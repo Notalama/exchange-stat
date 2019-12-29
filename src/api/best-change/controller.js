@@ -120,7 +120,7 @@ module.exports = {
                     let ask = ''
                     let bidRate = 0
                     let askRate = 0
-                    console.log(frst, scnd, ' : first - scnd')
+                    // console.log(frst, scnd, ' : first - scnd')
                     const askIndex = element.findIndex(e => +e[1] < 0)
                     const bidRatesCount = +element[exmoOrdersCount] && +element[exmoOrdersCount][1] && +element[exmoOrdersCount][1] > 0 ? +exmoOrdersCount : askIndex
                     const askRatesCount = element[askIndex + +exmoOrdersCount] ? askIndex + +exmoOrdersCount : element.length
@@ -157,8 +157,8 @@ module.exports = {
                   }
                 }
               }
-              console.log(exmoRatesUnform.slice(0, 2), ' - exmo kuna next')
-              console.log(kunaRatesUnform)
+              // console.log(exmoRatesUnform.slice(0, 2), ' - exmo kuna next')
+              // console.log(kunaRatesUnform)
               // console.log(`${+minBalance}  ${+minProfit} s-- minb and minprof`)
               const unformattedList = [...ratesBuffer.split('\n'), ...exmoRatesUnform, ...kunaRatesUnform]
               await formatRates({
