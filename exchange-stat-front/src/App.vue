@@ -2,7 +2,7 @@
   <div id="app">
     <meta name="appleid-signin-client-id" content="com.kukatree.platform">
     <meta name="appleid-signin-scope" content="">
-    <meta name="appleid-signin-redirect-uri" content="https://staging.platform.kukatree.com/auth/apple">
+    <meta name="appleid-signin-redirect-uri" content="https://exchange-stat.herokuapp.com/auth-apple">
     <meta name="appleid-signin-state" content="1">
     <meta name="appleid-signin-use-popup" content="true">
     <meta name="appleid-signin-use-popup" content="true">
