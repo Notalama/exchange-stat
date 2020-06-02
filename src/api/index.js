@@ -2,6 +2,7 @@ const { Router } = require('express')
 // const {bestChange } = require('./best-change'
 const bestChange = require('./best-change')
 const customChain = require('./custom-chain')
+const appleAuth = require('./apple-auth')
 const currencies = require('./currencies')
 const exchangers = require('./exchangers')
 const tempHide = require('./temp-hide')
@@ -35,4 +36,5 @@ router.use('/currencies', currencies)
 router.use('/exchangers', exchangers)
 router.use('/temp-hide', tempHide)
 router.use('/custom-chain', customChain)
+router.use('/auth-apple', appleAuth)
 module.exports = router
