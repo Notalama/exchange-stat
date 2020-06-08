@@ -62,7 +62,7 @@ module.exports = {
                     const divIndex = key.search('_')
                     const frst = currencies.find(curr => curr.title === key.substring(0, divIndex))
                     const scnd = currencies.find(curr => curr.title === key.substring(divIndex + 1, key.length))
-                    if (frst && scnd && +exmoOrdersCount) {
+                    if (frst && scnd && +exmoOrdersCount && element.ask) {
                       let giveAccum = 0
                       let receiveAccum = 0
                       let balanceAccum = 0
@@ -88,7 +88,7 @@ module.exports = {
                       receiveAcc = (receiveAcc / element.bid.length).toFixed(6)
                       let rateBid = `${frst.id};${scnd.id};1024;${giveAcc};${receiveAcc};${balanceAcc}`
                       exmoRatesUnform.push(rateBid)
-                    } else if (frst && scnd && !+exmoOrdersCount) {
+                    } else if (frst && scnd && !+exmoOrdersCount && element.ask) {
                       element.ask.forEach(el => {
                         const give = +el[0] < 1 ? '1' : +el[0]
                         const receive = +el[0] < 1 ? (1 / +el[0]) : '1'
