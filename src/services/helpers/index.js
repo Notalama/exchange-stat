@@ -1,5 +1,5 @@
 const formatRates = require('./formatRates')
-const { getExmoOrders, getKunaOrders } = require('./external-rates')
+const { getExmoOrders, getKunaOrders, getBinanceOrders } = require('./external-rates')
 const {
   formatExchangers,
   compileResponse,
@@ -12,5 +12,6 @@ module.exports = {
   compileResponse,
   formatCurrencies,
   getExmoOrders,
-  getKunaOrders
+  getKunaOrders,
+  getBinanceOrders
 }

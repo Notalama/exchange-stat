@@ -11,7 +11,8 @@ const {
   formatExchangers,
   compileResponse,
   getExmoOrders,
-  getKunaOrders
+  getKunaOrders,
+  getBinanceOrders
 } = require('./../../services/helpers')
 module.exports = {
   index: async (req, res, next) => {
@@ -157,17 +158,21 @@ module.exports = {
                   }
                 }
               }
+              let binanceUnform = [];
+              if (true) {
+                binanceUnform = await getBinanceOrders();
+                console.log(binanceUnform.length);
+              }
               // console.log(exmoRatesUnform.slice(0, 2), ' - exmo kuna next')
               // console.log(kunaRatesUnform)
               // console.log(`${+minBalance}  ${+minProfit} s-- minb and minprof`)
-              const unformattedList = [...ratesBuffer.split('\n'), ...exmoRatesUnform, ...kunaRatesUnform]
+              const unformattedList = [...binanceUnform, ...ratesBuffer.split('\n'), ...exmoRatesUnform, ...kunaRatesUnform];
               await formatRates({
                 unformattedList,
                 minAmount: +minBalance,
                 minProfit: +minProfit,
                 chainSubscriptions,
-                ltThreeLinks: JSON.parse(ltThreeLinks),
-                exmoRates: exmoRatesUnform
+                ltThreeLinks: JSON.parse(ltThreeLinks)
               }).then(async result => {
                 const response = await compileResponse(result)
                 res.status(200).json(response)

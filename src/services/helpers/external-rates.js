@@ -1,4 +1,5 @@
 const axios = require('axios')
+const { binanceCurrenciesMap } = require('../../api/best-change/binance-currencies')
 module.exports = {
   getExmoOrders: async function ({
     exmoOrdersCount = null
@@ -39,44 +40,46 @@ module.exports = {
       return err
     }
   },
-  buildStringRates: function ({
-    ask,
-    bid,
-    element,
-    exmoOrdersCount,
-    currencies,
-    divIndex
-  }) {
-    // const frst = currencies.find(curr => curr.title === key.substring(0, divIndex))
-    // const scnd = currencies.find(curr => curr.title === key.substring(divIndex + 1, key.length))
-    // if (frst && scnd) {
-    //   let giveAccum = 0
-    //   let receiveAccum = 0
-    //   let balanceAccum = 0
-    //   element.ask.forEach(el => {
-    //     giveAccum += (+el[0] < 1) ? 1 : +el[0]
-    //     receiveAccum += (+el[0] < 1) ? (1 / +el[0]) : 1
-    //     balanceAccum += +el[1]
-    //   })
-    //   giveAccum = (giveAccum / element.ask.length).toFixed(6)
-    //   receiveAccum = (receiveAccum / element.ask.length).toFixed(6)
-    //   let rateAsk = `${scnd.id};${frst.id};899;${giveAccum};${receiveAccum};${balanceAccum}`
-    //   exmoRatesUnform.push(rateAsk)
-
-    //   let giveAcc = 0
-    //   let receiveAcc = 0
-    //   let balanceAcc = 0
-    //   element.bid.forEach(el => {
-    //     giveAcc += (+el[0] < 1) ? (1 / +el[0]) : 1
-    //     receiveAcc += (+el[0] < 1) ? 1 : +el[0]
-    //     balanceAcc += +el[2]
-    //   })
-
-    //   giveAcc = (giveAcc / element.bid.length).toFixed(6)
-    //   receiveAcc = (receiveAcc / element.bid.length).toFixed(6)
-    //   let a = receiveAcc !== 1 ? (giveAcc !== 1 ? console.log(giveAcc, receiveAcc, 84) : null) : null
-    //   let rateBid = `${frst.id};${scnd.id};899;${giveAcc};${receiveAcc};${balanceAcc}`
-    //   exmoRatesUnform.push(rateBid)
-    //   }
+  getBinanceOrders: async function () {
+    try {
+      const binanceUrl = 'https://api1.binance.com/api/v3/ticker/bookTicker';
+      const binanceResponse = await axios.get(binanceUrl);
+      const result = handleBinanceResponse(binanceResponse);
+      return result;
+    } catch (err) {
+      console.error(err, 'binance orders error')
+      return [];
+    }
   }
 }
+
+function handleBinanceResponse(binanceResponse) {
+  const resArr = binanceResponse.data.filter((el) => filterSymbols(el));
+  return resArr.reduce((acc, rate, i) => {
+    const {give, receive} = binanceCurrenciesMap[rate.symbol] || {};
+    if (!give || !receive) {
+      console.log(rate.symbol)
+      return [...acc];
+    }
+    const giveBid = +rate.askPrice < 1 ? '1' : rate.askPrice;
+    const receiveBid = +rate.askPrice < 1 ? 1 / rate.askPrice : '1';
+    const receiveAsk = +rate.bidPrice < 1 ? '1' : rate.bidPrice;
+    const giveAsk = +rate.bidPrice < 1 ? 1 / rate.bidPrice : '1';
+    const bidRate = `${receive};${give};510;${giveBid};${receiveBid};${rate.bidQty}`;
+    const askRate = `${give};${receive};510;${giveAsk};${receiveAsk};${rate.askQty}`;
+    if (!i || i === 1) return [bidRate, askRate];
+    return [...acc, bidRate, askRate];
+  });
+}
+
+function filterSymbols(rate) {
+  const { symbol, askQty, bidQty } = rate;
+  const includesUp = symbol.includes('UP');
+  const includesDown = symbol.includes('DOWN');
+  const hasQuantity = +askQty > 0.00000001 && +bidQty > 0.00000001;
+  const isStableCoin = symbol.includes('TUSD') ||
+  symbol.includes('USDC') || symbol.includes('PAX') || symbol.includes('DAI') ||
+  symbol.includes('BUSD') || symbol.includes('RUB') || symbol.includes('EUR');
+  return !(includesUp || includesDown || isStableCoin || !hasQuantity);
+}
+

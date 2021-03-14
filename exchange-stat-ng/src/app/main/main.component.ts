@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { ChainService } from './chain.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { StoreService } from '../store.service';
@@ -21,10 +22,11 @@ export class MainComponent implements OnInit {
   subscription: Subscription;
   toggleLoader = true;
   // tslint:disable-next-line:variable-name
-  constructor(private _chainService: ChainService, private _store: StoreService) { }
+  constructor(private http: HttpClient,private _chainService: ChainService, private _store: StoreService) { }
 
   ngOnInit() {
-    this.interval = 10000;
+    this.interval = 10;
+    // this.http.get('https://api1.binance.com/api/v3/ticker/bookTicker').toPromise().then(res => console.log(res));
     setInterval(() => {
       this.timer++;
       this.chains.forEach(el => el.age++);
