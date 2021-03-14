@@ -25,7 +25,7 @@ export class MainComponent implements OnInit {
   constructor(private http: HttpClient,private _chainService: ChainService, private _store: StoreService) { }
 
   ngOnInit() {
-    this.interval = 10;
+    this.interval = 10000;
     // this.http.get('https://api1.binance.com/api/v3/ticker/bookTicker').toPromise().then(res => console.log(res));
     setInterval(() => {
       this.timer++;
