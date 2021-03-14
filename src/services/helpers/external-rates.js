@@ -58,7 +58,6 @@ function handleBinanceResponse(binanceResponse) {
   return resArr.reduce((acc, rate, i) => {
     const {give, receive} = binanceCurrenciesMap[rate.symbol] || {};
     if (!give || !receive) {
-      console.log(rate.symbol)
       return [...acc];
     }
     const giveBid = +rate.askPrice < 1 ? '1' : rate.askPrice;

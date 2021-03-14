@@ -71,5 +71,7 @@ module.exports = {
   }, {
     id: '173',
     title: 'XEM'
-  }]
+  },
+  { "id": 23, "title": "USDC" }, { "id": 26, "title": "QTUM" }, { "id": 27, "title": "BTT" }, { "id": 48, "title": "OMG" }, { "id": 93, "title": "BTC" }, { "id": 99, "title": "LTC" }, { "id": 115, "title": "DOGE" }, { "id": 133, "title": "WAVES" }, { "id": 135, "title": "ONT" }, { "id": 139, "title": "ETH" }, { "id": 140, "title": "DASH" }, { "id": 149, "title": "XMR" }, { "id": 160, "title": "ETC" }, { "id": 161, "title": "XRP" }, { "id": 162, "title": "ZEC" }, { "id": 163, "title": "USDT" }, { "id": 168, "title": "ZRX" }, { "id": 172, "title": "BCH" }, { "id": 173, "title": "XEM" }, { "id": 175, "title": "XTZ" }, { "id": 177, "title": "NEO" }, { "id": 178, "title": "EOS" }, { "id": 180, "title": "LSK" }, { "id": 181, "title": "ADA" }, { "id": 182, "title": "XLM" }, { "id": 184, "title": "BTG" }, { "id": 185, "title": "TRX" }, { "id": 197, "title": "LINK" }, { "id": 198, "title": "ATOM" }, { "id": 202, "title": "UNI" }, { "id": 203, "title": "DAI" }
+  ]
 }
