@@ -16,6 +16,9 @@ export class BuildExmoLinkPipe implements PipeTransform {
     if (pairLink === 'USD_ETH') pairLink = 'ETH_USD';
     if (pairLink === 'USD_BTC') pairLink = 'USD_BTC';
     if (pairLink === 'BTC_LTC') pairLink = 'LTC_BTC';
+    if (element.changer === '510') {
+      if (pairLink === 'ETH_XMR') pairLink = 'XMR_ETH';
+    }
     return pairLink;
   }
 }
