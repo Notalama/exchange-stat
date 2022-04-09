@@ -18,7 +18,7 @@
     "axios": "^0.18.0",
     "font-awesome": "^4.7.0",
     "materialize-css": "^1.0.0-rc.2",
-    "moment": "^2.22.2",
+    "moment": "^2.29.2",
     "vue": "^2.5.17",
     "vue-good-table": "^2.16.0",
     "vue-router": "^3.0.2"
