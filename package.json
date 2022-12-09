@@ -60,7 +60,7 @@
     "concurrently": "^4.1.0",
     "cors": "^2.8.4",
     "ejs": "^2.6.1",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "iconv": "^2.3.1",
     "mongodb": "^3.1.13",
     "mongoose": "^5.1.0",
